@@ -121,7 +121,7 @@ class SearchPageState extends State<SearchPage> {
     final result = new SerializableSearchResult.fromTrack(track);
     _addToSearchResults(result);
 
-    final playbackTrack = PlaybackTransformer.fromSpotify(track, -1);
+    final playbackTrack = PlaybackTransformer.fromSpotify(track, -1, isPrio: true);
     _manager.sendPlayTrack(playbackTrack);
   }
 
