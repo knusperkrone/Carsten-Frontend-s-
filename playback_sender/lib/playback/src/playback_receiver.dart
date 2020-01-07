@@ -1,0 +1,247 @@
+import 'package:chrome_tube/playback/src/sender_playback_queue.dart';
+import 'package:flutter/material.dart';
+import 'package:optional/optional.dart';
+import 'package:optional/optional_internal.dart';
+import 'package:playback_interop/playback_interop.dart';
+
+import 'ipc/cast_playback_context.dart';
+import 'playback_listeners.dart';
+import 'playback_sender.dart';
+
+class PlaybackReceiver extends PlaybackSender {
+  /*
+   * Singleton
+   */
+
+  static PlaybackReceiver _instance;
+
+  factory PlaybackReceiver() {
+    _instance ??= PlaybackReceiver.internal(new CastPlaybackContext());
+    return _instance;
+  }
+
+  @protected
+  PlaybackReceiver.internal(CastPlaybackContext cxt) : super(cxt);
+
+  factory PlaybackReceiver.test(CastPlaybackContext mockedContext) {
+    return PlaybackReceiver.internal(mockedContext);
+  }
+
+  /*
+   * members
+   */
+
+  @protected
+  // ignore: prefer_collection_literals
+  final uiListeners = new Set<PlaybackUIListener>();
+
+  int _currSeek = 0;
+  bool _isRepeating = false;
+  ShuffleStateDto _currShuffleState;
+  SimplePlaybackState _currPlayerState = SimplePlaybackState.ENDED;
+  DateTime _seekTimestamp = new DateTime.now();
+  SenderPlaybackQueue _queue;
+
+  /*
+   * public getter
+   */
+
+  double get trackSeek => _currSeek.toDouble();
+
+  bool get isRepeating => _isRepeating;
+
+  DateTime get seekTimestamp => _seekTimestamp;
+
+  ShuffleStateDto get currShuffleState => _currShuffleState;
+
+  bool get isShuffled => _currShuffleState?.isShuffled ?? false;
+
+  SimplePlaybackState get currPlayerState => _currPlayerState;
+
+  Optional<PlaybackTrack> get track => new Optional.ofNullable(_queue?.currentTrack);
+
+  int get trackIndex => _queue?.trackHolder?.queueIndex ?? 0;
+
+  List<PlaybackTrack> get prioTracks => _queue?.prioTracks ?? [];
+
+  List<PlaybackTrack> get queueTracks => _queue?.mutableTracks ?? [];
+
+  String get playlistName => _queue?.name ?? '';
+
+  /*
+   * protected getters/setters
+   */
+
+  @protected
+  SenderPlaybackQueue get queue => _queue;
+
+  @protected
+  set track(Optional<PlaybackTrack> val) => val;
+
+  @protected
+  set currPlayerState(SimplePlaybackState val) => _currPlayerState = val;
+
+  @protected
+  set isRepeating(bool val) => _isRepeating = val;
+
+  @protected
+  set seekTimestamp(DateTime val) => _seekTimestamp = val;
+
+  @protected
+  set shuffleState(ShuffleStateDto val) => _currShuffleState = val;
+
+  @protected
+  set queue(SenderPlaybackQueue val) => _queue = val;
+
+  @protected
+  set trackSeek(double seek) => _currSeek = seek.toInt();
+
+  /*
+   * Receiver methods
+   */
+
+  void onConnect(ReadyDto readyDto) {
+    isConnected = readyDto.ready;
+    if (readyDto.ready == false) {
+      _onStop();
+    } else {
+      uiListeners.forEach((l) => l.notifyPlaybackReady());
+    }
+  }
+
+  void onPlayerState(PlayerStateDto playerStateDto) {
+    switch (playerStateDto.state) {
+      case PlayerState.SEEKING:
+      case PlayerState.BUFFERING:
+        _currPlayerState = SimplePlaybackState.BUFFERING;
+        break;
+      case PlayerState.ENDED:
+        _currPlayerState = SimplePlaybackState.ENDED;
+        _onStop(); // notify
+        break;
+      case PlayerState.PAUSED:
+        _currPlayerState = SimplePlaybackState.PAUSED;
+        break;
+      case PlayerState.PLAYING:
+        _currPlayerState = SimplePlaybackState.PLAYING;
+        break;
+      default:
+        print('ERROR] invalid state ${playerStateDto.state}');
+        return;
+    }
+    uiListeners.forEach((l) => l.notifyPlayingState());
+  }
+
+  void onQueue(PlaybackQueueDto queueDto) {
+    _queue = new SenderPlaybackQueue.fromQueue(
+        queueDto, isRepeating, isShuffled, _currShuffleState?.initSeed);
+    uiListeners.forEach((l) => l.notifyQueue());
+  }
+
+  void onTrackState(TrackStateDto trackStateDto) {
+    if (_queue == null) {
+      return;
+    }
+
+    switch (trackStateDto.trackState) {
+      case TrackState.KICKOFF:
+        break;
+      case TrackState.NEXT:
+        _queue.nextTrack();
+        _seekTimestamp = DateTime.now();
+        _currSeek = 0;
+        uiListeners.forEach((l) => l.notifyTrackSeek());
+        break;
+      case TrackState.PREVIOUS:
+        _queue.previousTrack();
+        _seekTimestamp = DateTime.now();
+        _currSeek = 0;
+        uiListeners.forEach((l) => l.notifyTrackSeek());
+        break;
+      case TrackState.SYNC:
+        if (trackStateDto.durationMs != null) {
+          if (_queue.currentTrack != null) {
+            _queue.currentTrack.durationMs = trackStateDto.durationMs;
+          }
+        }
+        break;
+      default:
+        print('[ERROR] invalid state ${trackStateDto.trackState}');
+        return;
+    }
+
+    if (_queue.currentTrack != null &&
+        _queue.currentTrack.origQueueIndex != trackStateDto.trackIndex) {
+      _reSync('Invalid: ${_queue.currentTrack.origQueueIndex} != ${trackStateDto.trackIndex}');
+    }
+
+    uiListeners.forEach((l) => l.notifyTrack());
+  }
+
+  void onTrackSeek(SeekDto seekDto) {
+    _seekTimestamp = DateTime.now();
+    _currSeek = seekDto.seekMs;
+    uiListeners.forEach((l) => l.notifyTrackSeek());
+  }
+
+  void onShuffling(ShuffleStateDto shuffleDto) {
+    try {
+      _queue.setShuffleState(shuffleDto);
+      _currShuffleState = shuffleDto;
+      uiListeners.forEach((l) => l.notifyQueue());
+    } catch (e) {
+      _reSync("Couldn't shuffle:\n$e");
+    }
+  }
+
+  void onRepeating(RepeatingDto repeat) {
+    _isRepeating = repeat.isRepeating;
+    uiListeners.forEach((l) => l.notifyRepeating());
+  }
+
+  void onAddPrioDelta(AddPrioDeltaDto addDeltaDto) {
+    try {
+      queue.addPrioTrack(addDeltaDto.track, addDeltaDto.append);
+      uiListeners.forEach((l) => l.notifyQueue());
+    } catch (e) {
+      _reSync("Couldn't add $e");
+    }
+  }
+
+  void onMovePrioDelta(MovePrioDeltaDto moveDeltaDto) {
+    try {
+      queue.move(moveDeltaDto.startPrio, moveDeltaDto.startIndex, moveDeltaDto.targetPrio,
+          moveDeltaDto.targetIndex);
+      uiListeners.forEach((l) => l.notifyQueue());
+    } catch (e) {
+      _reSync("Couldn't move $e");
+    }
+  }
+
+  void onError(ErrorDto errorDto) {
+    print('On error:\n${errorDto.error}');
+  }
+
+/*
+   * Helpers
+   */
+
+  void _reSync(String msg) {
+    print('[ERROR] $msg');
+    scheduleFullSync();
+  }
+
+  void _onStop() {
+    _isRepeating = false;
+    _currSeek = 0;
+    _queue = null;
+
+    for (final l in uiListeners) {
+      l.notifyTrackSeek();
+      l.notifyTrack();
+      l.notifyQueue();
+      l.notifyRepeating();
+      l.notifyPlaybackReady();
+    }
+  }
+}

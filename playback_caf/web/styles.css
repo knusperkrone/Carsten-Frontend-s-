@@ -1,0 +1,21 @@
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #000000;
+  overflow: hidden;
+  position: fixed;
+}
+
+#output {
+  padding: 20px;
+  text-align: center;
+}
+
+#youTubePlayerDOM {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}

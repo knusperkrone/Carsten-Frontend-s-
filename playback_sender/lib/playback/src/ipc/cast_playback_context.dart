@@ -1,0 +1,61 @@
+import 'dart:convert';
+import 'dart:io';
+import 'dart:ui';
+
+import 'package:flutter/services.dart';
+import 'package:playback_interop/playback_interop.dart';
+
+import 'background_dispatcher.dart';
+import 'foreground_dispatcher.dart';
+
+class CastPlaybackContext {
+  static const _CHANNEL_METHOD_NAME = 'interfaceag/cast_context_plugin';
+  static const _METHOD_CHANNEL = MethodChannel(_CHANNEL_METHOD_NAME);
+  static bool _isInited = false;
+
+  static Future<void> init() async {
+    if (_isInited) {
+      return;
+    }
+    if (Platform.isIOS) {
+      throw UnsupportedError('iOS does currently not support \'CastPlaybackContext\'');
+    }
+
+    // Start background service
+    final handle = PluginUtilities.getCallbackHandle(backgroundDispatchEntry);
+    while (true) {
+      _isInited = await _METHOD_CHANNEL.invokeMethod('init', <dynamic>[handle.toRawHandle()]);
+      if (_isInited) {
+        break;
+      }
+      await new Future.delayed(const Duration(milliseconds: 250), () => {});
+    }
+    foregroundDispatch();
+  }
+
+  Future<void> send(CastMessage message) async {
+    final String msg = jsonEncode(message.toJson());
+    final wasSend = await _METHOD_CHANNEL.invokeMethod('send_msg', <dynamic>[msg]) as bool;
+    if (!wasSend) {
+      print('[ERROR] Couldn\'t dispatch: send($msg)');
+    }
+  }
+
+  Future<void> end() async {
+    final wasSend = await _METHOD_CHANNEL.invokeMethod('end', []) as bool;
+    if (!wasSend) {
+      print('[ERROR] Couldn\'t dispatch: end()');
+    }
+  }
+
+  static Future<void> restoreSession() async {
+    for (int i = 0; i < 5; i++) {
+      final wasSend = await _METHOD_CHANNEL.invokeMethod('restore_session', []) as bool;
+      if (wasSend) {
+        return;
+      }
+      await Future.delayed(const Duration(milliseconds: 100), () {});
+    }
+    print('[ERROR] Couldn\'t dispatch: restoreSession()');
+  }
+}
