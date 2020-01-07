@@ -45,7 +45,7 @@ void main() {
 
     // Verify
     const matcher = ListEquality<PlaybackTrack>();
-    verify(listener.notifyQueue()).called(1);
+    verify(listener.notifyQueue());
 
     // ignore: invalid_use_of_protected_member
     expect(expectedFirst, manager.track.value);

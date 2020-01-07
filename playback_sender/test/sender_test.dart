@@ -89,22 +89,24 @@ void main() {
     verify(context.send(argThat(equals(expectedMessage)))).called(1);
   });
 
-  test('Next song', () {
+  test('Next song', () async {
     // Prepare
     final expectedMessage = new CastMessage<String>(SenderToCafConstants.PB_NEXT_TRACK, '');
 
     // Execute
+    await Future.delayed(const Duration(milliseconds: 5));
     sender.sendNext();
 
     // Verify
     verify(context.send(argThat(equals(expectedMessage)))).called(1);
   });
 
-  test('Previous song', () {
+  test('Previous song', () async {
     // Prepare
     final expectedMessage = new CastMessage<String>(SenderToCafConstants.PB_PREV_TRACK, '');
 
     // Execute
+    await Future.delayed(const Duration(milliseconds: 5));
     sender.sendPrevious();
 
     // Verify
