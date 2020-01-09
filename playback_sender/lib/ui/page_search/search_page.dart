@@ -168,7 +168,7 @@ class SearchPageState extends State<SearchPage> {
               icon: Icon(Icons.more_vert),
               onPressed: () => key.currentState.open(actionType: SlideActionType.primary),
             )
-          : Container(),
+          : null,
     );
 
     if (curr.type == SearchType.TRACK) {
