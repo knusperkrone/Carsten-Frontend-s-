@@ -109,11 +109,11 @@ class PlaybackManager {
       }
 
       // Add to prio list and play song
-      try  {
+      try {
         _queue.value.addPrioTrack(track, false);
         _broadcastAddPrioDelta(track, false);
         playNext();
-      } catch(e) {
+      } catch (e) {
         print("[ERROR] Coulnd't play track: $track - $e");
       }
     });
@@ -193,9 +193,10 @@ class PlaybackManager {
   }
 
   void onPlayerReady(PlaybackPlayer player) {
-    assert(player != null);
-    _player = new Optional.of(player);
-    _broadcastReady();
+    if (!_player.isPresent) {
+      _player = new Optional.of(player);
+      _broadcastReady();
+    }
   }
 
   void onError(String error) {

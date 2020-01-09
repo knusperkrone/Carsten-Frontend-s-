@@ -1,8 +1,7 @@
 import 'dart:async';
-import 'dart:convert';
 
-import 'package:http/http.dart' as http;
 import 'package:playback_caf_dart/playback_caf.dart';
+import 'package:playback_caf_dart/src/playback/backend.dart';
 import 'package:playback_interop/playback_interop.dart';
 
 import 'youtube_iframe.dart' as yt;
@@ -12,6 +11,7 @@ class YoutubePlayer extends PlaybackPlayer {
   static const SEEK_TICK_INTERVAL_MS = 1000 * 10;
 
   final PlaybackManager _manager;
+  final BackendAdapter _adapter = new BackendAdapter();
   StreamSubscription _periodicSeekDispatcher; // Null safe by optional
   PlaybackTrack _currTrack; // Null safe by assert
   yt.Player _iplayer; // null safe
@@ -87,26 +87,8 @@ class YoutubePlayer extends PlaybackPlayer {
     final key = '${track.title} ${track.artist}';
     String id = cache.get(key);
     if (id == null) {
-      try {
-        final uri = Uri.http(
-          'spotitube.if-lab.de',
-          '/api/youtube/search',
-          {'q': '${track.title} ${track.artist}'},
-        );
-        final resp = await http.get(uri);
-
-        if (resp.statusCode != 200) {
-          throw new StateError('Invalid status code: ${resp.statusCode}\n${resp.body}');
-        }
-        id = jsonDecode(resp.body)['id'] as String;
-        if (id == null) {
-          throw new StateError('Invalid id with request ${resp.statusCode}\n${resp.body}');
-        }
-
-        cache.set(key, id);
-      } catch (e) {
-        print('[ERROR] couldn\'t get Video id: $id\n$e');
-      }
+      id = await _adapter.getVideoId(track);
+      cache.set(id, id);
     }
     return id ?? 'QryoOF5jEbc'; // Fallback is twerk
   }
