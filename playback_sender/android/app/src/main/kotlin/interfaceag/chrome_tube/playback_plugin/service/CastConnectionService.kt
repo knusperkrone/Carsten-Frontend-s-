@@ -90,9 +90,10 @@ class CastConnectionService : Service(), MethodChannel.MethodCallHandler, CastPl
 
     @RequiresApi(Build.VERSION_CODES.ECLAIR)
     override fun onDestroy() {
-        stopForeground(true)
-        mNotiBuilder.clear()
         mBackgroundIsolate = null
+        mNotiBuilder.clear()
+        stopForeground(true)
+        stopSelf()
         super.onDestroy()
     }
 

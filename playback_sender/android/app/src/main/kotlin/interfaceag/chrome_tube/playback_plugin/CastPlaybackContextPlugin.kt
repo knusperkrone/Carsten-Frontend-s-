@@ -64,13 +64,13 @@ class CastPlaybackContextPlugin(private val mContext: Context, messenger: Binary
     fun onDestroy() {
         instance = null
         if (mIsInited) {
+            mIsInited = false
             if (mIsBound) {
                 mContext.unbindService(mServiceConnection)
             }
+            mIsBound = false
             val serviceIntent = Intent(mContext, CastConnectionService::class.java)
             mContext.stopService(serviceIntent)
-            mIsInited = false
-            mIsBound = false
         }
     }
 
@@ -114,8 +114,7 @@ class CastPlaybackContextPlugin(private val mContext: Context, messenger: Binary
             result.success(false)
             return
         }
-        result.success(true)
-
+        mServiceConnection.result = result
         mContext.bindService(serviceIntent, mServiceConnection, Context.BIND_AUTO_CREATE)
         mIsBound = true
         mIsInited = true
@@ -152,10 +151,13 @@ class ResultServiceConnection(messenger: BinaryMessenger) : ServiceConnection {
     private val mForegroundMethodChannel = MethodChannel(messenger, CastPlaybackContextPlugin.SERVICE_CHANNEL_METHOD_NAME)
     private val mForegroundMessageChannel = BasicMessageChannel<String>(messenger, CastPlaybackContextPlugin.SERVICE_CHANNEL_MESSAGE_NAME, StringCodec.INSTANCE)
 
+    var result: MethodChannel.Result? = null
     var service: CastConnectionService? = null
 
     override fun onServiceConnected(name: ComponentName?, binder: IBinder?) {
         service = (binder as CastConnectionService.LocalBinder).service
+        result?.success(true)
+        result = null
         service!!.startUIBroadcast(mForegroundMethodChannel, mForegroundMessageChannel)
     }
 
