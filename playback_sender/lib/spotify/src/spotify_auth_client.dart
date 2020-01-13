@@ -73,7 +73,7 @@ class AuthorizedSpotifyClient with DartHttpClientMixin {
   Future<String> authorizedPut(String path, String body, {String baseUrl = _BASE_URL}) async {
     await _refreshToken();
     baseUrl ??= _BASE_URL;
-    return doPut(baseUrl, path, {'Authorization': 'Bearer ${_apiToken.accessToken}'}, body);
+    return doPut<String>(baseUrl, path, {'Authorization': 'Bearer ${_apiToken.accessToken}'}, body);
   }
 
   /*

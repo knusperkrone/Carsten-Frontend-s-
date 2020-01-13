@@ -43,18 +43,18 @@ void main() {
 
   test('Send tracks with pagination', () {
     // Prepare
-    final expectedTracks = new List.generate(
-        8192, (_) => new PlaybackTrack.fromJson(jsonDecode(trackJson) as Map<String, dynamic>));
+    final expectedTracks =
+        new List.generate(8192, (_) => new PlaybackTrack.fromJson(jsonDecode(trackJson) as Map<String, dynamic>));
 
     // Execute
     sender.sendTracks(expectedTracks, 0, '');
 
     // Validate
     int trackIndex = 0;
-    final List<dynamic> captured = new List.from(verify(context.send(captureAny)).captured);
+    final captured = new List<dynamic>.from(verify(context.send(captureAny)).captured);
 
     // Clear queue at first
-    final first = captured.removeAt(0);
+    final first = captured.removeAt(0) as CastMessage;
     expect(first.type, SenderToCafConstants.PB_CLEAR_QUEUE);
 
     final castedCaptured = captured.cast<CastMessage<dynamic>>();
@@ -66,7 +66,7 @@ void main() {
       // Notify on last msg
       if (resultMsg == captured.last) {
         expect(trackIndex, expectedTracks.length);
-        expect(resultMsg.data, []);
+        expect(resultMsg.data, <PlaybackTrack>[]);
         break;
       }
 
@@ -94,7 +94,7 @@ void main() {
     final expectedMessage = new CastMessage<String>(SenderToCafConstants.PB_NEXT_TRACK, '');
 
     // Execute
-    await Future.delayed(const Duration(milliseconds: 5));
+    await Future<void>.delayed(const Duration(milliseconds: 5));
     sender.sendNext();
 
     // Verify
@@ -106,7 +106,7 @@ void main() {
     final expectedMessage = new CastMessage<String>(SenderToCafConstants.PB_PREV_TRACK, '');
 
     // Execute
-    await Future.delayed(const Duration(milliseconds: 5));
+    await Future<void>.delayed(const Duration(milliseconds: 5));
     sender.sendPrevious();
 
     // Verify
@@ -116,8 +116,7 @@ void main() {
   test('Set shuffling', () {
     // Prepare
     final expectedShuffleMessage = new CastMessage<bool>(SenderToCafConstants.PB_SHUFFLING, true);
-    final expectedNoShuffleMessage =
-        new CastMessage<bool>(SenderToCafConstants.PB_SHUFFLING, false);
+    final expectedNoShuffleMessage = new CastMessage<bool>(SenderToCafConstants.PB_SHUFFLING, false);
 
     // Execute
     sender.sendShuffling(true);
@@ -140,10 +139,8 @@ void main() {
     sender.sendRepeating(false);
 
     // Verify
-    verifyInOrder([
-      context.send(argThat(equals(expectedRepeatMessage))),
-      context.send(argThat(equals(expectedNoRepeatMessage)))
-    ]);
+    verifyInOrder(
+        [context.send(argThat(equals(expectedRepeatMessage))), context.send(argThat(equals(expectedNoRepeatMessage)))]);
   });
 
   test('Set seek', () {
@@ -161,8 +158,7 @@ void main() {
   test('Add to prio', () {
     // Prepare
     final track = new PlaybackTrack.fromJson(jsonDecode(trackJson) as Map<String, dynamic>);
-    final expectedMessage =
-        new CastMessage<PlaybackTrack>(SenderToCafConstants.PB_APPEND_TO_PRIO, track);
+    final expectedMessage = new CastMessage<PlaybackTrack>(SenderToCafConstants.PB_APPEND_TO_PRIO, track);
 
     // Execute
     sender.sendAddToPrio(track);
@@ -178,7 +174,7 @@ void main() {
     const targetPrio = true;
     const targetIndex = 0;
     final expectedMessage = new CastMessage<List<dynamic>>(
-        SenderToCafConstants.PB_MOVE, [startPrio, startIndex, targetPrio, targetIndex]);
+        SenderToCafConstants.PB_MOVE, <dynamic>[startPrio, startIndex, targetPrio, targetIndex]);
 
     // Execute
     sender.sendMove(startPrio, startIndex, targetPrio, targetIndex);
@@ -191,7 +187,7 @@ void main() {
 
 // List matcher helper
 class _MessageListMatcher extends Matcher {
-  final ListEquality listTester = const ListEquality();
+  final ListEquality listTester = const ListEquality<dynamic>();
   final CastMessage<List<dynamic>> _expected;
 
   _MessageListMatcher(this._expected);
@@ -202,11 +198,10 @@ class _MessageListMatcher extends Matcher {
   }
 
   @override
-  bool matches(item, Map matchState) {
+  bool matches(dynamic item, Map matchState) {
     if (item is CastMessage<dynamic>) {
       final CastMessage<dynamic> typedItem = item;
-      return typedItem.type == _expected.type &&
-          listTester.equals(_expected.data, typedItem.data as List<dynamic>);
+      return typedItem.type == _expected.type && listTester.equals(_expected.data, typedItem.data as List<dynamic>);
     }
     return false;
   }

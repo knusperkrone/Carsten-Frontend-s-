@@ -28,21 +28,21 @@ class CastPlaybackContext {
       if (_isInited) {
         break;
       }
-      await new Future.delayed(const Duration(milliseconds: 250), () => {});
+      await new Future.delayed(const Duration(milliseconds: 250), () {});
     }
     foregroundDispatch();
   }
 
   Future<void> send(CastMessage message) async {
     final String msg = jsonEncode(message.toJson());
-    final wasSend = await _METHOD_CHANNEL.invokeMethod('send_msg', <dynamic>[msg]) as bool;
+    final wasSend = await _METHOD_CHANNEL.invokeMethod<bool>('send_msg', <dynamic>[msg]);
     if (!wasSend) {
       print('[ERROR] Couldn\'t dispatch: send($msg)');
     }
   }
 
   Future<void> end() async {
-    final wasSend = await _METHOD_CHANNEL.invokeMethod('end', []) as bool;
+    final wasSend = await _METHOD_CHANNEL.invokeMethod<bool>('end', <dynamic>[]);
     if (!wasSend) {
       print('[ERROR] Couldn\'t dispatch: end()');
     }
@@ -50,7 +50,7 @@ class CastPlaybackContext {
 
   static Future<void> restoreSession() async {
     for (int i = 0; i < 5; i++) {
-      final wasSend = await _METHOD_CHANNEL.invokeMethod('restore_session', []) as bool;
+      final wasSend = await _METHOD_CHANNEL.invokeMethod<bool>('restore_session', <dynamic>[]);
       if (wasSend) {
         return;
       }

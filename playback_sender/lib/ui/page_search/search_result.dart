@@ -68,7 +68,7 @@ class SerializableSearchResult {
    */
 
   @override
-  bool operator ==(other) =>
+  bool operator ==(dynamic other) =>
       (runtimeType != other.runtimeType) ? false : hashCode == other.hashCode;
 
   @override

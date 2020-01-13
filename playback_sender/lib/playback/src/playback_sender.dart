@@ -46,7 +46,7 @@ class PlaybackSender {
     } while (currIndex < tracks.length);
 
     // Notify last msg
-    _sendMsg(SenderToCafConstants.PB_APPEND_TO_QUEUE, []);
+    _sendMsg(SenderToCafConstants.PB_APPEND_TO_QUEUE, <PlaybackTrack>[]);
   }
 
   /*

@@ -32,7 +32,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
   Future<void> _onSearch() async {
     final prefs = await SharedPreferences.getInstance();
-    Navigator.push(context, new FadeInRoute(builder: (context) {
+    Navigator.push<void>(context, new FadeInRoute(builder: (context) {
       return new SearchPage(prefs);
     }));
   }

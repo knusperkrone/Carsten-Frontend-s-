@@ -88,7 +88,7 @@ class TrackPageState extends State<TrackPage> {
           setState(() => _tracks = _tracks);
         }
         _streamSub.pause();
-        await Future.delayed(const Duration(milliseconds: 400));
+        await Future<void>.delayed(const Duration(milliseconds: 400));
         _streamSub.resume();
       });
       _streamSub.onDone(() => setState(() => _hasFetched = true));

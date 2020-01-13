@@ -12,9 +12,7 @@ class QueuePage extends StatefulWidget {
   State<StatefulWidget> createState() => new _QueuePageState();
 }
 
-class _QueuePageState extends State<QueuePage>
-    with SingleTickerProviderStateMixin
-    implements PlaybackUIListener {
+class _QueuePageState extends State<QueuePage> with SingleTickerProviderStateMixin implements PlaybackUIListener {
   // ignore: non_constant_identifier_names
   static final _PLACEHOLDER_TRACK = new PlaybackTrack.dummy(artist: '', coverUrl: '', title: '');
 
@@ -33,8 +31,7 @@ class _QueuePageState extends State<QueuePage>
     _queueTracks = List.from(_manager.queueTracks);
 
     _mediaRouteBloc = new MediaRouteBloc();
-    _animController =
-        new AnimationController(vsync: this, duration: const Duration(milliseconds: 250));
+    _animController = new AnimationController(vsync: this, duration: const Duration(milliseconds: 250));
     _animController.value = _prioTracks.isEmpty ? 0.0 : 1.0;
   }
 
@@ -66,7 +63,7 @@ class _QueuePageState extends State<QueuePage>
   void notifyRepeating() => setState(() {});
 
   @override
-  void notifyPlayingState() => setState(() => {});
+  void notifyPlayingState() => setState(() {});
 
   @override
   void notifyPlaybackReady() => setState(() {});
@@ -105,8 +102,7 @@ class _QueuePageState extends State<QueuePage>
       final startPrio = startIndex <= _prioTracks.length;
       bool targetPrio = targetIndex <= _prioTracks.length;
       // targetPrio might be wrong, as we drag on the barrier
-      if ((startPrio && targetPrio) &&
-          (_prioTracks.isNotEmpty && _prioTracks.length == targetIndex)) {
+      if ((startPrio && targetPrio) && (_prioTracks.isNotEmpty && _prioTracks.length == targetIndex)) {
         targetPrio = false;
       }
 
@@ -259,8 +255,7 @@ class _QueuePageState extends State<QueuePage>
                               height: 40 * _animController.value,
                               child: _animController.value > 0.7
                                   ? Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 5.0, horizontal: 7.0),
+                                      padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 7.0),
                                       child: Opacity(
                                         opacity: _animController.value,
                                         child: Text(

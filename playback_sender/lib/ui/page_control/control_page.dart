@@ -28,7 +28,7 @@ class ControlPage extends StatefulWidget {
     final baseColor = PlaybackManager().track.isPresent
         ? Theme.of(context).canvasColor
         : Theme.of(context).primaryColor;
-    Navigator.push(context, new MaterialPageRoute(builder: (context) {
+    Navigator.push<void>(context, new MaterialPageRoute(builder: (context) {
       return new ControlPage._(baseColor);
     }));
   }
@@ -152,7 +152,7 @@ class ControlPageState extends State<ControlPage>
 
   Future<void> _onQueue() async {
     _manager.unregisterListener(this);
-    await Navigator.of(context).push(new MaterialPageRoute(builder: (context) {
+    await Navigator.of(context).push<void>(new MaterialPageRoute(builder: (context) {
       return new QueuePage();
     }));
 

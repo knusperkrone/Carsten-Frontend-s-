@@ -36,7 +36,7 @@ class _SplashScreenState extends State<SplashScreen> {
         }
         return;
       }
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) {
+      await Navigator.pushReplacement<void, void>(context, MaterialPageRoute(builder: (_) {
         return new PlaylistPage(playlists);
       }));
     } else {
@@ -61,8 +61,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 children: <Widget>[
                   Text('Error:', style: theme.textTheme.title),
                   Text(_errorMsg,
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.title.copyWith(color: theme.errorColor)),
+                      textAlign: TextAlign.center, style: theme.textTheme.title.copyWith(color: theme.errorColor)),
                   OutlineButton(
                     child: const Text('Retry'),
                     onPressed: _initToken,

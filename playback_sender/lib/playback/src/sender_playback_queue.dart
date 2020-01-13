@@ -67,14 +67,14 @@ class SenderPlaybackQueue extends BasePlaybackQueue {
     final shuffleState = new ShuffleStateDto.fromJson(json['shuffleState'] as Map<String, dynamic>);
     final currentTrack = new PlaybackTrack.fromJson(json['currTrackOpt'] as Map<String, dynamic>);
     final trackHolder = new PlaybackTrack.fromJson(json['trackHolderOpt'] as Map<String, dynamic>);
-    final prioTracks = json['prioTracks']
-        .map((json) => new PlaybackTrack.fromJson(json as Map<String, dynamic>))
+    final prioTracks = (json['prioTracks'] as List<dynamic>)
+        .map((dynamic json) => new PlaybackTrack.fromJson(json as Map<String, dynamic>))
         .toList();
-    final mutableTracks = json['mutableTrackList']
-        .map((json) => new PlaybackTrack.fromJson(json as Map<String, dynamic>))
+    final mutableTracks = (json['mutableTrackList'] as List<dynamic>)
+        .map((dynamic json) => new PlaybackTrack.fromJson(json as Map<String, dynamic>))
         .toList();
-    final queueTracks = json['immutableTrackList']
-        .map((json) => new PlaybackTrack.fromJson(json as Map<String, dynamic>))
+    final queueTracks = (json['immutableTrackList'] as List<dynamic>)
+        .map((dynamic json) => new PlaybackTrack.fromJson(json as Map<String, dynamic>))
         .toList();
 
     return new SenderPlaybackQueue._state(
@@ -85,14 +85,14 @@ class SenderPlaybackQueue extends BasePlaybackQueue {
       currTrackOpt: currentTrack,
       trackHolderOpt: trackHolder,
       hash: hash,
-      prioTracks: prioTracks.cast<PlaybackTrack>() as List<PlaybackTrack>,
-      mutableTrackList: mutableTracks.cast<PlaybackTrack>() as List<PlaybackTrack>,
-      immutableTrackList: queueTracks.cast<PlaybackTrack>() as List<PlaybackTrack>,
+      prioTracks: prioTracks.cast<PlaybackTrack>(),
+      mutableTrackList: mutableTracks.cast<PlaybackTrack>(),
+      immutableTrackList: queueTracks.cast<PlaybackTrack>(),
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {
+    return <String, dynamic>{
       'name': name,
       'isDirty': isDirty,
       'isRepeating': isRepeating,

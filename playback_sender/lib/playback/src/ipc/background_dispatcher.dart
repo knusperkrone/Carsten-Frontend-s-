@@ -14,15 +14,16 @@ import 'notification.dart';
  */
 @pragma('vm:entry-point')
 void backgroundDispatchEntry() {
+  WidgetsFlutterBinding.ensureInitialized();
+
   const methodChannel = MethodChannel(NativeConstants.CHANNEL_METHOD_NAME);
   const ipcChannel = BasicMessageChannel(NativeConstants.CHANNEL_MESSAGE_NAME, StringCodec());
   final dispatcher = new BackgroundDispatcher();
   final manager = new PlaybackManager();
   manager.isBackground = true;
 
-  WidgetsFlutterBinding.ensureInitialized();
   ipcChannel.setMessageHandler(dispatcher.dispatchMessage);
-  methodChannel.invokeMethod(
+  methodChannel.invokeMethod<void>(
       'background_isolate_inited', ['Mit einem Chromecast verbinden!']); // Native init cast_context
 }
 

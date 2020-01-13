@@ -71,7 +71,7 @@ class SearchPageState extends State<SearchPage> {
     } else {
       final q = _textController.text.toLowerCase();
       final searchFuture = _spotify.search(q);
-      _currSearch = CancelableOperation.fromFuture(searchFuture).then((triple) {
+      _currSearch = CancelableOperation.fromFuture(searchFuture).then<void>((triple) {
         if (!mounted) {
           return;
         }

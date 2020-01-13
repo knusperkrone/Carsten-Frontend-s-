@@ -15,11 +15,8 @@ void main() {
 
   test('Interop shuffling - short', () {
     final shuffler = new PlaybackShuffler();
-    final list = json.decode(INTEGRATION_TRACKS);
-    final untyped = list
-        .map((json) => PlaybackTrack.fromJson(json as Map<String, dynamic>))
-        .toList() as List<dynamic>;
-    final List<PlaybackTrack> tracks = untyped.cast();
+    final list = json.decode(INTEGRATION_TRACKS) as List<dynamic>;
+    final tracks = list.map((dynamic json) => PlaybackTrack.fromJson(json as Map<String, dynamic>)).toList();
 
     final List<PlaybackTrack> result = shuffler.shuffle(0, tracks);
     final resultString = result.map((r) => r.title).join(',');

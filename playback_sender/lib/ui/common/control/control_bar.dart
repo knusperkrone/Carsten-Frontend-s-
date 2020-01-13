@@ -31,16 +31,16 @@ class ControlBarState extends State<ControlBar> implements PlaybackUIListener {
    */
 
   @override
-  void notifyPlaybackReady() => setState(() => {});
+  void notifyPlaybackReady() => setState(() {});
 
   @override
   void notifyPlayingState() => setState(() {});
 
   @override
-  void notifyQueue() => setState(() => {});
+  void notifyQueue() => setState(() {});
 
   @override
-  void notifyTrack() => setState(() => {});
+  void notifyTrack() => setState(() {});
 
   @override
   void notifyRepeating() {}

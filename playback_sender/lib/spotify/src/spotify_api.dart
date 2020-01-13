@@ -76,7 +76,7 @@ class SpotifyApi {
   Future<List<SpotifyPlaylist>> getUserPlaylists() {
     assert(_client != null);
     const endpoint = '/v1/me/playlists';
-    SpotifyPlaylist transform(json) => SpotifyPlaylist.fromJson(json as Map<String, dynamic>);
+    SpotifyPlaylist transform(Map<String, dynamic> json) => SpotifyPlaylist.fromJson(json);
     // No caching key here - blocking event!
     return _paginateEager(endpoint, transform);
   }
@@ -109,7 +109,7 @@ class SpotifyApi {
     assert(_client != null);
     final endpoint = '/v1/albums/${album.id}/tracks';
     final path = p.join(_path, 'album_${album.id}.json');
-    SpotifyTrack transform(json) => SpotifyTrack.fromJson(json as Map<String, dynamic>);
+    SpotifyTrack transform(Map<String, dynamic> json) => SpotifyTrack.fromJson(json);
     // album.id cache key,
     return _getCached(endpoint, path, transform);
   }
@@ -125,12 +125,14 @@ class SpotifyApi {
     final albumJson = json['albums']['items'] as Iterable<dynamic>;
     final tracksJson = json['tracks']['items'] as Iterable<dynamic>;
     final playlists = playlistsJson
-        .map((json) => SpotifyPlaylist.fromJson(json as Map<String, dynamic>))
+        .map((dynamic json) => SpotifyPlaylist.fromJson(json as Map<String, dynamic>))
         .toList();
-    final albums =
-        albumJson.map((json) => SpotifyAlbum.fromJson(json as Map<String, dynamic>)).toList();
-    final tracks =
-        tracksJson.map((json) => SpotifyTrack.fromJson(json as Map<String, dynamic>)).toList();
+    final albums = albumJson
+        .map((dynamic json) => SpotifyAlbum.fromJson(json as Map<String, dynamic>))
+        .toList();
+    final tracks = tracksJson
+        .map((dynamic json) => SpotifyTrack.fromJson(json as Map<String, dynamic>))
+        .toList();
 
     return new Tuple3(playlists, albums, tracks);
   }
@@ -165,13 +167,15 @@ class SpotifyApi {
     // Fetch, convert and transform
     String source = await _tryGet(endpoint);
     SpotifyPager pager = SpotifyPager.fromJson(jsonDecode(source) as Map<String, dynamic>);
-    fetchedResult.addAll(pager.items.map((item) => transformFun(item as Map<String, dynamic>)));
+    fetchedResult
+        .addAll(pager.items.map((dynamic item) => transformFun(item as Map<String, dynamic>)));
     // Repeat
     while (pager.next != null && fetchedResult.length <= max) {
       source = await _tryGet(pager.next, '');
       pager = SpotifyPager.fromJson(jsonDecode(source) as Map<String, dynamic>);
 
-      fetchedResult.addAll(pager.items.map((item) => transformFun(item as Map<String, dynamic>)));
+      fetchedResult
+          .addAll(pager.items.map((dynamic item) => transformFun(item as Map<String, dynamic>)));
     }
 
     return fetchedResult;
@@ -186,7 +190,7 @@ class SpotifyApi {
 
     source = await _tryGet(endpoint);
     SpotifyPager pager = SpotifyPager.fromJson(jsonDecode(source) as Map<String, dynamic>);
-    items = pager.items.map((item) => transformFun(item as Map<String, dynamic>)).toList();
+    items = pager.items.map((dynamic item) => transformFun(item as Map<String, dynamic>)).toList();
     count += items.length;
     yield items;
 
@@ -195,7 +199,8 @@ class SpotifyApi {
       source = await _tryGet(pager.next, '');
       pager = SpotifyPager.fromJson(jsonDecode(source) as Map<String, dynamic>);
 
-      items = pager.items.map((item) => transformFun(item as Map<String, dynamic>)).toList();
+      items =
+          pager.items.map((dynamic item) => transformFun(item as Map<String, dynamic>)).toList();
       count += items.length;
       yield items;
     }
@@ -216,7 +221,7 @@ class SpotifyApi {
           try {
             final int errorCode = jsonDecode(err.message)['error']['status'] as int;
             if (errorCode == 429) {
-              await Future.delayed(const Duration(milliseconds: 500));
+              await new Future<void>.delayed(const Duration(milliseconds: 500));
             }
           } catch (_) {}
         }
