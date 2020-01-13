@@ -97,9 +97,10 @@ class LinearTrackSliderState extends State<LinearTrackSlider>
       _animTween.end = _trackDuration;
       _animController.duration = Duration(milliseconds: _trackDuration.toInt());
 
-      final timeDelta = _trackDuration -
-          _manager.trackSeek +
-          (_manager.seekTimestamp.difference(DateTime.now()).inMilliseconds);
+      double timeDelta = _trackDuration - _manager.trackSeek;
+      if (_manager.currPlayerState == SimplePlaybackState.PLAYING) {
+        timeDelta -= _manager.seekTimestamp.difference(DateTime.now()).inMilliseconds;
+      }
       _animController.value = 1 - timeDelta / _trackDuration;
 
       if (_manager.currPlayerState == SimplePlaybackState.PLAYING) {
