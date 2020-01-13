@@ -155,7 +155,6 @@ class CastConnectionService : Service(), MethodChannel.MethodCallHandler, CastPl
         startForeground(NOTIFICATION_ID, mNotiBuilder.buildUserNotification(text))
         mCastContext = CastPlaybackContext(CastContext.getSharedInstance(this), this, this)
         backgroundResult.success(true)
-
     }
 
     fun restoreSession(): Boolean {
@@ -190,7 +189,6 @@ class CastConnectionService : Service(), MethodChannel.MethodCallHandler, CastPl
         val msg = buildIPCMessage(N_DISCONNECTED)
         mForegroundMessageChannel?.send(msg)
         sendToBackgroundChannel(msg)
-
     }
 
     @RequiresApi(Build.VERSION_CODES.ECLAIR)

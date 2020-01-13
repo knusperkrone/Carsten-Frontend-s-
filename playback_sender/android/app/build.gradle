@@ -66,6 +66,10 @@ android {
     buildTypes {
         release {
             signingConfig signingConfigs.release
+
+            minifyEnabled true
+            useProguard true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 }
@@ -84,12 +88,10 @@ dependencies {
 
     // MediaRoute-Button
     implementation 'androidx.mediarouter:mediarouter:1.1.0'
-    api 'com.google.android.gms:play-services-cast-framework:17.1.0'
+    api 'com.google.android.gms:play-services-cast-framework:18.0.0'
 
     // Service notification
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.core:core:1.1.0'
     implementation 'com.beust:klaxon:5.0.1'
-    implementation 'com.github.bumptech.glide:glide:4.10.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.10.0'
 }

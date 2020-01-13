@@ -1,6 +1,5 @@
 package interfaceag.chrome_tube.playback_plugin.notification
 
-import CastMessage
 import android.annotation.TargetApi
 import android.app.Notification
 import android.app.NotificationChannel
@@ -60,15 +59,30 @@ class NativeNotificationBuilder(private val mContext: Context, private val mServ
         setupNotificationChannel()
     }
 
+    @RequiresApi(Build.VERSION_CODES.FROYO)
     fun build(plainMsg: String) {
-        val parsedMsg: CastMessage? = mParser.parse<CastMessage>(plainMsg)
+        // Proguard workaround
         val noti: Notification?
-        when (parsedMsg?.type) {
-            NativeConstants.N_MSG_INFO -> noti = buildUserNotification(parsedMsg.data)
-            NativeConstants.N_MSG_TRACK -> noti = buildTrackNoti(mParser.parse<TrackIndicatorMessage>(parsedMsg.data)!!)
+        val parsedMsg = mParser.parse<Map<String, Any>>(plainMsg)!!
+        val data = parsedMsg["data"] as String
+
+        when (parsedMsg["type"]) {
+            NativeConstants.N_MSG_INFO -> noti = buildUserNotification(data)
+            NativeConstants.N_MSG_TRACK -> {
+                val dataObj = mParser.parse<Map<String, Any>>(data)!!
+                val msg = TrackIndicatorMessage(
+                        dataObj["title"] as String,
+                        dataObj["artist"] as String,
+                        dataObj["playlistName"] as String,
+                        dataObj["coverB64"] as String?,
+                        dataObj["isBuffering"] as Boolean,
+                        dataObj["isPlaying"] as Boolean
+                )
+                noti = buildTrackNoti(msg)
+            }
             else -> {
-                noti = null
                 Log.e(TAG, "Invalid message:\n$parsedMsg")
+                noti = null
             }
         }
         if (noti != null) {
