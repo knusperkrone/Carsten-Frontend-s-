@@ -15,6 +15,7 @@ class Player {
   external void pauseVideo();
   external void stop();
   external void seekTo(num seek, bool alwaysTrue);
+  external void cueVideoById(String id, double seek);
   external void loadVideoById(String id, double seek);
   external double getCurrentTime();
   external double getDuration();

@@ -51,7 +51,7 @@ class YoutubePlayer extends PlaybackPlayer {
   void pause() => _iplayer.pauseVideo();
 
   @override
-  void stop() => _iplayer.stop();
+  void stop() => _iplayer.cueVideoById('QryoOF5jEbc', 0.0);
 
   @override
   void seekTo(int seekMs) {
