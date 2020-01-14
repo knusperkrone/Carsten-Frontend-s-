@@ -1,10 +1,13 @@
 import 'package:mockito/mockito.dart';
 import 'package:playback_caf_dart/playback_caf.dart';
+import 'package:playback_caf_dart/src/playback/ui_manager.dart';
 import 'package:playback_interop/playback_interop.dart';
 import 'package:playback_interop/src_test/constant.dart';
 
 import 'package:playback_interop/src_test/generator.dart';
 import 'package:test/test.dart';
+
+class MockedUI extends Mock implements UiManager {}
 
 class MockedBridge extends Mock implements CommunicationChannel {}
 
@@ -17,8 +20,7 @@ void main() {
 
   setUp(() {
     player = new MockedPlayer();
-    final channel = new MockedBridge();
-    manager = new PlaybackManager(channel);
+    manager = new PlaybackManager(MockedBridge(), MockedUI());
     manager.onPlayerReady(player);
 
     // Pre-execute

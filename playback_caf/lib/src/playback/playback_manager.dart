@@ -4,8 +4,10 @@ import 'package:playback_interop/playback_interop.dart';
 import '../io/communication_channel.dart';
 import 'caf_queue.dart';
 import 'player.dart';
+import 'ui_manager.dart';
 
 class PlaybackManager {
+  final UiManager _uiManager;
   final CommunicationChannel _playerBridge;
   final _queueBuffer = <PlaybackTrack>[];
   bool _isBuildingQueue = false;
@@ -16,7 +18,7 @@ class PlaybackManager {
   Optional<PlaybackPlayer> _player = const Optional.empty();
   Optional<CafPlaybackQueue> _queue = const Optional.empty();
 
-  PlaybackManager(this._playerBridge) : assert(_playerBridge != null);
+  PlaybackManager(this._playerBridge, this._uiManager) : assert(_playerBridge != null && _uiManager != null);
 
   /*
    * CAF only methdos
@@ -52,6 +54,7 @@ class PlaybackManager {
         _playerState = PlayerState.BUFFERING;
         _broadcastQueue();
         _broadcastShuffleState();
+        _uiManager.showPlayer(true);
       });
     }
   }
@@ -82,6 +85,7 @@ class PlaybackManager {
         _playerState = PlayerState.ENDED;
         _broadcastPlayerState();
         _setKillTimeout();
+        _uiManager.showPlayer(false);
       }
     } else {
       print('[WARNING] coulnd\'t play next track');
@@ -124,6 +128,7 @@ class PlaybackManager {
       player.stop();
       _playerState = PlayerState.ENDED;
       _broadcastPlayerState();
+      _uiManager.showPlayer(false);
     });
   }
 
@@ -196,6 +201,7 @@ class PlaybackManager {
     if (!_player.isPresent) {
       _player = new Optional.of(player);
       _broadcastReady();
+      _uiManager.showReady();
     }
   }
 

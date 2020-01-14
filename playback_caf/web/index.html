@@ -1,16 +1,23 @@
 <html>
-    <head>
-        <title>chromecast-youtube-player-receiver</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-        <link rel="stylesheet" href="styles.css">
-        
-        <script src="//www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js"></script>
-        <script src="https://www.youtube.com/player_api"></script>
-        <script src="main.dart.js"></script>
-    </head>
-    <body>
-        <div id="youTubePlayerDOM"></div>
-    </body>
+<head>
+    <title>chromecast-youtube-player-receiver</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <link rel="stylesheet" href="styles.css">
+    
+    <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+    <script src="//www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js"></script>
+    <script src="https://www.youtube.com/player_api"></script>
+    <script src="main.dart.js"></script>
+</head>
+
+<body>
+    <img id="logo" src="carsten.png" >
+    <div id="spinner" class="loader"></div>
+    <h2 id="text"></h2>
+    <div id="youTubePlayerDOM" class="front"></div>
+</body>
+
 </html>
