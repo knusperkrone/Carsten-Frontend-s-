@@ -85,6 +85,7 @@ class PlaybackManager {
         _playerState = PlayerState.ENDED;
         _broadcastPlayerState();
         _setKillTimeout();
+        _player.value.stop();
         _uiManager.showPlayer(false);
       }
     } else {
