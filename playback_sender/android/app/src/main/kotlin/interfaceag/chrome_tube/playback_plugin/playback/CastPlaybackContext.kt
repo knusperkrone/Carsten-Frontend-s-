@@ -6,7 +6,7 @@ import com.google.android.gms.cast.framework.SessionManager
 import interfaceag.chrome_tube.playback_plugin.io.CastPlaybackChannel
 import interfaceag.chrome_tube.playback_plugin.io.EncodedMessageReceivedListener
 
-class CastPlaybackContext(castContext: CastContext, listener: EncodedMessageReceivedListener, private val connectionListener: CastPlaybackConnectionListener) {
+class CastPlaybackContext(private val castContext: CastContext, listener: EncodedMessageReceivedListener, private val connectionListener: CastPlaybackConnectionListener) {
 
     private val castSessionManagerListener = CastSessionManagerListener(this)
     private val sessionManager: SessionManager = castContext.sessionManager
@@ -18,6 +18,11 @@ class CastPlaybackContext(castContext: CastContext, listener: EncodedMessageRece
     init {
         castContext.addCastStateListener(castSessionManagerListener)
         sessionManager.addSessionManagerListener(castSessionManagerListener, CastSession::class.java)
+    }
+
+    fun dispose() {
+        castContext.removeCastStateListener(castSessionManagerListener)
+        sessionManager.removeSessionManagerListener(castSessionManagerListener, CastSession::class.java)
     }
 
     /*

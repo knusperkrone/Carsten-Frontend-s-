@@ -98,7 +98,7 @@ class CastPlaybackContextPlugin(private val mContext: Context, messenger: Binary
                         .edit()
                         .putLong(DISPATCHER_HANDLE_KEY, handle)
                         .commit()) {
-            result.success(false)
+            result.error("-2", "No background entrypoint provided!", "")
             return
         }
 
@@ -156,9 +156,9 @@ class ResultServiceConnection(messenger: BinaryMessenger) : ServiceConnection {
 
     override fun onServiceConnected(name: ComponentName?, binder: IBinder?) {
         service = (binder as CastConnectionService.LocalBinder).service
+        service!!.startUIBroadcast(mForegroundMethodChannel, mForegroundMessageChannel)
         result?.success(true)
         result = null
-        service!!.startUIBroadcast(mForegroundMethodChannel, mForegroundMessageChannel)
     }
 
     override fun onServiceDisconnected(name: ComponentName?) {

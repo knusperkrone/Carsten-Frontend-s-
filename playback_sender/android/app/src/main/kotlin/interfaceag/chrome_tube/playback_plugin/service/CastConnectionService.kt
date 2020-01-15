@@ -27,6 +27,7 @@ import io.flutter.view.FlutterCallbackInformation
 import io.flutter.view.FlutterMain
 import io.flutter.view.FlutterNativeView
 import io.flutter.view.FlutterRunArguments
+import java.util.concurrent.atomic.AtomicBoolean
 
 
 class CastConnectionService : Service(), MethodChannel.MethodCallHandler, CastPlaybackConnectionListener, EncodedMessageReceivedListener {
@@ -42,12 +43,14 @@ class CastConnectionService : Service(), MethodChannel.MethodCallHandler, CastPl
         }
     }
 
-    private val mBinder = LocalBinder()
+    private val mBinder: LocalBinder = LocalBinder()
+    private val mIsBackgroundInit: AtomicBoolean = AtomicBoolean(false)
+    private val mIsForegroundInit: AtomicBoolean = AtomicBoolean(false)
 
-    private lateinit var mNotiBuilder: NativeNotificationBuilder
     private lateinit var mBackgroundMethodChannel: MethodChannel
     private lateinit var mBackgroundMessageChannel: BasicMessageChannel<String>
 
+    private var mNotiBuilder: NativeNotificationBuilder? = null
     private var mBackgroundIsolate: FlutterNativeView? = null
     private var mForegroundMethodChannel: MethodChannel? = null
     private var mForegroundMessageChannel: BasicMessageChannel<String>? = null
@@ -90,11 +93,21 @@ class CastConnectionService : Service(), MethodChannel.MethodCallHandler, CastPl
 
     @RequiresApi(Build.VERSION_CODES.ECLAIR)
     override fun onDestroy() {
+        // Stop native listeners
         mBackgroundIsolate = null
-        mNotiBuilder.clear()
+        mCastContext?.dispose()
+        // Clear notification
         stopForeground(true)
-        stopSelf()
+        mNotiBuilder?.clear()
+        mNotiBuilder = null
+        stopSelf() // necessary?
         super.onDestroy()
+    }
+
+    private fun onIsolateInited() {
+        if (mCastContext == null && mIsBackgroundInit.get() && mIsForegroundInit.get()) {
+            mCastContext = CastPlaybackContext(CastContext.getSharedInstance(this), this, this)
+        }
     }
 
     /*
@@ -105,6 +118,8 @@ class CastConnectionService : Service(), MethodChannel.MethodCallHandler, CastPl
         mForegroundMethodChannel = methodChannel
         mForegroundMessageChannel = messageChannel
         mForegroundMethodChannel!!.setMethodCallHandler(this)
+        mIsForegroundInit.set(true)
+        onIsolateInited()
 
         mBackgroundMessageChannel.send(buildIPCMessage(N_SYNC)) {
             messageChannel.send(it!!)
@@ -132,7 +147,7 @@ class CastConnectionService : Service(), MethodChannel.MethodCallHandler, CastPl
     private fun sendToBackgroundChannel(msg: String) {
         mBackgroundMessageChannel.send(msg) {
             if (it != null) {
-                mNotiBuilder.build(it)
+                mNotiBuilder?.build(it)
             }
         }
     }
@@ -152,9 +167,14 @@ class CastConnectionService : Service(), MethodChannel.MethodCallHandler, CastPl
 
     @RequiresApi(Build.VERSION_CODES.ECLAIR)
     private fun onBackgroundInit(backgroundResult: MethodChannel.Result, text: String) {
-        startForeground(NOTIFICATION_ID, mNotiBuilder.buildUserNotification(text))
-        mCastContext = CastPlaybackContext(CastContext.getSharedInstance(this), this, this)
-        backgroundResult.success(true)
+        if (mNotiBuilder != null) {
+            startForeground(NOTIFICATION_ID, mNotiBuilder?.buildUserNotification(text))
+            mIsBackgroundInit.set(true)
+            onIsolateInited()
+            backgroundResult.success(true)
+        } else {
+            backgroundResult.error("-1", "Service was already destroyed!", "")
+        }
     }
 
     fun restoreSession(): Boolean {
