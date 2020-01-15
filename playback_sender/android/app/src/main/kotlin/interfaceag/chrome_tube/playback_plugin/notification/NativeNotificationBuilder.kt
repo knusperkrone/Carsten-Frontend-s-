@@ -1,6 +1,5 @@
 package interfaceag.chrome_tube.playback_plugin.notification
 
-import android.annotation.TargetApi
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -166,19 +165,20 @@ class NativeNotificationBuilder(private val mContext: Context, private val mServ
         mContext.registerReceiver(receiver, intentFilter)
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
     private fun setupNotificationChannel() {
-        val name = CHANNEL_NAME
-        val description = CHANNEL_DESCR
-        val importance = NotificationManager.IMPORTANCE_DEFAULT
-        val channel = NotificationChannel(CHANNEL_ID, name, importance)
-        channel.setDescription(description)
-        channel.setSound(null, null)
-        channel.enableLights(false)
-        channel.enableVibration(false)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = CHANNEL_NAME
+            val description = CHANNEL_DESCR
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel(CHANNEL_ID, name, importance)
+            channel.setDescription(description)
+            channel.setSound(null, null)
+            channel.enableLights(false)
+            channel.enableVibration(false)
 
-        val notificationManager = mContext.getSystemService(NotificationManager::class.java)
-        notificationManager!!.createNotificationChannel(channel)
+            val notificationManager = mContext.getSystemService(NotificationManager::class.java)
+            notificationManager!!.createNotificationChannel(channel)
+        }
     }
 
 }
