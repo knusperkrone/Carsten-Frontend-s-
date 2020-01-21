@@ -8,7 +8,7 @@ class BackendAdapter {
     final key = '${track.title} ${track.artist}';
     String id;
     try {
-      final uri = Uri.http(
+      final uri = Uri.https(
         'spotitube.if-lab.de',
         '/api/youtube/search',
         {'q': key},
