@@ -30,7 +30,7 @@ class _SplashScreenState extends State<SplashScreen> {
       } catch (error) {
         if (error is SocketException) {
           final typedError = error;
-          setState(() => _errorMsg = typedError.osError.toString());
+          setState(() => _errorMsg = typedError.message);
         } else {
           setState(() => _errorMsg = error.toString());
         }
