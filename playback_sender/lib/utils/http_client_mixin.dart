@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 
 abstract class DartHttpClientMixin {
-  final HttpClient _client = new HttpClient();
+  final HttpClient _client = new HttpClient()..badCertificateCallback = (_, __, ___) => true;
 
   @protected
   Future<String> doGet(String base, String path, Map<String, String> headers) async {

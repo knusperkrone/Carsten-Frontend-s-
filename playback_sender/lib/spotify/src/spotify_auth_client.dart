@@ -83,36 +83,36 @@ class AuthorizedSpotifyClient with DartHttpClientMixin {
   Future<void> _refreshToken([int tryCount = 5]) async {
     final Map<String, String> headers = {'Content-Type': 'application/x-www-form-urlencoded'};
 
-    // XXX: closed source call
-    if (_apiToken == null) {
-      const path = '/create';
-      final body = 'auth_code=${Uri.encodeQueryComponent(_authCode)}';
+    try {
+      if (_apiToken == null) {
+        const path = '/create';
+        final body = 'auth_code=${Uri.encodeQueryComponent(_authCode)}';
 
-      try {
+        // XXX: closed source call
         final respBody = await doPost(_BACKEND_BASE_URL, path, headers, body);
         _apiToken = new SerializableApiToken.fromJsonSource(respBody);
-      } catch (e) {
-        print('_refreshToken: $e');
-        return _refreshToken(tryCount--);
-      }
 
-      _prefs.setString(_TOKEN_KEY, _apiToken.toJsonSource());
-    } else if (_apiToken.isExpired) {
-      const path = '/refresh';
-      final body = 'refresh_token=${_apiToken.refreshToken}';
-      SerializableApiToken refreshToken;
+        _prefs.setString(_TOKEN_KEY, _apiToken.toJsonSource());
+      } else if (_apiToken.isExpired) {
+        const path = '/refresh';
+        final body = 'refresh_token=${_apiToken.refreshToken}';
+        SerializableApiToken refreshToken;
 
-      try {
+        // XXX: closed source call
         final respBody = await doPost(_BACKEND_BASE_URL, path, headers, body);
         refreshToken = new SerializableApiToken.fromJsonSource(respBody);
-      } catch (e) {
-        print('[ERROR] refreshToken: $e');
-        return _refreshToken(tryCount--);
+
+        _apiToken.accessToken = refreshToken.accessToken;
+        _apiToken.createdOn = DateTime.now();
+        _prefs.setString(_TOKEN_KEY, _apiToken.toJsonSource());
+      }
+    } catch (e) {
+      if (tryCount-- <= 0) {
+        rethrow;
       }
 
-      _apiToken.accessToken = refreshToken.accessToken;
-      _apiToken.createdOn = DateTime.now();
-      _prefs.setString(_TOKEN_KEY, _apiToken.toJsonSource());
+      print('[ERROR] refreshToken: $e tries[$tryCount/5]');
+      return _refreshToken(tryCount);
     }
   }
 }
