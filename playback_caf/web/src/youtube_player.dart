@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:playback_caf_dart/playback_caf.dart';
 import 'package:playback_caf_dart/src/playback/backend.dart';
 import 'package:playback_interop/playback_interop.dart';
+import 'package:js/js.dart' show allowInterop;
 
 import 'youtube_iframe.dart' as yt;
 
@@ -26,9 +27,9 @@ class YoutubePlayer extends PlaybackPlayer {
         height: '98%',
         width: '98%',
         events: yt.PlayerEvents(
-          onReady: _onReady,
-          onError: (e) => _onError(e.data),
-          onStateChange: (e) => _sendPlayerStateChange(e.data),
+          onReady: allowInterop((dynamic _) => _onReady()),
+          onError: allowInterop((e) => _onError(e.data)),
+          onStateChange: allowInterop((e) => _sendPlayerStateChange(e.data)),
         ),
         playerVars: yt.PlayerVars(
             // autoplay: 0,
