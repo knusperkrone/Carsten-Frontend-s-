@@ -3,7 +3,7 @@ library yt;
 
 import 'package:js/js.dart';
 
-typedef OnReadyCallback = void Function();
+typedef OnReadyCallback = void Function(dynamic _);
 typedef OnStateCallback = void Function(CallbackEvent event);
 typedef OnErrorCallback = void Function(CallbackEvent event);
 
