@@ -6,6 +6,6 @@ void main() {
   test('Fetch youtube id', () async  {
     final track = new PlaybackTrack.dummy();
     final resp = await BackendAdapter().getVideoId(track);
-    expect(resp, (String resp) => resp != null && resp == '1SG5A3PYaUs');
+    expect(resp, '1SG5A3PYaUs');
   });
 }
