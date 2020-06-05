@@ -1,6 +1,8 @@
 import 'package:chrome_tube/playback/playback.dart';
 import 'package:chrome_tube/ui/pages.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_google_cast_button/bloc_media_route.dart';
+import 'package:flutter_google_cast_button/cast_button_widget.dart';
 import 'package:playback_interop/playback_interop.dart';
 
 class ControlBar extends StatefulWidget {
@@ -10,14 +12,17 @@ class ControlBar extends StatefulWidget {
 
 class ControlBarState extends State<ControlBar> implements PlaybackUIListener {
   // ignore: non_constant_identifier_names
-  static final _PLACEHOLDER_TRACK = PlaybackTrack.dummy(title: 'No Track', artist: '');
+  static final _PLACEHOLDER_TRACK =
+      PlaybackTrack.dummy(title: 'No Track', artist: '');
 
   final _manager = new PlaybackManager();
+  MediaRouteBloc _mediaRouteBloc;
 
   @override
   void initState() {
     super.initState();
     _manager.registerListener(this);
+    _mediaRouteBloc = new MediaRouteBloc();
   }
 
   @override
@@ -82,7 +87,10 @@ class ControlBarState extends State<ControlBar> implements PlaybackUIListener {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                IconButton(icon: Icon(Icons.arrow_drop_up), onPressed: _onOpen),
+                CastButtonWidget(
+                  bloc: _mediaRouteBloc,
+                  tintColor: Colors.white70,
+                ),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
@@ -97,7 +105,8 @@ class ControlBarState extends State<ControlBar> implements PlaybackUIListener {
                   ],
                 ),
                 IconButton(
-                  icon: Icon(_manager.currPlayerState == SimplePlaybackState.PAUSED ||
+                  icon: Icon(_manager.currPlayerState ==
+                              SimplePlaybackState.PAUSED ||
                           _manager.currPlayerState == SimplePlaybackState.ENDED
                       ? Icons.play_arrow
                       : Icons.pause),

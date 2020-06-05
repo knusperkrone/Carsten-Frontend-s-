@@ -12,8 +12,11 @@ import 'package:palette_generator/palette_generator.dart';
 import 'package:playback_interop/playback_interop.dart';
 
 part 'track_control.dart';
+
 part 'track_pages.dart';
+
 part 'track_progress.dart';
+
 part 'track_title.dart';
 
 class ControlPage extends StatefulWidget {
@@ -58,8 +61,8 @@ class ControlPageState extends State<ControlPage>
   @override
   void initState() {
     super.initState();
-    _animController =
-        new AnimationController(vsync: this, duration: const Duration(milliseconds: 1250));
+    _animController = new AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 1250));
     _mediaRouteBloc = new MediaRouteBloc();
 
     _manager.registerListener(this);
@@ -81,7 +84,8 @@ class ControlPageState extends State<ControlPage>
       setState(() => _isTicking = true);
       if (paletteFuture != null) {
         final palette = await paletteFuture;
-        final paletteColor = (palette.vibrantColor ?? palette.dominantColor).color;
+        final paletteColor =
+            (palette.vibrantColor ?? palette.dominantColor).color;
         _animateColor(paletteColor);
       }
     });
@@ -110,7 +114,8 @@ class ControlPageState extends State<ControlPage>
     if (_manager.currPlayerState != SimplePlaybackState.BUFFERING) {
       Color color;
       if (_manager.track.isPresent && _imageProvider != null) {
-        final palette = await PaletteGenerator.fromImageProvider(_imageProvider);
+        final palette =
+            await PaletteGenerator.fromImageProvider(_imageProvider);
         color = (palette.vibrantColor ?? palette.dominantColor).color;
       } else {
         color = Theme.of(context).primaryColor;
@@ -151,7 +156,8 @@ class ControlPageState extends State<ControlPage>
 
   Future<void> _onQueue() async {
     _manager.unregisterListener(this);
-    await Navigator.of(context).push<void>(new MaterialPageRoute(builder: (context) {
+    await Navigator.of(context)
+        .push<void>(new MaterialPageRoute(builder: (context) {
       return new QueuePage();
     }));
 
@@ -207,7 +213,8 @@ class ControlPageState extends State<ControlPage>
                 AnimatedOpacity(
                   duration: const Duration(milliseconds: 200),
                   opacity: _isTicking ? 1.0 : 0.0,
-                  child: TrackPages(key: _pageKey, onTrackChanged: _onTrackChanged),
+                  child: TrackPages(
+                      key: _pageKey, onTrackChanged: _onTrackChanged),
                 ),
               ],
             ),
@@ -217,7 +224,10 @@ class ControlPageState extends State<ControlPage>
             flex: 4,
             child: TrackDetails(key: _detailKey),
           ),
-          TrackSlider(padding: 20.0, delay: const Duration(milliseconds: 150), key: _sliderKey),
+          TrackSlider(
+              padding: 20.0,
+              delay: const Duration(milliseconds: 150),
+              key: _sliderKey),
           Flexible(
             flex: 6,
             child: TrackControl(key: _controlKey),
@@ -228,8 +238,11 @@ class ControlPageState extends State<ControlPage>
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Padding(
-                    padding: const EdgeInsets.only(left: 17.0),
-                    child: CastButtonWidget(bloc: _mediaRouteBloc),
+                    padding: const EdgeInsets.only(left: 0.0),
+                    child: CastButtonWidget(
+                      bloc: _mediaRouteBloc,
+                      tintColor: Colors.white70,
+                    ),
                   ),
                   Expanded(child: Container()),
                   IconButton(

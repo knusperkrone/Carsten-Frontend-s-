@@ -12,9 +12,12 @@ class QueuePage extends StatefulWidget {
   State<StatefulWidget> createState() => new _QueuePageState();
 }
 
-class _QueuePageState extends State<QueuePage> with SingleTickerProviderStateMixin implements PlaybackUIListener {
+class _QueuePageState extends State<QueuePage>
+    with SingleTickerProviderStateMixin
+    implements PlaybackUIListener {
   // ignore: non_constant_identifier_names
-  static final _PLACEHOLDER_TRACK = new PlaybackTrack.dummy(artist: '', coverUrl: '', title: '');
+  static final _PLACEHOLDER_TRACK =
+      new PlaybackTrack.dummy(artist: '', coverUrl: '', title: '');
 
   final _manager = new PlaybackManager();
   MediaRouteBloc _mediaRouteBloc;
@@ -31,7 +34,8 @@ class _QueuePageState extends State<QueuePage> with SingleTickerProviderStateMix
     _queueTracks = List.from(_manager.queueTracks);
 
     _mediaRouteBloc = new MediaRouteBloc();
-    _animController = new AnimationController(vsync: this, duration: const Duration(milliseconds: 250));
+    _animController = new AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 250));
     _animController.value = _prioTracks.isEmpty ? 0.0 : 1.0;
   }
 
@@ -101,7 +105,8 @@ class _QueuePageState extends State<QueuePage> with SingleTickerProviderStateMix
       final startPrio = startIndex <= _prioTracks.length;
       bool targetPrio = targetIndex <= _prioTracks.length;
       // targetPrio might be wrong, as we drag on the barrier
-      if ((startPrio && targetPrio) && (_prioTracks.isNotEmpty && _prioTracks.length == targetIndex)) {
+      if ((startPrio && targetPrio) &&
+          (_prioTracks.isNotEmpty && _prioTracks.length == targetIndex)) {
         targetPrio = false;
       }
 
@@ -172,7 +177,8 @@ class _QueuePageState extends State<QueuePage> with SingleTickerProviderStateMix
                 ),
                 Text(
                   curr?.artist ?? '',
-                  style: TextStyle(color: theme.textTheme.caption.color, fontSize: 13.0),
+                  style: TextStyle(
+                      color: theme.textTheme.caption.color, fontSize: 13.0),
                 ),
               ],
             ),
@@ -199,7 +205,8 @@ class _QueuePageState extends State<QueuePage> with SingleTickerProviderStateMix
     );
 
     final trackOffset = _manager.trackIndex + 1;
-    final queueTracks = _queueTracks.skip(trackOffset).map((t) => _buildTile(t)).toList();
+    final queueTracks =
+        _queueTracks.skip(trackOffset).map((t) => _buildTile(t)).toList();
 
     if (queueTracks.isEmpty) {
       return prioTracks.toList();
@@ -228,7 +235,8 @@ class _QueuePageState extends State<QueuePage> with SingleTickerProviderStateMix
                     slivers: <Widget>[
                       SliverToBoxAdapter(
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 7.0),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 5.0, horizontal: 7.0),
                           child: Text(
                             'Current Title:',
                             style: Theme.of(context).textTheme.title,
@@ -238,11 +246,15 @@ class _QueuePageState extends State<QueuePage> with SingleTickerProviderStateMix
                       SliverToBoxAdapter(
                         child: ListTile(
                           leading: CachedNetworkImage(
-                            imageUrl: _manager.track.orElse(_PLACEHOLDER_TRACK).coverUrl,
+                            imageUrl: _manager.track
+                                .orElse(_PLACEHOLDER_TRACK)
+                                .coverUrl,
                             placeholder: (_, __) => Container(width: 56.0),
                           ),
-                          title: Text(_manager.track.orElse(_PLACEHOLDER_TRACK).title),
-                          subtitle: Text(_manager.track.orElse(_PLACEHOLDER_TRACK).artist),
+                          title: Text(
+                              _manager.track.orElse(_PLACEHOLDER_TRACK).title),
+                          subtitle: Text(
+                              _manager.track.orElse(_PLACEHOLDER_TRACK).artist),
                         ),
                       ),
                       SliverToBoxAdapter(
@@ -254,12 +266,14 @@ class _QueuePageState extends State<QueuePage> with SingleTickerProviderStateMix
                               height: 40 * _animController.value,
                               child: _animController.value > 0.7
                                   ? Padding(
-                                      padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 7.0),
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 5.0, horizontal: 7.0),
                                       child: Opacity(
                                         opacity: _animController.value,
                                         child: Text(
                                           'Next song from queue:',
-                                          style: Theme.of(context).textTheme.title,
+                                          style:
+                                              Theme.of(context).textTheme.title,
                                         ),
                                       ),
                                     )
@@ -272,7 +286,8 @@ class _QueuePageState extends State<QueuePage> with SingleTickerProviderStateMix
                         onStartReorder: _onStartReorder,
                         canReorder: _canReorder,
                         onReorder: _onReorder,
-                        delegate: ReorderableSliverChildListDelegate(_buildTrackList()),
+                        delegate: ReorderableSliverChildListDelegate(
+                            _buildTrackList()),
                       ),
                     ],
                   ),
@@ -285,7 +300,10 @@ class _QueuePageState extends State<QueuePage> with SingleTickerProviderStateMix
               AnimatedOpacity(
                 duration: const Duration(milliseconds: 250),
                 child: const LinearProgressIndicator(),
-                opacity: (_manager.currPlayerState == SimplePlaybackState.BUFFERING) ? 1.0 : 0.0,
+                opacity:
+                    (_manager.currPlayerState == SimplePlaybackState.BUFFERING)
+                        ? 1.0
+                        : 0.0,
               ),
             ],
           ),
@@ -301,7 +319,8 @@ class _QueuePageState extends State<QueuePage> with SingleTickerProviderStateMix
                   splashColor: Theme.of(context).accentColor,
                 ),
                 IconButton(
-                  icon: Icon(_manager.currPlayerState == SimplePlaybackState.PAUSED ||
+                  icon: Icon(_manager.currPlayerState ==
+                              SimplePlaybackState.PAUSED ||
                           _manager.currPlayerState == SimplePlaybackState.ENDED
                       ? Icons.play_arrow
                       : Icons.pause),
@@ -323,7 +342,10 @@ class _QueuePageState extends State<QueuePage> with SingleTickerProviderStateMix
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                CastButtonWidget(bloc: _mediaRouteBloc),
+                CastButtonWidget(
+                  bloc: _mediaRouteBloc,
+                  tintColor: Colors.white70,
+                ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 5.0),
                   child: Text(
