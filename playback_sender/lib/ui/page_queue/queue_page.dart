@@ -39,7 +39,6 @@ class _QueuePageState extends State<QueuePage> with SingleTickerProviderStateMix
   void dispose() {
     super.dispose();
     _manager.unregisterListener(this);
-    _mediaRouteBloc.dispose();
     _animController.dispose();
   }
 

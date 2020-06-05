@@ -91,7 +91,6 @@ class ControlPageState extends State<ControlPage>
   void dispose() {
     _manager.unregisterListener(this);
     _animController.dispose();
-    _mediaRouteBloc.dispose();
     super.dispose();
   }
 

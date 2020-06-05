@@ -71,7 +71,7 @@ void main() {
       }
 
       // Populate queue
-      for (PlaybackTrack resultTrack in resultMsg.data) {
+      for (PlaybackTrack resultTrack in resultMsg.data as List<PlaybackTrack>) {
         final expectedTrack = expectedTracks[trackIndex++];
         expect(resultTrack, expectedTrack);
       }

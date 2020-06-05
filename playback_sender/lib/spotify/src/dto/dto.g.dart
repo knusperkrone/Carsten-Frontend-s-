@@ -11,11 +11,11 @@ SpotifyAlbum _$SpotifyAlbumFromJson(Map<String, dynamic> json) {
     json['id'] as String,
     json['name'] as String,
     (json['images'] as List)
-        ?.map((e) =>
+        ?.map((dynamic e) =>
             e == null ? null : SpotifyImage.fromJson(e as Map<String, dynamic>))
         ?.toList(),
     (json['artists'] as List)
-        ?.map((e) => e == null
+        ?.map((dynamic e) => e == null
             ? null
             : SpotifyArtist.fromJson(e as Map<String, dynamic>))
         ?.toList(),
@@ -70,7 +70,7 @@ SpotifyPlaylist _$SpotifyPlaylistFromJson(Map<String, dynamic> json) {
     json['name'] as String,
     json['snapshot_id'] as String,
     (json['images'] as List)
-        ?.map((e) =>
+        ?.map((dynamic e) =>
             e == null ? null : SpotifyImage.fromJson(e as Map<String, dynamic>))
         ?.toList(),
     json['owner'] == null
@@ -96,7 +96,7 @@ SpotifyTrack _$SpotifyTrackFromJson(Map<String, dynamic> json) {
         ? null
         : SpotifyAlbum.fromJson(json['album'] as Map<String, dynamic>),
     (json['artists'] as List)
-        ?.map((e) => e == null
+        ?.map((dynamic e) => e == null
             ? null
             : SpotifyArtist.fromJson(e as Map<String, dynamic>))
         ?.toList(),
