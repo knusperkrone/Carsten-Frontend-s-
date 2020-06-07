@@ -1,4 +1,5 @@
 import 'package:chrome_tube/playback/playback.dart';
+import 'package:chrome_tube/ui/common/ui_listener_state.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -8,14 +9,13 @@ import 'package:playback_interop/playback_interop_test.dart';
 import 'mocks.dart';
 
 void main() {
-  PlaybackUIListener listener;
+  UIListener listener;
   PlaybackManager manager;
 
   setUp(() {
     listener = new MockedUiListener();
     manager = new PlaybackManager.test(new MockedContext());
-    manager.registerListener(listener);
-    reset(listener);
+    manager.stream.listen(listener.onEvent);
   });
 
   PlaybackQueueDto _generateMockQueueDto() {
@@ -30,7 +30,7 @@ void main() {
         hash: 'hash');
   }
 
-  test('Interop manager not shuffling', () {
+  test('Interop manager not shuffling', () async {
     // Prepare
     final mockedTracks = generateTracks();
     final PlaybackTrack expectedFirst = mockedTracks.first;
@@ -45,14 +45,15 @@ void main() {
 
     // Verify
     const matcher = ListEquality<PlaybackTrack>();
-    verify(listener.notifyQueue());
+    await Future.delayed(const Duration(milliseconds: 0), () {});
+    verify(listener.onEvent(PlaybackUIEvent.QUEUE));
 
     // ignore: invalid_use_of_protected_member
     expect(expectedFirst, manager.track.value);
     expect(matcher.hash(expectedTail), matcher.hash(manager.queueTracks));
   });
 
-  test('Interop manager shuffling', () {
+  test('Interop manager shuffling', () async {
     // Prepare
     final mockedTracks = generateTracks();
     final PlaybackTrack expectedFirst = mockedTracks.first;
@@ -65,14 +66,15 @@ void main() {
     manager.onShuffling(mockedState);
 
     // Verify
-    verify(listener.notifyQueue()).called(2);
+    await Future.delayed(const Duration(milliseconds: 0), () {});
+    verify(listener.onEvent(PlaybackUIEvent.QUEUE)).called(2);
 
     // ignore: invalid_use_of_protected_member
     expect(expectedFirst, manager.track.value);
     expect(EXPECTED_SHUFFLED_MANAGER, tracksToString(manager.queueTracks));
   });
 
-  test('Interop manager on/off shuffling', () {
+  test('Interop manager on/off shuffling', () async {
     // Prepare
     final mockedTracks = generateTracks();
     final PlaybackTrack expectedFirst = mockedTracks.first;
@@ -86,7 +88,8 @@ void main() {
     manager.onQueue(mockedDtoQueue);
 
     // Verify
-    verify(listener.notifyQueue()).called(3);
+    await Future.delayed(const Duration(milliseconds: 0), () {});
+    verify(listener.onEvent(PlaybackUIEvent.QUEUE)).called(3);
 
     // ignore: invalid_use_of_protected_member
     expect(expectedFirst, manager.track.value);
