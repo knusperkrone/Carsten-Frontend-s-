@@ -1,13 +1,13 @@
 import 'package:chrome_tube/ui/pages.dart';
 import 'package:flutter/material.dart';
 
-void main() => runApp(ChromeTubeApplication());
+void main() => runApp(CarstenApplication());
 
-class ChromeTubeApplication extends StatelessWidget {
+class CarstenApplication extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'ChromeTube',
+      title: 'Carsten',
       theme: _prepareTheme(ThemeData.dark()),
       home: SplashScreen(),
     );
