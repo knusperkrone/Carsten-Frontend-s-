@@ -5,12 +5,14 @@ import 'package:flutter_google_cast_button/bloc_media_route.dart';
 import 'package:flutter_google_cast_button/cast_button_widget.dart';
 import 'package:playback_interop/playback_interop.dart';
 
+import '../ui_listener_state.dart';
+
 class ControlBar extends StatefulWidget {
   @override
   State createState() => ControlBarState();
 }
 
-class ControlBarState extends State<ControlBar> implements PlaybackUIListener {
+class ControlBarState extends UIListenerState<ControlBar> {
   // ignore: non_constant_identifier_names
   static final _PLACEHOLDER_TRACK =
       PlaybackTrack.dummy(title: 'No Track', artist: '');
@@ -21,13 +23,12 @@ class ControlBarState extends State<ControlBar> implements PlaybackUIListener {
   @override
   void initState() {
     super.initState();
-    _manager.registerListener(this);
     _mediaRouteBloc = new MediaRouteBloc();
   }
 
   @override
   void dispose() {
-    _manager.unregisterListener(this);
+    _mediaRouteBloc.close();
     super.dispose();
   }
 
@@ -36,22 +37,17 @@ class ControlBarState extends State<ControlBar> implements PlaybackUIListener {
    */
 
   @override
-  void notifyPlaybackReady() => setState(() {});
-
-  @override
-  void notifyPlayingState() => setState(() {});
-
-  @override
-  void notifyQueue() => setState(() {});
-
-  @override
-  void notifyTrack() => setState(() {});
-
-  @override
-  void notifyRepeating() {}
-
-  @override
-  void notifyTrackSeek() {}
+  void onEvent(PlaybackUIEvent event) {
+    switch (event) {
+      case PlaybackUIEvent.READY:
+      case PlaybackUIEvent.PLAYER_STATE:
+      case PlaybackUIEvent.QUEUE:
+      case PlaybackUIEvent.TRACK:
+        setState(() {});
+        break;
+      default:
+    }
+  }
 
   /*
    * UI callbacks

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chrome_tube/playback/src/sender_playback_queue.dart';
 import 'package:flutter/material.dart';
 import 'package:optional/optional.dart';
@@ -31,9 +33,7 @@ class PlaybackReceiver extends PlaybackSender {
    * members
    */
 
-  @protected
-  // ignore: prefer_collection_literals
-  final uiListeners = new Set<PlaybackUIListener>();
+  final _completer = new StreamController<PlaybackUIEvent>.broadcast();
 
   int _currSeek = 0;
   bool _isRepeating = false;
@@ -45,6 +45,8 @@ class PlaybackReceiver extends PlaybackSender {
   /*
    * public getter
    */
+
+  Stream<PlaybackUIEvent> get stream => _completer.stream;
 
   double get trackSeek => _currSeek.toDouble();
 
@@ -106,7 +108,7 @@ class PlaybackReceiver extends PlaybackSender {
     if (readyDto.ready == false) {
       _onStop();
     } else {
-      uiListeners.forEach((l) => l.notifyPlaybackReady());
+      _completer.add(PlaybackUIEvent.READY);
     }
   }
 
@@ -130,13 +132,13 @@ class PlaybackReceiver extends PlaybackSender {
         print('ERROR] invalid state ${playerStateDto.state}');
         return;
     }
-    uiListeners.forEach((l) => l.notifyPlayingState());
+    _completer.add(PlaybackUIEvent.PLAYER_STATE);
   }
 
   void onQueue(PlaybackQueueDto queueDto) {
     _queue = new SenderPlaybackQueue.fromQueue(
         queueDto, isRepeating, isShuffled, _currShuffleState?.initSeed);
-    uiListeners.forEach((l) => l.notifyQueue());
+    _completer.add(PlaybackUIEvent.QUEUE);
   }
 
   void onTrackState(TrackStateDto trackStateDto) {
@@ -151,13 +153,13 @@ class PlaybackReceiver extends PlaybackSender {
         _queue.nextTrack();
         _seekTimestamp = DateTime.now();
         _currSeek = 0;
-        uiListeners.forEach((l) => l.notifyTrackSeek());
+        _completer.add(PlaybackUIEvent.SEEK);
         break;
       case TrackState.PREVIOUS:
         _queue.previousTrack();
         _seekTimestamp = DateTime.now();
         _currSeek = 0;
-        uiListeners.forEach((l) => l.notifyTrackSeek());
+        _completer.add(PlaybackUIEvent.SEEK);
         break;
       case TrackState.SYNC:
         if (trackStateDto.durationMs != null) {
@@ -177,20 +179,20 @@ class PlaybackReceiver extends PlaybackSender {
           'Invalid: ${_queue.currentTrack.origQueueIndex} != ${trackStateDto.trackIndex}');
     }
 
-    uiListeners.forEach((l) => l.notifyTrack());
+    _completer.add(PlaybackUIEvent.TRACK);
   }
 
   void onTrackSeek(SeekDto seekDto) {
     _seekTimestamp = DateTime.now();
     _currSeek = seekDto.seekMs;
-    uiListeners.forEach((l) => l.notifyTrackSeek());
+    _completer.add(PlaybackUIEvent.SEEK);
   }
 
   void onShuffling(ShuffleStateDto shuffleDto) {
     try {
       _queue.setShuffleState(shuffleDto);
       _currShuffleState = shuffleDto;
-      uiListeners.forEach((l) => l.notifyQueue());
+      _completer.add(PlaybackUIEvent.QUEUE);
     } catch (e) {
       _reSync("Couldn't shuffle:\n$e");
     }
@@ -198,13 +200,13 @@ class PlaybackReceiver extends PlaybackSender {
 
   void onRepeating(RepeatingDto repeat) {
     _isRepeating = repeat.isRepeating;
-    uiListeners.forEach((l) => l.notifyRepeating());
+    _completer.add(PlaybackUIEvent.REPEATING);
   }
 
   void onAddPrioDelta(AddPrioDeltaDto addDeltaDto) {
     try {
       queue.addPrioTrack(addDeltaDto.track, addDeltaDto.append);
-      uiListeners.forEach((l) => l.notifyQueue());
+      _completer.add(PlaybackUIEvent.QUEUE);
     } catch (e) {
       _reSync("Couldn't add $e");
     }
@@ -214,7 +216,7 @@ class PlaybackReceiver extends PlaybackSender {
     try {
       queue.move(moveDeltaDto.startPrio, moveDeltaDto.startIndex,
           moveDeltaDto.targetPrio, moveDeltaDto.targetIndex);
-      uiListeners.forEach((l) => l.notifyQueue());
+      _completer.add(PlaybackUIEvent.QUEUE);
     } catch (e) {
       _reSync("Couldn't move $e");
     }
@@ -238,12 +240,10 @@ class PlaybackReceiver extends PlaybackSender {
     _currSeek = 0;
     _queue = null;
 
-    for (final l in uiListeners) {
-      l.notifyTrackSeek();
-      l.notifyTrack();
-      l.notifyQueue();
-      l.notifyRepeating();
-      l.notifyPlaybackReady();
-    }
+    _completer.add(PlaybackUIEvent.SEEK);
+    _completer.add(PlaybackUIEvent.TRACK);
+    _completer.add(PlaybackUIEvent.QUEUE);
+    _completer.add(PlaybackUIEvent.REPEATING);
+    _completer.add(PlaybackUIEvent.PLAYER_STATE);
   }
 }

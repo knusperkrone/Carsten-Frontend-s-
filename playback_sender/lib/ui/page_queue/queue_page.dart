@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chrome_tube/playback/playback.dart';
 import 'package:chrome_tube/ui/common/common.dart';
+import 'package:chrome_tube/ui/common/ui_listener_state.dart';
 import 'package:chrome_tube/utils/forked/reorderable_sliver/reorderable_sliver.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_cast_button/bloc_media_route.dart';
@@ -12,9 +13,8 @@ class QueuePage extends StatefulWidget {
   State<StatefulWidget> createState() => new _QueuePageState();
 }
 
-class _QueuePageState extends State<QueuePage>
-    with SingleTickerProviderStateMixin
-    implements PlaybackUIListener {
+class _QueuePageState extends UIListenerState<QueuePage>
+    with SingleTickerProviderStateMixin {
   // ignore: non_constant_identifier_names
   static final _PLACEHOLDER_TRACK =
       new PlaybackTrack.dummy(artist: '', coverUrl: '', title: '');
@@ -29,7 +29,6 @@ class _QueuePageState extends State<QueuePage>
   @override
   void initState() {
     super.initState();
-    _manager.registerListener(this);
     _prioTracks = List.from(_manager.prioTracks);
     _queueTracks = List.from(_manager.queueTracks);
 
@@ -41,9 +40,9 @@ class _QueuePageState extends State<QueuePage>
 
   @override
   void dispose() {
-    super.dispose();
-    _manager.unregisterListener(this);
+    _mediaRouteBloc.close();
     _animController.dispose();
+    super.dispose();
   }
 
   /*
@@ -51,28 +50,23 @@ class _QueuePageState extends State<QueuePage>
    */
 
   @override
-  void notifyQueue() => setState(() {
-        _prioTracks = List.from(_manager.prioTracks);
-        _queueTracks = List.from(_manager.queueTracks);
-      });
-
-  @override
-  void notifyTrack() => setState(() {
-        _prioTracks = List.from(_manager.prioTracks);
-        _queueTracks = List.from(_manager.queueTracks);
-      });
-
-  @override
-  void notifyRepeating() => setState(() {});
-
-  @override
-  void notifyPlayingState() => setState(() {});
-
-  @override
-  void notifyPlaybackReady() => setState(() {});
-
-  @override
-  void notifyTrackSeek() {}
+  void onEvent(PlaybackUIEvent event) {
+    switch (event) {
+      case PlaybackUIEvent.REPEATING:
+      case PlaybackUIEvent.PLAYER_STATE:
+      case PlaybackUIEvent.READY:
+        setState(() {});
+        break;
+      case PlaybackUIEvent.TRACK:
+      case PlaybackUIEvent.QUEUE:
+        setState(() {
+          _prioTracks = List.from(_manager.prioTracks);
+          _queueTracks = List.from(_manager.queueTracks);
+        });
+        break;
+      default:
+    }
+  }
 
   /*
    * UI callbacks

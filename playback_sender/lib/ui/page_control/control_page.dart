@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chrome_tube/playback/playback.dart';
 import 'package:chrome_tube/ui/common/common.dart';
+import 'package:chrome_tube/ui/common/ui_listener_state.dart';
 import 'package:chrome_tube/ui/page_control/track_app_bar.dart';
 import 'package:chrome_tube/ui/page_control/track_gradient.dart';
 import 'package:chrome_tube/ui/pages.dart';
@@ -37,9 +38,8 @@ class ControlPage extends StatefulWidget {
   }
 }
 
-class ControlPageState extends State<ControlPage>
-    with SingleTickerProviderStateMixin
-    implements PlaybackUIListener {
+class ControlPageState extends UIListenerState<ControlPage>
+    with SingleTickerProviderStateMixin {
   final PlaybackManager _manager = new PlaybackManager();
   final ColorTween _colorTween = new ColorTween();
   final Duration _animDelay = const Duration(milliseconds: 250);
@@ -65,7 +65,6 @@ class ControlPageState extends State<ControlPage>
         vsync: this, duration: const Duration(milliseconds: 1250));
     _mediaRouteBloc = new MediaRouteBloc();
 
-    _manager.registerListener(this);
     if (_colorTween.begin == null) {
       _gradientStart = widget.baseColor;
       _colorTween.begin = _gradientStart;
@@ -93,7 +92,7 @@ class ControlPageState extends State<ControlPage>
 
   @override
   void dispose() {
-    _manager.unregisterListener(this);
+    _mediaRouteBloc.close();
     _animController.dispose();
     super.dispose();
   }
@@ -102,13 +101,7 @@ class ControlPageState extends State<ControlPage>
    * PlaybackManager contract
    */
 
-  @override
-  void notifyPlaybackReady() {
-    _controlKey.currentState?.rebuild();
-  }
-
-  @override
-  Future<void> notifyPlayingState() async {
+  Future<void> _notifyPlayingState() async {
     _progressKey.currentState?.onState();
     _controlKey.currentState?.rebuild();
     if (_manager.currPlayerState != SimplePlaybackState.BUFFERING) {
@@ -125,29 +118,31 @@ class ControlPageState extends State<ControlPage>
   }
 
   @override
-  Future<void> notifyTrack() async {
-    _detailKey.currentState?.setTrack(_manager.track);
-    _manager.track.ifPresent((track) async {
-      _pageKey.currentState?.setTrack(_manager.track);
-      _imageProvider = new CachedNetworkImageProvider(track.coverUrl);
-    });
-  }
-
-  @override
-  void notifyQueue() {
-    _barKey.currentState?.rebuild();
-    _pageKey.currentState?.rebuild();
-    _controlKey.currentState?.rebuild(); // shuffle state
-  }
-
-  @override
-  void notifyRepeating() {
-    _controlKey.currentState?.rebuild();
-  }
-
-  @override
-  void notifyTrackSeek() {
-    _sliderKey.currentState?.notifyTrackSeek();
+  void onEvent(PlaybackUIEvent event) {
+    switch (event) {
+      case PlaybackUIEvent.READY:
+      case PlaybackUIEvent.REPEATING:
+        _controlKey.currentState?.rebuild();
+        break;
+      case PlaybackUIEvent.SEEK:
+        _sliderKey.currentState?.notifyTrackSeek();
+        break;
+      case PlaybackUIEvent.QUEUE:
+        _barKey.currentState?.rebuild();
+        _pageKey.currentState?.rebuild();
+        _controlKey.currentState?.rebuild(); // shuffle state
+        break;
+      case PlaybackUIEvent.TRACK:
+        _detailKey.currentState?.setTrack(_manager.track);
+        _manager.track.ifPresent((track) async {
+          _pageKey.currentState?.setTrack(_manager.track);
+          _imageProvider = new CachedNetworkImageProvider(track.coverUrl);
+        });
+        break;
+      case PlaybackUIEvent.PLAYER_STATE:
+        _notifyPlayingState();
+        break;
+    }
   }
 
   /*
@@ -155,13 +150,13 @@ class ControlPageState extends State<ControlPage>
    */
 
   Future<void> _onQueue() async {
-    _manager.unregisterListener(this);
+    uiSub.pause();
     await Navigator.of(context)
         .push<void>(new MaterialPageRoute(builder: (context) {
       return new QueuePage();
     }));
+    uiSub.resume();
 
-    _manager.registerListener(this);
     _pageKey.currentState?.setTrack(_manager.track);
     _detailKey.currentState?.setTrack(_manager.track);
   }

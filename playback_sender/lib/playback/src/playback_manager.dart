@@ -26,21 +26,7 @@ class PlaybackManager extends PlaybackReceiver {
   PlaybackManager._internal(CastPlaybackContext cxt) : super.internal(cxt);
 
   /*
-   * Listener registration
-   */
-
-  void registerListener(PlaybackUIListener toRegister) {
-    final success = uiListeners.add(toRegister);
-    assert(success);
-  }
-
-  void unregisterListener(PlaybackUIListener toDeregister) {
-    final success = uiListeners.remove(toDeregister);
-    assert(success);
-  }
-
-  /*
-   * Hide implementation
+   * Wrap native calls
    */
 
   Future<void> init() async {

@@ -1,4 +1,5 @@
 import 'package:chrome_tube/playback/playback.dart';
+import 'package:chrome_tube/ui/common/ui_listener_state.dart';
 import 'package:flutter/material.dart';
 
 class LinearTrackSlider extends StatefulWidget {
@@ -26,9 +27,8 @@ class TrackSlider extends LinearTrackSlider {
   State createState() => new TrackSliderState();
 }
 
-class LinearTrackSliderState extends State<LinearTrackSlider>
-    with TickerProviderStateMixin
-    implements PlaybackUIListener {
+class LinearTrackSliderState extends UIListenerState<LinearTrackSlider>
+    with TickerProviderStateMixin {
   final PlaybackManager _manager = new PlaybackManager();
 
   final _animTween = new Tween<double>(begin: 0.0, end: 0.0);
@@ -41,7 +41,6 @@ class LinearTrackSliderState extends State<LinearTrackSlider>
   void initState() {
     super.initState();
     _animController = new AnimationController(vsync: this);
-    _manager.registerListener(this);
     if (widget.delay == null) {
       _startSeekInterpolation();
     } else {
@@ -55,28 +54,21 @@ class LinearTrackSliderState extends State<LinearTrackSlider>
 
   @override
   void dispose() {
-    _manager.unregisterListener(this);
     _animController.dispose();
     super.dispose();
   }
 
   @override
-  void notifyTrack() => _startSeekInterpolation();
-
-  @override
-  void notifyPlayingState() => _startSeekInterpolation();
-
-  @override
-  void notifyTrackSeek() => _startSeekInterpolation();
-
-  @override
-  void notifyRepeating() {}
-
-  @override
-  void notifyQueue() {}
-
-  @override
-  void notifyPlaybackReady() {}
+  void onEvent(PlaybackUIEvent event) {
+    switch (event) {
+      case PlaybackUIEvent.TRACK:
+      case PlaybackUIEvent.PLAYER_STATE:
+      case PlaybackUIEvent.SEEK:
+        setState(() {});
+        break;
+      default:
+    }
+  }
 
   /*
    * Build
