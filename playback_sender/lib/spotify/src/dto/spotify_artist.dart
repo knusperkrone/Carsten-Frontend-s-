@@ -6,7 +6,8 @@ class SpotifyArtist extends Dto {
 
   SpotifyArtist(this.name) : assert(name != null);
 
-  factory SpotifyArtist.fromJson(Map<String, dynamic> json) => _$SpotifyArtistFromJson(json);
+  factory SpotifyArtist.fromJson(Map<String, dynamic> json) =>
+      _$SpotifyArtistFromJson(json);
 
   @override
   Map<String, dynamic> toJson() => _$SpotifyArtistToJson(this);

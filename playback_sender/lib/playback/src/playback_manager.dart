@@ -70,9 +70,12 @@ class PlaybackManager extends PlaybackReceiver {
     isConnected = json['isConnected'] as bool;
     trackSeek = json['trackSeek'] as double;
     isRepeating = json['isRepeating'] as bool;
-    shuffleState = new ShuffleStateDto.fromJson(json['currShuffleState'] as Map<String, dynamic>);
-    currPlayerState = SimplePlaybackState.values[json['currPlayerState'] as int];
+    shuffleState = new ShuffleStateDto.fromJson(
+        json['currShuffleState'] as Map<String, dynamic>);
+    currPlayerState =
+        SimplePlaybackState.values[json['currPlayerState'] as int];
     seekTimestamp = DateTime.parse(json['seekTimestamp'] as String);
-    queue = new SenderPlaybackQueue.fromJson(json['queue'] as Map<String, dynamic>);
+    queue =
+        new SenderPlaybackQueue.fromJson(json['queue'] as Map<String, dynamic>);
   }
 }

@@ -5,7 +5,8 @@ class TrackAppBar extends StatefulWidget {
   final ColorTween colorTween;
   final AnimationController animController;
 
-  const TrackAppBar({Key key, this.colorTween, this.animController}) : super(key: key);
+  const TrackAppBar({Key key, this.colorTween, this.animController})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() => new TrackAppBarState();
@@ -24,7 +25,8 @@ class TrackAppBarState extends State<TrackAppBar> {
         return AppBar(
           elevation: 0.0,
           title: Text(_manager.playlistName),
-          backgroundColor: widget.colorTween.animate(widget.animController).value,
+          backgroundColor:
+              widget.colorTween.animate(widget.animController).value,
         );
       },
     );

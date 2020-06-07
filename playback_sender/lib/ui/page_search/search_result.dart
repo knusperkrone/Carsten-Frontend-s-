@@ -15,7 +15,8 @@ class SerializableSearchResult {
   @JsonKey(ignore: true)
   int bias;
 
-  SerializableSearchResult(this.url, this.name, this.parent, this.serialized, this.type);
+  SerializableSearchResult(
+      this.url, this.name, this.parent, this.serialized, this.type);
 
   SerializableSearchResult.fromTrack(SpotifyTrack track, [String q])
       : url = track.album.images.last.url,
@@ -79,7 +80,8 @@ class SerializableSearchResult {
    */
 
   factory SerializableSearchResult.fromJson(String jsonStr) =>
-      _$SerializableSearchResultFromJson(jsonDecode(jsonStr) as Map<String, dynamic>);
+      _$SerializableSearchResultFromJson(
+          jsonDecode(jsonStr) as Map<String, dynamic>);
 
   String toJson() => jsonEncode(_$SerializableSearchResultToJson(this));
 }
@@ -90,7 +92,10 @@ class SearchResult extends StatelessWidget {
   final Widget trailing;
 
   const SearchResult(
-      {Key key, @required this.searchResult, @required this.parent, @required this.trailing})
+      {Key key,
+      @required this.searchResult,
+      @required this.parent,
+      @required this.trailing})
       : super(key: key);
 
   void _onTab() {
@@ -110,7 +115,8 @@ class SearchResult extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String typeStr = searchResult.type.toString().substring('SearchType'.length + 1);
+    String typeStr =
+        searchResult.type.toString().substring('SearchType'.length + 1);
     typeStr = '${typeStr[0]}${typeStr.substring(1).toLowerCase()}';
     return new ListTile(
       leading: CachedNetworkImage(

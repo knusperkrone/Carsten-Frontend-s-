@@ -17,14 +17,15 @@ void backgroundDispatchEntry() {
   WidgetsFlutterBinding.ensureInitialized();
 
   const methodChannel = MethodChannel(NativeConstants.CHANNEL_METHOD_NAME);
-  const ipcChannel = BasicMessageChannel(NativeConstants.CHANNEL_MESSAGE_NAME, StringCodec());
+  const ipcChannel =
+      BasicMessageChannel(NativeConstants.CHANNEL_MESSAGE_NAME, StringCodec());
   final dispatcher = new BackgroundDispatcher();
   final manager = new PlaybackManager();
   manager.isBackground = true;
 
   ipcChannel.setMessageHandler(dispatcher.dispatchMessage);
-  methodChannel.invokeMethod<void>(
-      'background_isolate_inited', ['Mit einem Chromecast verbinden!']); // Native init cast_context
+  methodChannel.invokeMethod<void>('background_isolate_inited',
+      ['Mit einem Chromecast verbinden!']); // Native init cast_context
 }
 
 /*
@@ -56,7 +57,8 @@ class BackgroundDispatcher extends MessageDispatcher {
       case NativeConstants.N_DISCONNECTED:
       case NativeConstants.N_FAILED:
         manager.onConnect(new ReadyDto(false));
-        return new CastMessage(NativeConstants.N_MSG_INFO, 'Mit einem Chromecast verbinden!');
+        return new CastMessage(
+            NativeConstants.N_MSG_INFO, 'Mit einem Chromecast verbinden!');
       case NativeConstants.N_SYNC:
         return new CastMessage(NativeConstants.N_SYNC, manager.serialize());
       case NativeConstants.N_PB_TOGGLE:

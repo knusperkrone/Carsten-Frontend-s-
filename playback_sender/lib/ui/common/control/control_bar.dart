@@ -61,14 +61,6 @@ class ControlBarState extends State<ControlBar> implements PlaybackUIListener {
     return await ControlPage.navigate(context);
   }
 
-  void _onPlayerState() {
-    if (_manager.currPlayerState == SimplePlaybackState.PLAYING) {
-      _manager.sendPause();
-    } else if (_manager.currPlayerState == SimplePlaybackState.PAUSED) {
-      _manager.sendPlay();
-    }
-  }
-
   /*
    * Build
    */

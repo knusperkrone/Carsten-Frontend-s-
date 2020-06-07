@@ -1,6 +1,7 @@
 class NativeConstants {
   static const CHANNEL_METHOD_NAME = 'interfaceag/cast_context/service_method';
-  static const CHANNEL_MESSAGE_NAME = 'interfaceag/cast_context/service_message';
+  static const CHANNEL_MESSAGE_NAME =
+      'interfaceag/cast_context/service_message';
 
   static const N_CONNECTING = 'N_CONNECTING';
   static const N_CONNECTED = 'N_CONNECTED';

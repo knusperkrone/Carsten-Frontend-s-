@@ -18,13 +18,15 @@ class CastPlaybackContext {
       return;
     }
     if (Platform.isIOS) {
-      throw UnsupportedError('iOS does currently not support \'CastPlaybackContext\'');
+      throw UnsupportedError(
+          'iOS does currently not support \'CastPlaybackContext\'');
     }
 
     // Start background service
     final handle = PluginUtilities.getCallbackHandle(backgroundDispatchEntry);
     while (true) {
-      _isInited = await _METHOD_CHANNEL.invokeMethod('init', <dynamic>[handle.toRawHandle()]);
+      _isInited = await _METHOD_CHANNEL
+          .invokeMethod('init', <dynamic>[handle.toRawHandle()]);
       if (_isInited) {
         break;
       }
@@ -35,14 +37,16 @@ class CastPlaybackContext {
 
   Future<void> send(CastMessage message) async {
     final String msg = jsonEncode(message.toJson());
-    final wasSend = await _METHOD_CHANNEL.invokeMethod<bool>('send_msg', <dynamic>[msg]);
+    final wasSend =
+        await _METHOD_CHANNEL.invokeMethod<bool>('send_msg', <dynamic>[msg]);
     if (!wasSend) {
       print('[ERROR] Couldn\'t dispatch: send($msg)');
     }
   }
 
   Future<void> end() async {
-    final wasSend = await _METHOD_CHANNEL.invokeMethod<bool>('end', <dynamic>[]);
+    final wasSend =
+        await _METHOD_CHANNEL.invokeMethod<bool>('end', <dynamic>[]);
     if (!wasSend) {
       print('[ERROR] Couldn\'t dispatch: end()');
     }
@@ -50,7 +54,8 @@ class CastPlaybackContext {
 
   static Future<void> restoreSession() async {
     for (int i = 0; i < 5; i++) {
-      final wasSend = await _METHOD_CHANNEL.invokeMethod<bool>('restore_session', <dynamic>[]);
+      final wasSend = await _METHOD_CHANNEL
+          .invokeMethod<bool>('restore_session', <dynamic>[]);
       if (wasSend) {
         return;
       }

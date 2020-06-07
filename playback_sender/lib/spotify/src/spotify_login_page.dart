@@ -14,7 +14,8 @@ class SpotifyLoginPage extends StatelessWidget {
    * Constants
    */
 
-  static const _REDIRECT_URL = 'https://spotitube.if-lab.de/api/spotify/callback';
+  static const _REDIRECT_URL =
+      'https://spotitube.if-lab.de/api/spotify/callback';
   static const _CLIENT_ID = '2b217a32857645b79e60dda0a56b2268';
   static const _TYPE = 'code';
   static const _SCOPES = [
@@ -47,7 +48,8 @@ class SpotifyLoginPage extends StatelessWidget {
       final uri = Uri.parse(loadedUri);
       final token = uri.queryParameters['code'];
       final error = uri.queryParameters['error'];
-      Navigator.pop<SpotifyLoginPageResult>(context, new SpotifyLoginPageResult(token, error));
+      Navigator.pop<SpotifyLoginPageResult>(
+          context, new SpotifyLoginPageResult(token, error));
     }
   }
 

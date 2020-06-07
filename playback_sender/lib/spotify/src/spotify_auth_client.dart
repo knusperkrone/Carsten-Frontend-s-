@@ -19,18 +19,20 @@ class SerializableApiToken {
   @JsonKey(nullable: true)
   DateTime createdOn;
 
-  SerializableApiToken(
-      this.accessToken, this.refreshToken, this.tokenType, this.expiresIn, this.createdOn) {
+  SerializableApiToken(this.accessToken, this.refreshToken, this.tokenType,
+      this.expiresIn, this.createdOn) {
     createdOn ??= DateTime.now();
   }
 
   factory SerializableApiToken.fromJsonSource(String source) => (source == null)
       ? null
-      : _$SerializableApiTokenFromJson(jsonDecode(source) as Map<String, dynamic>);
+      : _$SerializableApiTokenFromJson(
+          jsonDecode(source) as Map<String, dynamic>);
 
   String toJsonSource() => jsonEncode(_$SerializableApiTokenToJson(this));
 
-  bool get isExpired => createdOn.difference(new DateTime.now()).inSeconds.abs() > expiresIn;
+  bool get isExpired =>
+      createdOn.difference(new DateTime.now()).inSeconds.abs() > expiresIn;
 }
 
 class AuthorizedSpotifyClient with DartHttpClientMixin {
@@ -38,7 +40,8 @@ class AuthorizedSpotifyClient with DartHttpClientMixin {
    * Constants
    */
 
-  static const String _BACKEND_BASE_URL = 'https://spotitube.if-lab.de/api/spotify';
+  static const String _BACKEND_BASE_URL =
+      'https://spotitube.if-lab.de/api/spotify';
   static const String _BASE_URL = 'https://api.spotify.com';
   static const String _TOKEN_KEY = 'SPOTIFY_API_SERIALIZED_TOKEN_KEY';
 
@@ -51,7 +54,8 @@ class AuthorizedSpotifyClient with DartHttpClientMixin {
   SerializableApiToken _apiToken;
 
   AuthorizedSpotifyClient(this._prefs, this._authCode) {
-    _apiToken = new SerializableApiToken.fromJsonSource(_prefs.getString(_TOKEN_KEY));
+    _apiToken =
+        new SerializableApiToken.fromJsonSource(_prefs.getString(_TOKEN_KEY));
   }
 
   /*
@@ -61,19 +65,24 @@ class AuthorizedSpotifyClient with DartHttpClientMixin {
   Future<String> authorizedGet(String path, {String baseUrl}) async {
     await _refreshToken();
     baseUrl ??= _BASE_URL;
-    return doGet(baseUrl, path, {'Authorization': 'Bearer ${_apiToken.accessToken}'});
+    return doGet(
+        baseUrl, path, {'Authorization': 'Bearer ${_apiToken.accessToken}'});
   }
 
-  Future<String> authorizedPost(String path, String body, {String baseUrl = _BASE_URL}) async {
+  Future<String> authorizedPost(String path, String body,
+      {String baseUrl = _BASE_URL}) async {
     await _refreshToken();
     baseUrl ??= _BASE_URL;
-    return doPost(baseUrl, path, {'Authorization': 'Bearer ${_apiToken.accessToken}'}, body);
+    return doPost(baseUrl, path,
+        {'Authorization': 'Bearer ${_apiToken.accessToken}'}, body);
   }
 
-  Future<String> authorizedPut(String path, String body, {String baseUrl = _BASE_URL}) async {
+  Future<String> authorizedPut(String path, String body,
+      {String baseUrl = _BASE_URL}) async {
     await _refreshToken();
     baseUrl ??= _BASE_URL;
-    return doPut<String>(baseUrl, path, {'Authorization': 'Bearer ${_apiToken.accessToken}'}, body);
+    return doPut<String>(baseUrl, path,
+        {'Authorization': 'Bearer ${_apiToken.accessToken}'}, body);
   }
 
   /*
@@ -81,7 +90,9 @@ class AuthorizedSpotifyClient with DartHttpClientMixin {
    */
 
   Future<void> _refreshToken([int tryCount = 5]) async {
-    final Map<String, String> headers = {'Content-Type': 'application/x-www-form-urlencoded'};
+    final Map<String, String> headers = {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    };
 
     try {
       if (_apiToken == null) {

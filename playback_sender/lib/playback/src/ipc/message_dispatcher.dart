@@ -8,7 +8,8 @@ import '../../playback.dart';
 abstract class MessageDispatcher {
   @protected
   // ignore: non_constant_identifier_names
-  static final CastMessage<String> IPC_MESSAGE_HANDLED = new CastMessage('', '');
+  static final CastMessage<String> IPC_MESSAGE_HANDLED =
+      new CastMessage('', '');
 
   @protected
   final PlaybackManager manager;
@@ -30,7 +31,8 @@ abstract class MessageDispatcher {
    */
 
   Future<String> dispatchMessage(String sourceMsg) async {
-    final msg = new CastMessage<String>.fromJson(jsonDecode(sourceMsg) as Map<String, dynamic>);
+    final msg = new CastMessage<String>.fromJson(
+        jsonDecode(sourceMsg) as Map<String, dynamic>);
 
     final ipcResponse = await dispatchIPCMessage(msg);
     if (ipcResponse != null) {
@@ -75,8 +77,8 @@ abstract class MessageDispatcher {
         manager.onTrackState(new TrackStateDto.fromJson(json));
         break;
       case CafToSenderConstants.PB_QUEUE:
-        manager
-            .onQueue(new PlaybackQueueDto.fromJson(jsonDecode(msg.data) as Map<String, dynamic>));
+        manager.onQueue(new PlaybackQueueDto.fromJson(
+            jsonDecode(msg.data) as Map<String, dynamic>));
         break;
       case CafToSenderConstants.PB_DELTA_ADD:
         manager.onAddPrioDelta(new AddPrioDeltaDto.fromJson(json));

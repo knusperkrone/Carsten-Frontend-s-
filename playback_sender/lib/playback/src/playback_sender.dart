@@ -32,7 +32,8 @@ class PlaybackSender {
    * Business methods
    */
 
-  void sendTracks(List<PlaybackTrack> tracks, int selected, String playlistName) {
+  void sendTracks(
+      List<PlaybackTrack> tracks, int selected, String playlistName) {
     tracks.insert(0, PlaybackTrack.dtoHack(selected, playlistName));
 
     _sendMsg(SenderToCafConstants.PB_CLEAR_QUEUE); // Clear current queue
@@ -40,7 +41,8 @@ class PlaybackSender {
     int currIndex = 0;
     do {
       // paginate
-      final sendList = tracks.sublist(currIndex, min(tracks.length, currIndex + _PAGINATE_WINDOW));
+      final sendList = tracks.sublist(
+          currIndex, min(tracks.length, currIndex + _PAGINATE_WINDOW));
       currIndex += _PAGINATE_WINDOW;
       _sendMsg(SenderToCafConstants.PB_APPEND_TO_QUEUE, sendList);
     } while (currIndex < tracks.length);
@@ -57,7 +59,8 @@ class PlaybackSender {
 
   void sendPause() => _sendMsg(SenderToCafConstants.PB_PAUSE);
 
-  void sendPlayTrack(PlaybackTrack track) => _sendMsg(SenderToCafConstants.PB_PLAY_TRACK, track);
+  void sendPlayTrack(PlaybackTrack track) =>
+      _sendMsg(SenderToCafConstants.PB_PLAY_TRACK, track);
 
   void sendStop() => _sendMsg(SenderToCafConstants.PB_STOP);
 
@@ -75,11 +78,14 @@ class PlaybackSender {
     _prevTimeout = _createTimer();
   }
 
-  void sendShuffling(bool isShuffling) => _sendMsg(SenderToCafConstants.PB_SHUFFLING, isShuffling);
+  void sendShuffling(bool isShuffling) =>
+      _sendMsg(SenderToCafConstants.PB_SHUFFLING, isShuffling);
 
-  void sendRepeating(bool isRepeating) => _sendMsg(SenderToCafConstants.PB_REPEATING, isRepeating);
+  void sendRepeating(bool isRepeating) =>
+      _sendMsg(SenderToCafConstants.PB_REPEATING, isRepeating);
 
-  void sendSeek(int seekMs) => _sendMsg(SenderToCafConstants.PB_SEEK_TO, seekMs);
+  void sendSeek(int seekMs) =>
+      _sendMsg(SenderToCafConstants.PB_SEEK_TO, seekMs);
 
   void scheduleFullSync() {
     if (isBackground) {
@@ -90,8 +96,10 @@ class PlaybackSender {
   void sendAddToPrio(PlaybackTrack track) =>
       _sendMsg(SenderToCafConstants.PB_APPEND_TO_PRIO, track);
 
-  void sendMove(bool startPrio, int startIndex, bool targetPrio, int targetIndex) =>
-      _sendMsg(SenderToCafConstants.PB_MOVE, [startPrio, startIndex, targetPrio, targetIndex]);
+  void sendMove(
+          bool startPrio, int startIndex, bool targetPrio, int targetIndex) =>
+      _sendMsg(SenderToCafConstants.PB_MOVE,
+          [startPrio, startIndex, targetPrio, targetIndex]);
 
   /*
    * Helpers

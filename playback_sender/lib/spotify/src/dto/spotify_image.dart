@@ -8,7 +8,8 @@ class SpotifyImage extends Dto {
 
   SpotifyImage(this.height, this.width, this.url) : assert(url != null);
 
-  factory SpotifyImage.fromJson(Map<String, dynamic> json) => _$SpotifyImageFromJson(json);
+  factory SpotifyImage.fromJson(Map<String, dynamic> json) =>
+      _$SpotifyImageFromJson(json);
 
   @override
   Map<String, dynamic> toJson() => _$SpotifyImageToJson(this);

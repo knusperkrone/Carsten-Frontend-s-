@@ -9,7 +9,8 @@ class TrackDetails extends StatefulWidget {
 
 class TrackDetailsState extends State<TrackDetails> {
   // ignore: non_constant_identifier_names
-  static final _PLACEHOLDER_TRACK = new PlaybackTrack.dummy(title: 'No Song', artist: '');
+  static final _PLACEHOLDER_TRACK =
+      new PlaybackTrack.dummy(title: 'No Song', artist: '');
 
   Optional<PlaybackTrack> _track;
 
@@ -35,7 +36,7 @@ class TrackDetailsState extends State<TrackDetails> {
           child: Text(
             _track.orElse(_PLACEHOLDER_TRACK).title,
             textAlign: TextAlign.start,
-            style: Theme.of(context).textTheme.title,
+            style: Theme.of(context).textTheme.headline6,
           ),
         ),
         Container(
@@ -44,7 +45,7 @@ class TrackDetailsState extends State<TrackDetails> {
           child: Text(
             _track.orElse(_PLACEHOLDER_TRACK).artist,
             textAlign: TextAlign.start,
-            style: Theme.of(context).textTheme.subhead,
+            style: Theme.of(context).textTheme.subtitle1,
           ),
         ),
       ],

@@ -7,7 +7,8 @@ class TrackProgress extends StatefulWidget {
   State<StatefulWidget> createState() => new TrackProgressState();
 }
 
-class TrackProgressState extends State<TrackProgress> with SingleTickerProviderStateMixin {
+class TrackProgressState extends State<TrackProgress>
+    with SingleTickerProviderStateMixin {
   final PlaybackManager _manager = new PlaybackManager();
   double _val = 0.0;
 

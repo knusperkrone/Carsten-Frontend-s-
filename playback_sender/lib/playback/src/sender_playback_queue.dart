@@ -5,7 +5,8 @@ class SenderPlaybackQueue extends BasePlaybackQueue {
   final String name;
 
   factory SenderPlaybackQueue.empty() {
-    return new SenderPlaybackQueue._internal('', 0, null, null, false, false, [], []);
+    return new SenderPlaybackQueue._internal(
+        '', 0, null, null, false, false, [], []);
   }
 
   factory SenderPlaybackQueue.fromQueue(
@@ -16,8 +17,8 @@ class SenderPlaybackQueue extends BasePlaybackQueue {
     final prioTracks = queueDto.prioTracks;
     final trackList = queueDto.immutableTracks;
 
-    return new SenderPlaybackQueue._internal(
-        name, seed, currentTrack, trackHolder, isShuffling, isRepeating, prioTracks, trackList);
+    return new SenderPlaybackQueue._internal(name, seed, currentTrack,
+        trackHolder, isShuffling, isRepeating, prioTracks, trackList);
   }
 
   SenderPlaybackQueue._internal(
@@ -29,7 +30,8 @@ class SenderPlaybackQueue extends BasePlaybackQueue {
       bool isRepeating,
       List<PlaybackTrack> prioTracks,
       List<PlaybackTrack> mutableTrackList)
-      : super(currentTrack, isShuffling, isRepeating, prioTracks, mutableTrackList,
+      : super(currentTrack, isShuffling, isRepeating, prioTracks,
+            mutableTrackList,
             trackHolder: trackHolder, seed: seed);
 
   SenderPlaybackQueue._state({
@@ -64,17 +66,23 @@ class SenderPlaybackQueue extends BasePlaybackQueue {
     final hash = json['hash'] as String;
     final isDirty = json['isDirty'] as bool;
     final isRepeating = json['isRepeating'] as bool;
-    final shuffleState = new ShuffleStateDto.fromJson(json['shuffleState'] as Map<String, dynamic>);
-    final currentTrack = new PlaybackTrack.fromJson(json['currTrackOpt'] as Map<String, dynamic>);
-    final trackHolder = new PlaybackTrack.fromJson(json['trackHolderOpt'] as Map<String, dynamic>);
+    final shuffleState = new ShuffleStateDto.fromJson(
+        json['shuffleState'] as Map<String, dynamic>);
+    final currentTrack = new PlaybackTrack.fromJson(
+        json['currTrackOpt'] as Map<String, dynamic>);
+    final trackHolder = new PlaybackTrack.fromJson(
+        json['trackHolderOpt'] as Map<String, dynamic>);
     final prioTracks = (json['prioTracks'] as List<dynamic>)
-        .map((dynamic json) => new PlaybackTrack.fromJson(json as Map<String, dynamic>))
+        .map((dynamic json) =>
+            new PlaybackTrack.fromJson(json as Map<String, dynamic>))
         .toList();
     final mutableTracks = (json['mutableTrackList'] as List<dynamic>)
-        .map((dynamic json) => new PlaybackTrack.fromJson(json as Map<String, dynamic>))
+        .map((dynamic json) =>
+            new PlaybackTrack.fromJson(json as Map<String, dynamic>))
         .toList();
     final queueTracks = (json['immutableTrackList'] as List<dynamic>)
-        .map((dynamic json) => new PlaybackTrack.fromJson(json as Map<String, dynamic>))
+        .map((dynamic json) =>
+            new PlaybackTrack.fromJson(json as Map<String, dynamic>))
         .toList();
 
     return new SenderPlaybackQueue._state(

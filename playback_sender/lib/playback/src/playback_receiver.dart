@@ -58,7 +58,8 @@ class PlaybackReceiver extends PlaybackSender {
 
   SimplePlaybackState get currPlayerState => _currPlayerState;
 
-  Optional<PlaybackTrack> get track => new Optional.ofNullable(_queue?.currentTrack);
+  Optional<PlaybackTrack> get track =>
+      new Optional.ofNullable(_queue?.currentTrack);
 
   int get trackIndex => _queue?.trackHolder?.queueIndex ?? 0;
 
@@ -172,7 +173,8 @@ class PlaybackReceiver extends PlaybackSender {
 
     if (_queue.currentTrack != null &&
         _queue.currentTrack.origQueueIndex != trackStateDto.trackIndex) {
-      _reSync('Invalid: ${_queue.currentTrack.origQueueIndex} != ${trackStateDto.trackIndex}');
+      _reSync(
+          'Invalid: ${_queue.currentTrack.origQueueIndex} != ${trackStateDto.trackIndex}');
     }
 
     uiListeners.forEach((l) => l.notifyTrack());
@@ -210,8 +212,8 @@ class PlaybackReceiver extends PlaybackSender {
 
   void onMovePrioDelta(MovePrioDeltaDto moveDeltaDto) {
     try {
-      queue.move(moveDeltaDto.startPrio, moveDeltaDto.startIndex, moveDeltaDto.targetPrio,
-          moveDeltaDto.targetIndex);
+      queue.move(moveDeltaDto.startPrio, moveDeltaDto.startIndex,
+          moveDeltaDto.targetPrio, moveDeltaDto.targetIndex);
       uiListeners.forEach((l) => l.notifyQueue());
     } catch (e) {
       _reSync("Couldn't move $e");

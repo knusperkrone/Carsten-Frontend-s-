@@ -9,7 +9,8 @@ class SpotifyPager extends Dto {
 
   SpotifyPager(this.next, this.previous, this.items) : assert(items != null);
 
-  factory SpotifyPager.fromJson(Map<String, dynamic> json) => _$SpotifyPagerFromJson(json);
+  factory SpotifyPager.fromJson(Map<String, dynamic> json) =>
+      _$SpotifyPagerFromJson(json);
 
   @override
   Map<String, dynamic> toJson() {

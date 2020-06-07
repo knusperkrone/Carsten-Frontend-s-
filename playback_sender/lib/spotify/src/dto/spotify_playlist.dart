@@ -3,7 +3,7 @@ part of 'dto.dart';
 typedef GetterFun = int Function(SpotifyImage);
 
 @JsonSerializable()
-class SpotifyPlaylist extends Dto  implements SpotifyFeatured  {
+class SpotifyPlaylist extends Dto implements SpotifyFeatured {
   final String id;
   @override
   final String name;
@@ -13,9 +13,14 @@ class SpotifyPlaylist extends Dto  implements SpotifyFeatured  {
   final SpotifyUser owner;
 
   SpotifyPlaylist(this.id, this.name, this.snapshotId, this.images, this.owner)
-      : assert(id != null && name != null && snapshotId != null && images != null && owner != null);
+      : assert(id != null &&
+            name != null &&
+            snapshotId != null &&
+            images != null &&
+            owner != null);
 
-  factory SpotifyPlaylist.fromJson(Map<String, dynamic> json) => _$SpotifyPlaylistFromJson(json);
+  factory SpotifyPlaylist.fromJson(Map<String, dynamic> json) =>
+      _$SpotifyPlaylistFromJson(json);
 
   @override
   Map<String, dynamic> toJson() => _$SpotifyPlaylistToJson(this);

@@ -10,7 +10,8 @@ import 'message_dispatcher.dart';
  */
 void foregroundDispatch() {
   final dispatcher = new ForegroundDispatcher();
-  const channel = BasicMessageChannel<String>(NativeConstants.CHANNEL_MESSAGE_NAME, StringCodec());
+  const channel = BasicMessageChannel<String>(
+      NativeConstants.CHANNEL_MESSAGE_NAME, StringCodec());
 
   channel.setMessageHandler(dispatcher.dispatchMessage);
 }

@@ -99,7 +99,8 @@ class LinearTrackSliderState extends State<LinearTrackSlider>
 
       double timeDelta = _trackDuration - _manager.trackSeek;
       if (_manager.currPlayerState == SimplePlaybackState.PLAYING) {
-        timeDelta -= _manager.seekTimestamp.difference(DateTime.now()).inMilliseconds;
+        timeDelta -=
+            _manager.seekTimestamp.difference(DateTime.now()).inMilliseconds;
       }
       _animController.value = 1 - timeDelta / _trackDuration;
 
@@ -122,7 +123,8 @@ class LinearTrackSliderState extends State<LinearTrackSlider>
   Widget build(BuildContext context) {
     return new AnimatedBuilder(
       animation: _animController,
-      builder: (context, _) => new LinearProgressIndicator(value: _animController.value),
+      builder: (context, _) =>
+          new LinearProgressIndicator(value: _animController.value),
     );
   }
 }
@@ -177,7 +179,8 @@ class TrackSliderState extends LinearTrackSliderState {
     return new AnimatedBuilder(
       animation: _animController,
       builder: (context, _) {
-        final timeStamp = _isUser ? _userVal : _animTween.animate(_animController).value;
+        final timeStamp =
+            _isUser ? _userVal : _animTween.animate(_animController).value;
         return Column(
           children: <Widget>[
             Padding(

@@ -173,7 +173,7 @@ class _QueuePageState extends State<QueuePage>
                 Text(
                   curr?.title ?? '',
                   overflow: TextOverflow.fade,
-                  style: theme.textTheme.subhead.copyWith(fontSize: 16.0),
+                  style: theme.textTheme.subtitle1.copyWith(fontSize: 16.0),
                 ),
                 Text(
                   curr?.artist ?? '',
@@ -200,7 +200,7 @@ class _QueuePageState extends State<QueuePage>
       padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 7.0),
       child: Text(
         'Next song from ${_manager.playlistName}:',
-        style: Theme.of(context).textTheme.title,
+        style: Theme.of(context).textTheme.headline6,
       ),
     );
 
@@ -239,7 +239,7 @@ class _QueuePageState extends State<QueuePage>
                               vertical: 5.0, horizontal: 7.0),
                           child: Text(
                             'Current Title:',
-                            style: Theme.of(context).textTheme.title,
+                            style: Theme.of(context).textTheme.headline6,
                           ),
                         ),
                       ),
@@ -272,8 +272,9 @@ class _QueuePageState extends State<QueuePage>
                                         opacity: _animController.value,
                                         child: Text(
                                           'Next song from queue:',
-                                          style:
-                                              Theme.of(context).textTheme.title,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headline6,
                                         ),
                                       ),
                                     )

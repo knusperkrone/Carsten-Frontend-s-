@@ -16,7 +16,6 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 part 'search_page.g.dart';
-
 part 'search_result.dart';
 
 class SearchPage extends StatefulWidget {

@@ -3,7 +3,8 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:playback_interop/playback_interop.dart';
 
-abstract class TrackPageControllerState<T extends StatefulWidget> extends State<T> {
+abstract class TrackPageControllerState<T extends StatefulWidget>
+    extends State<T> {
   static const _TRANSITION_DURATION = Duration(milliseconds: 500);
   static const _LIST_EQUALITY = ListEquality<PlaybackTrack>();
 
@@ -28,7 +29,8 @@ abstract class TrackPageControllerState<T extends StatefulWidget> extends State<
       _currIndex = 0;
     } else {
       _shadowTracks = _stackAllTracks();
-      _currIndex = _shadowTracks.indexWhere((t) => t.title == manager.track.value.title);
+      _currIndex =
+          _shadowTracks.indexWhere((t) => t.title == manager.track.value.title);
     }
     pageController = PageController(initialPage: _currIndex);
   }
@@ -59,7 +61,9 @@ abstract class TrackPageControllerState<T extends StatefulWidget> extends State<
   void onScroll(int newIndex) {
     manager.track.ifPresent((track) {
       final oldIndex = _currIndex;
-      if (mounted && oldIndex != newIndex && pageController.page != track.queueIndex) {
+      if (mounted &&
+          oldIndex != newIndex &&
+          pageController.page != track.queueIndex) {
         _currIndex = newIndex;
 
         if (!_isAnimating) {
@@ -112,5 +116,6 @@ abstract class TrackPageControllerState<T extends StatefulWidget> extends State<
     return allTracks;
   }
 
-  bool get hasNoTracks => manager.prioTracks.isEmpty && manager.queueTracks.isEmpty;
+  bool get hasNoTracks =>
+      manager.prioTracks.isEmpty && manager.queueTracks.isEmpty;
 }

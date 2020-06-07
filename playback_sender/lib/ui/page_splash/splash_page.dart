@@ -6,8 +6,6 @@ import 'package:chrome_tube/ui/page_playlist/playlist_page.dart';
 import 'package:chrome_tube/ui/tracking/feature_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_cast_button/bloc_media_route.dart';
-import 'package:flutter_google_cast_button/cast_button_widget.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
