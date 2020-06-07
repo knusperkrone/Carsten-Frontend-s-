@@ -1,3 +1,4 @@
+import 'package:chrome_tube/spotify/src/dto/spotify_featured.dart';
 import 'package:chrome_tube/utils/serializable_utils.dart';
 import 'package:json_annotation/json_annotation.dart';
 

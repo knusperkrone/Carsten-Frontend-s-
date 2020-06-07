@@ -242,6 +242,7 @@ class ControlPageState extends State<ControlPage>
                     child: CastButtonWidget(
                       bloc: _mediaRouteBloc,
                       tintColor: Colors.white70,
+                      backgroundColor: Colors.transparent,
                     ),
                   ),
                   Expanded(child: Container()),

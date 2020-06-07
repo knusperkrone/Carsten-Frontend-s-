@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chrome_tube/playback/playback.dart';
 import 'package:chrome_tube/spotify/spotify.dart';
 import 'package:chrome_tube/ui/common/common.dart';
+import 'package:chrome_tube/ui/page_playlist/playlist_header.dart';
 import 'package:chrome_tube/ui/pages.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -45,7 +46,8 @@ class _PlaylistPageState extends State<PlaylistPage> {
     }
   }
 
-  Future<void> _navigateToTrackPage(BuildContext context, SpotifyPlaylist playlist) async {
+  Future<void> _navigateToTrackPage(
+      BuildContext context, SpotifyPlaylist playlist) async {
     if (!_isFetching) {
       _isFetching = true;
       await TrackPage.navigatePlaylist(context, playlist);
@@ -59,9 +61,11 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
   Widget _buildTiles(BuildContext context, int i) {
     if (i == 0) {
+      return PlaylistHeader(playlists: widget.playlists);
+    } else if (i == 1) {
       return _buildTrackTile(context);
     }
-    return _buildPlaylistTile(context, i - 1);
+    return _buildPlaylistTile(context, i - 2);
   }
 
   Widget _buildTrackTile(BuildContext context) {
@@ -82,7 +86,10 @@ class _PlaylistPageState extends State<PlaylistPage> {
       ),
       title: Text(
         'Songs',
-        style: Theme.of(context).textTheme.subhead.copyWith(fontWeight: FontWeight.bold),
+        style: Theme.of(context)
+            .textTheme
+            .subtitle1
+            .copyWith(fontWeight: FontWeight.bold),
       ),
       onTap: () => _navigateToSongPage(context),
     );
@@ -102,7 +109,10 @@ class _PlaylistPageState extends State<PlaylistPage> {
       ),
       title: Text(
         playlist.name,
-        style: Theme.of(context).textTheme.subhead.copyWith(fontWeight: FontWeight.bold),
+        style: Theme.of(context)
+            .textTheme
+            .subtitle1
+            .copyWith(fontWeight: FontWeight.bold),
       ),
       subtitle: Text(playlist.owner.name),
       onTap: () => _navigateToTrackPage(context, playlist),
@@ -112,21 +122,21 @@ class _PlaylistPageState extends State<PlaylistPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          leading: IconButton(
-        icon: Icon(Icons.search),
+      body: Container(
+        child: ListView.builder(
+          itemCount: widget.playlists.length + 2,
+          itemBuilder: _buildTiles,
+        ),
+      ),
+      bottomNavigationBar: BottomAppBar(
+        child: ControlBar(),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Theme.of(context).accentColor,
+        heroTag: 'second',
+        child: Icon(Icons.search),
         onPressed: _onSearch,
-      )),
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            child: ListView.builder(
-              itemCount: widget.playlists.length + 1,
-              itemBuilder: _buildTiles,
-            ),
-          ),
-          ControlBar(),
-        ],
       ),
     );
   }

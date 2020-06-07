@@ -4,11 +4,14 @@ import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chrome_tube/playback/playback.dart';
 import 'package:chrome_tube/spotify/spotify.dart';
+import 'package:chrome_tube/spotify/src/dto/spotify_featured.dart';
 import 'package:chrome_tube/ui/common/control/control_bar.dart';
 import 'package:chrome_tube/ui/common/transformer.dart';
+import 'package:chrome_tube/ui/tracking/feature_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:optional/optional.dart';
 import 'package:palette_generator/palette_generator.dart';
 
 class TrackPage extends StatefulWidget {
@@ -18,47 +21,78 @@ class TrackPage extends StatefulWidget {
   final PaletteGenerator palette;
   final ImageProvider appBarImageProvider;
   final double expandedHeight;
+  final Optional<SpotifyFeatured> featured;
 
-  const TrackPage._(this.trackStream, this.palette, this.collectionName, this.collectionOwner,
-      this.appBarImageProvider, this.expandedHeight,
+  const TrackPage._(
+      this.trackStream,
+      this.palette,
+      this.collectionName,
+      this.collectionOwner,
+      this.appBarImageProvider,
+      this.expandedHeight,
+      this.featured,
       {Key key})
       : super(key: key);
 
-  static Future<void> navigatePlaylist(BuildContext context, SpotifyPlaylist playlist,
+  static void navigateFeatured(BuildContext context, SpotifyFeatured feature) {
+    if (feature is SpotifyPlaylist) {
+      navigatePlaylist(context, feature);
+    } else if (feature is SpotifyAlbum) {
+      navigateAlbum(context, feature);
+    } else {
+      print('Invalid feature: $feature');
+    }
+  }
+
+  static Future<void> navigatePlaylist(
+      BuildContext context, SpotifyPlaylist playlist,
       {Key key}) async {
     final appBarHeight = MediaQuery.of(context).size.height / 10 * 5;
-    final appBarImageProvider = new CachedNetworkImageProvider(playlist.imageUrl);
+    final appBarImageProvider =
+        new CachedNetworkImageProvider(playlist.imageUrl);
     final stream = SpotifyApi().getPlaylistTracks(playlist);
-    final palette = await PaletteGenerator.fromImageProvider(appBarImageProvider);
+    final palette =
+        await PaletteGenerator.fromImageProvider(appBarImageProvider);
 
     return Navigator.of(context).push(MaterialPageRoute(builder: (context) {
       return new TrackPage._(
-          stream, palette, playlist.name, playlist.owner.name, appBarImageProvider, appBarHeight,
+          stream,
+          palette,
+          playlist.name,
+          playlist.owner.name,
+          appBarImageProvider,
+          appBarHeight,
+          Optional.of(playlist),
           key: key);
     }));
   }
 
-  static Future<void> navigateAlbum(BuildContext context, SpotifyAlbum album, {Key key}) async {
+  static Future<void> navigateAlbum(BuildContext context, SpotifyAlbum album,
+      {Key key}) async {
     final appBarHeight = MediaQuery.of(context).size.height / 10 * 5;
     final appBarImageProvider = new CachedNetworkImageProvider(album.imageUrl);
     final stream = SpotifyApi().getAlbumTracks(album);
-    final palette = await PaletteGenerator.fromImageProvider(appBarImageProvider);
+    final palette =
+        await PaletteGenerator.fromImageProvider(appBarImageProvider);
 
     return Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-      return new TrackPage._(
-          stream, palette, album.name, album.artist, appBarImageProvider, appBarHeight,
+      return new TrackPage._(stream, palette, album.name, album.artist,
+          appBarImageProvider, appBarHeight, Optional.of(album),
           key: key);
     }));
   }
 
   static Future<void> navigateTracks(BuildContext context, {Key key}) async {
     final appBarHeight = MediaQuery.of(context).size.height / 10 * 2.5;
-    const appBarImageProvider = ExactAssetImage('assets/images/transparent.png');
+    const appBarImageProvider =
+        ExactAssetImage('assets/images/transparent.png');
 
     final trackStream = SpotifyApi().getUserTracks();
-    final palette = PaletteGenerator.fromColors([PaletteColor(Theme.of(context).primaryColor, 1)]);
+    final palette = PaletteGenerator.fromColors(
+        [PaletteColor(Theme.of(context).primaryColor, 1)]);
     return Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-      return new TrackPage._(trackStream, palette, 'Songs', null, appBarImageProvider, appBarHeight,
+      return new TrackPage._(trackStream, palette, 'Songs', null,
+          appBarImageProvider, appBarHeight, const Optional.empty(),
           key: key);
     }));
   }
@@ -131,11 +165,13 @@ class TrackPageState extends State<TrackPage> {
     final sendList = new List.generate(_tracks.length, (i) {
       return PlaybackTransformer.fromSpotify(_tracks[i], i);
     });
+    widget.featured.ifPresent((curr) => FeatureService().addFeature(curr));
     PlaybackManager().sendTracks(sendList, selected, widget.collectionName);
   }
 
   void _onTrackSecondary(SpotifyTrack track) {
-    final playbackTrack = PlaybackTransformer.fromSpotify(track, -1, isPrio: true);
+    final playbackTrack =
+        PlaybackTransformer.fromSpotify(track, -1, isPrio: true);
     PlaybackManager().sendAddToPrio(playbackTrack);
   }
 
@@ -163,7 +199,8 @@ class TrackPageState extends State<TrackPage> {
         subtitle: Text(curr.artist ?? ''),
         trailing: IconButton(
           icon: Icon(Icons.more_vert),
-          onPressed: () => key.currentState?.open(actionType: SlideActionType.primary),
+          onPressed: () =>
+              key.currentState?.open(actionType: SlideActionType.primary),
         ),
         onTap: () => _onTrack(i),
       ),
@@ -173,8 +210,12 @@ class TrackPageState extends State<TrackPage> {
   @override
   Widget build(BuildContext context) {
     final scrollPadding = Container(
-      height: max(0,
-          MediaQuery.of(context).size.height - kToolbarHeight - 35.0 - 80 * (_tracks.length + 1)),
+      height: max(
+          0,
+          MediaQuery.of(context).size.height -
+              kToolbarHeight -
+              35.0 -
+              80 * (_tracks.length + 1)),
     );
     final statusBarColor = new Color.fromARGB(
       255,
@@ -208,7 +249,8 @@ class TrackPageState extends State<TrackPage> {
                     SliverFixedExtentList(
                       itemExtent: 80.0,
                       delegate: SliverChildListDelegate(
-                        List.generate(_tracks.length, (i) => _buildTrackTile(i, context)),
+                        List.generate(
+                            _tracks.length, (i) => _buildTrackTile(i, context)),
                       ),
                     ),
                     SliverToBoxAdapter(child: scrollPadding),
@@ -225,7 +267,6 @@ class TrackPageState extends State<TrackPage> {
 }
 
 class _TrackPageAppBar extends SliverPersistentHeaderDelegate {
-  static const PADDING = 20.0;
   static const SHUFFLE_SIZE = 35.0;
 
   final double expandedHeight;
@@ -251,7 +292,8 @@ class _TrackPageAppBar extends SliverPersistentHeaderDelegate {
    */
 
   @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
     final qWidth = MediaQuery.of(context).size.width;
 
     final Color gradientVal = gradientColor ?? Theme.of(context).primaryColor;
@@ -273,7 +315,11 @@ class _TrackPageAppBar extends SliverPersistentHeaderDelegate {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               stops: const [0.0, 0.8, 0.8],
-              colors: [gradientStart, Theme.of(context).canvasColor, Colors.transparent],
+              colors: [
+                gradientStart,
+                Theme.of(context).canvasColor,
+                Colors.transparent
+              ],
             ),
           ),
         ),
@@ -286,23 +332,31 @@ class _TrackPageAppBar extends SliverPersistentHeaderDelegate {
                 Image(
                     image: imageProvider,
                     width: qWidth - qWidth / 4 - shrinkOffset,
-                    height: expandedHeight - kToolbarHeight - shrinkOffset - 40.0 - SHUFFLE_SIZE,
+                    height: expandedHeight -
+                        kToolbarHeight -
+                        shrinkOffset -
+                        40.0 -
+                        SHUFFLE_SIZE,
                     fit: BoxFit.fitHeight),
                 Container(
                   padding: const EdgeInsets.only(top: 12.0),
-                  height: textSize - (shrinkOffset / expandedHeight) * textSize + 6,
+                  height:
+                      textSize - (shrinkOffset / expandedHeight) * textSize + 6,
                   child: owner == null
                       ? Container()
                       : Container(
                           decoration: BoxDecoration(
                             color: Colors.black12,
-                            borderRadius: const BorderRadius.all(Radius.circular(10.0)),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(10.0)),
                           ),
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
                             owner,
-                            style:
-                                Theme.of(context).textTheme.subhead.copyWith(color: Colors.white),
+                            style: Theme.of(context)
+                                .textTheme
+                                .subtitle1
+                                .copyWith(color: Colors.white),
                           ),
                         ),
                 ),
@@ -319,24 +373,32 @@ class _TrackPageAppBar extends SliverPersistentHeaderDelegate {
               child: Text(
                 name,
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.title.copyWith(color: Colors.white),
+                style: Theme.of(context)
+                    .textTheme
+                    .headline6
+                    .copyWith(color: Colors.white),
               ),
             ),
           ),
         ),
         Positioned(
-          top: max(
-              minExtent - 10.0 - SHUFFLE_SIZE, expandedHeight - 10.0 - SHUFFLE_SIZE - shrinkOffset),
+          top: max(minExtent - 10.0 - SHUFFLE_SIZE,
+              expandedHeight - 10.0 - SHUFFLE_SIZE - shrinkOffset),
           left: qWidth / 6,
           child: Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             elevation: 5,
             color: Theme.of(context).accentColor,
             child: SizedBox(
               height: 47.0,
               width: qWidth / 1.5,
-              child: MaterialButton(
-                child: const Text('Shuffle'),
+              child: FloatingActionButton.extended(
+                backgroundColor: Theme.of(context).accentColor,
+                heroTag: 'second',
+                elevation: 0.0,
+                label: const Text('Shuffle'),
+                foregroundColor: Colors.white,
                 onPressed: onShuffle,
               ),
             ),

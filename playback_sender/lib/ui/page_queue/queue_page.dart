@@ -345,6 +345,7 @@ class _QueuePageState extends State<QueuePage>
                 CastButtonWidget(
                   bloc: _mediaRouteBloc,
                   tintColor: Colors.white70,
+                  backgroundColor: Colors.transparent,
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 5.0),

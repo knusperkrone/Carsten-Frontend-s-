@@ -22,7 +22,7 @@ class FeatureService {
    * Business logic
    */
 
-  static const String _FEATURE_KEY = "featured_v1";
+  static const String _FEATURE_KEY = 'featured_v1';
 
   SharedPreferences _prefs;
 
@@ -41,7 +41,7 @@ class FeatureService {
   }
 
   List<SpotifyFeatured> getLastFeatured() {
-    final jsonStrings = _prefs.getStringList(_FEATURE_KEY);
+    final jsonStrings = _prefs.getStringList(_FEATURE_KEY) ?? [];
     final featured = <SpotifyFeatured>[];
     for (final jsonString in jsonStrings) {
       final map = jsonDecode(jsonString) as Map<String, dynamic>;

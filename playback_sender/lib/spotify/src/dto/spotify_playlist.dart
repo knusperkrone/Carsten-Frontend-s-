@@ -3,8 +3,9 @@ part of 'dto.dart';
 typedef GetterFun = int Function(SpotifyImage);
 
 @JsonSerializable()
-class SpotifyPlaylist extends Dto {
+class SpotifyPlaylist extends Dto  implements SpotifyFeatured  {
   final String id;
+  @override
   final String name;
   @JsonKey(name: 'snapshot_id')
   final String snapshotId;
@@ -19,6 +20,7 @@ class SpotifyPlaylist extends Dto {
   @override
   Map<String, dynamic> toJson() => _$SpotifyPlaylistToJson(this);
 
+  @override
   String get imageUrl {
     if (images == null) {
       return '';

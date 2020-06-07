@@ -75,48 +75,44 @@ class ControlBarState extends State<ControlBar> implements PlaybackUIListener {
 
   @override
   Widget build(BuildContext context) {
-    return new Column(
-      children: <Widget>[
-        InkWell(
-          onTap: _onOpen,
-          child: Container(
-            width: double.infinity,
-            height: kToolbarHeight,
-            color: Theme.of(context).primaryColor,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                CastButtonWidget(
-                  bloc: _mediaRouteBloc,
-                  tintColor: Colors.white70,
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Text(
-                      _manager.track.orElse(_PLACEHOLDER_TRACK).title,
-                      textAlign: TextAlign.center,
-                    ),
-                    Text(
-                      _manager.track.orElse(_PLACEHOLDER_TRACK).artist,
-                      textAlign: TextAlign.center,
-                    )
-                  ],
-                ),
-                IconButton(
-                  icon: Icon(_manager.currPlayerState ==
-                              SimplePlaybackState.PAUSED ||
-                          _manager.currPlayerState == SimplePlaybackState.ENDED
-                      ? Icons.play_arrow
-                      : Icons.pause),
-                  onPressed: _manager.isConnected ? _onPlayerState : null,
-                ),
-              ],
+    return Container(
+      height: kToolbarHeight,
+      color: Theme.of(context).primaryColor,
+      child: Column(
+        children: <Widget>[
+          InkWell(
+            onTap: _onOpen,
+            child: Container(
+              width: double.infinity,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  CastButtonWidget(
+                    bloc: _mediaRouteBloc,
+                    tintColor: Colors.white70,
+                    backgroundColor: Colors.transparent,
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        _manager.track.orElse(_PLACEHOLDER_TRACK).title,
+                        textAlign: TextAlign.center,
+                      ),
+                      Text(
+                        _manager.track.orElse(_PLACEHOLDER_TRACK).artist,
+                        textAlign: TextAlign.center,
+                      )
+                    ],
+                  ),
+                  Container(width: 56.0)
+                ],
+              ),
             ),
           ),
-        )
-      ],
+        ],
+      ),
     );
   }
 }

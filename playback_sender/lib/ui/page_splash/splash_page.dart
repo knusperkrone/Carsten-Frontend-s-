@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:chrome_tube/playback/playback.dart';
 import 'package:chrome_tube/spotify/spotify.dart';
 import 'package:chrome_tube/ui/page_playlist/playlist_page.dart';
+import 'package:chrome_tube/ui/tracking/feature_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_cast_button/bloc_media_route.dart';
@@ -29,6 +30,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void initState() {
     super.initState();
+    FeatureService().init();
     PlaybackManager().init();
     _initToken();
 

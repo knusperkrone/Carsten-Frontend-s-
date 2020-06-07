@@ -6,6 +6,7 @@ import 'package:async/async.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chrome_tube/playback/playback.dart';
 import 'package:chrome_tube/spotify/spotify.dart';
+import 'package:chrome_tube/ui/common/control/control_bar.dart';
 import 'package:chrome_tube/ui/common/transformer.dart';
 import 'package:chrome_tube/ui/page_track/track_page.dart';
 import 'package:edit_distance/edit_distance.dart';
@@ -15,6 +16,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 part 'search_page.g.dart';
+
 part 'search_result.dart';
 
 class SearchPage extends StatefulWidget {
@@ -45,7 +47,9 @@ class SearchPageState extends State<SearchPage> {
     super.initState();
     // Get the sorted searches
     final savedSearches = widget.prefs.getStringList(_SEARCH_PREFS_KEY) ?? [];
-    final searchList = savedSearches.map((str) => SerializableSearchResult.fromJson(str)).toList();
+    final searchList = savedSearches
+        .map((str) => SerializableSearchResult.fromJson(str))
+        .toList();
     _prevSearches = LinkedHashSet.of(searchList);
 
     _textController = new TextEditingController();
@@ -71,19 +75,24 @@ class SearchPageState extends State<SearchPage> {
     } else {
       final q = _textController.text.toLowerCase();
       final searchFuture = _spotify.search(q);
-      _currSearch = CancelableOperation.fromFuture(searchFuture).then<void>((triple) {
+      _currSearch =
+          CancelableOperation.fromFuture(searchFuture).then<void>((triple) {
         if (!mounted) {
           return;
         }
         setState(() {
-          final playlists = triple.item1.sublist(0, min(triple.item1.length, 5));
+          final playlists =
+              triple.item1.sublist(0, min(triple.item1.length, 5));
           final albums = triple.item2.sublist(0, min(triple.item2.length, 5));
           final tracks = triple.item3;
 
           _results.clear();
-          _results.addAll(playlists.map((p) => SerializableSearchResult.fromPlaylist(p, q)));
-          _results.addAll(albums.map((a) => SerializableSearchResult.fromAlbum(a, q)));
-          _results.addAll(tracks.map((t) => SerializableSearchResult.fromTrack(t, q)));
+          _results.addAll(playlists
+              .map((p) => SerializableSearchResult.fromPlaylist(p, q)));
+          _results.addAll(
+              albums.map((a) => SerializableSearchResult.fromAlbum(a, q)));
+          _results.addAll(
+              tracks.map((t) => SerializableSearchResult.fromTrack(t, q)));
           _results.sort((e1, e2) => e1.bias - e2.bias);
         });
       });
@@ -121,7 +130,8 @@ class SearchPageState extends State<SearchPage> {
     final result = new SerializableSearchResult.fromTrack(track);
     _addToSearchResults(result);
 
-    final playbackTrack = PlaybackTransformer.fromSpotify(track, -1, isPrio: true);
+    final playbackTrack =
+        PlaybackTransformer.fromSpotify(track, -1, isPrio: true);
     _manager.sendPlayTrack(playbackTrack);
   }
 
@@ -137,11 +147,13 @@ class SearchPageState extends State<SearchPage> {
   }
 
   void _onTrackSecondary(String trackJson) {
-    final track = new SpotifyTrack.fromJson(jsonDecode(trackJson) as Map<String, dynamic>);
+    final track = new SpotifyTrack.fromJson(
+        jsonDecode(trackJson) as Map<String, dynamic>);
     final result = new SerializableSearchResult.fromTrack(track);
     _addToSearchResults(result);
 
-    final playbackTrack = PlaybackTransformer.fromSpotify(track, -1, isPrio: true);
+    final playbackTrack =
+        PlaybackTransformer.fromSpotify(track, -1, isPrio: true);
     _manager.sendAddToPrio(playbackTrack);
   }
 
@@ -166,7 +178,8 @@ class SearchPageState extends State<SearchPage> {
       trailing: curr.type == SearchType.TRACK
           ? IconButton(
               icon: Icon(Icons.more_vert),
-              onPressed: () => key.currentState.open(actionType: SlideActionType.primary),
+              onPressed: () =>
+                  key.currentState.open(actionType: SlideActionType.primary),
             )
           : null,
     );
@@ -201,6 +214,9 @@ class SearchPageState extends State<SearchPage> {
           ),
         ),
       ),
+      bottomNavigationBar: BottomAppBar(
+        child: ControlBar(),
+      ),
       body: CustomScrollView(
         slivers: _textController.text.isEmpty
             ? <Widget>[
@@ -217,7 +233,8 @@ class SearchPageState extends State<SearchPage> {
                                   caption: 'Queue Track',
                                   color: Theme.of(context).accentColor,
                                   icon: Icons.queue_music,
-                                  onTap: () => _onTrackSecondary(result.serialized),
+                                  onTap: () =>
+                                      _onTrackSecondary(result.serialized),
                                 ),
                               ],
                         child: SearchResult(
@@ -237,7 +254,8 @@ class SearchPageState extends State<SearchPage> {
             : <Widget>[
                 SliverList(
                   delegate: SliverChildListDelegate(
-                    List.generate(_results.length, (i) => _buildTile(context, i)),
+                    List.generate(
+                        _results.length, (i) => _buildTile(context, i)),
                   ),
                 ),
               ],
