@@ -1,7 +1,8 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
@@ -83,13 +84,42 @@ class SpotifyApi {
     return _paginateEager(endpoint, transform);
   }
 
-  Stream<List<SpotifyTrack>> getUserTracks() {
+  Stream<List<SpotifyTrack>> getUserTracks() async* {
     assert(_client != null);
     const endpoint = '/v1/me/tracks';
-    SpotifyTrack transform(Map<String, dynamic> json) =>
-        SpotifyTrack.fromJson(json['track'] as Map<String, dynamic>);
+    SpotifyTrack transform(Map<String, dynamic> json) {
+      if (json.containsKey('track')) {
+        return SpotifyTrack.fromJson(json['track'] as Map<String, dynamic>);
+      }
+      return SpotifyTrack.fromJson(json);
+    }
+
     // No caching key here - but usually a lot of data
-    return _paginateLazy(endpoint, transform);
+    const fileName = 'songs_v5.json';
+    final cacheFile = new File(p.join(_path, fileName));
+    if (!cacheFile.existsSync()) {
+      // Fetch and Persist
+      final buffer = <SpotifyTrack>[];
+      yield* _paginateLazy(endpoint, transform).asBroadcastStream()
+        ..listen((page) => buffer.addAll(page)).onDone(() {
+          _persist(cacheFile, buffer);
+        });
+    } else {
+      final cached = await _transformPersisted(cacheFile, endpoint, transform);
+      final controller = new StreamController<List<SpotifyTrack>>();
+      controller.add(cached);
+
+      // Fetch all and update on delta
+      _paginateEager(endpoint, transform).then((fetched) {
+        if (!const ListEquality<SpotifyTrack>().equals(fetched, cached)) {
+          controller.add(null);
+          controller.add(fetched);
+          _persist(cacheFile, fetched);
+        }
+        controller.close();
+      });
+      yield* controller.stream;
+    }
   }
 
   Stream<List<SpotifyTrack>> getPlaylistTracks(SpotifyPlaylist playlist) {
@@ -144,37 +174,46 @@ class SpotifyApi {
     return new Tuple3(playlists, albums, tracks);
   }
 
+  void _persist<T extends Dto>(File cacheFile, List<T> toPersist) {
+    final fetchedJson = toPersist.map((t) => t.toJson()).toList();
+    cacheFile.writeAsString(jsonEncode(fetchedJson));
+  }
+
+  Stream<List<T>> _fetchAndPersist<T extends Dto>(
+      File cacheFile, String endpoint, _TransformFunc<T> transformFun) {
+    // Fetch and filter
+    final fetched = <T>[];
+    final stream = _paginateLazy(endpoint, (json) {
+      try {
+        return transformFun(json);
+      } catch (e) {
+        print("Couldn't transform json: $json");
+        return null;
+      }
+    }).asBroadcastStream().where((event) => event != null);
+    // Persist
+    stream.listen((part) => fetched.addAll(part)).onDone(() {
+      _persist(cacheFile, fetched);
+    });
+    return stream;
+  }
+
+  Future<List<T>> _transformPersisted<T extends Dto>(
+      File cacheFile, String endpoint, _TransformFunc<T> transformFun) async {
+    final cachedJson = cacheFile.readAsStringSync();
+    final jsonUntyped = jsonDecode(cachedJson) as List<dynamic>;
+    final List<Map<String, dynamic>> jsonList = jsonUntyped.cast();
+    return jsonList.map((json) => transformFun(json)).toList();
+  }
+
   Stream<List<T>> _getCached<T extends Dto>(
       String endpoint, String fileName, _TransformFunc<T> transformFun) async* {
     assert(_client != null);
-
     final cacheFile = new File(p.join(_path, fileName));
     if (cacheFile.existsSync()) {
-      final cachedJson = cacheFile.readAsStringSync();
-      final jsonUntyped = jsonDecode(cachedJson) as List<dynamic>;
-      final List<Map<String, dynamic>> jsonList = jsonUntyped.cast();
-      if (jsonList.isEmpty) {
-        cacheFile.deleteSync();
-        yield* _getCached(endpoint, fileName, transformFun);
-      }
-      final fetched = jsonList.map((json) => transformFun(json)).toList();
-      yield fetched;
+      yield await _transformPersisted(cacheFile, endpoint, transformFun);
     } else {
-      // fetch und persist
-      final fetched = <T>[];
-      final stream = _paginateLazy(endpoint, (json) {
-        try {
-          return transformFun(json);
-        } catch (e) {
-          print("Couldn't transform json: $json");
-          return null;
-        }
-      }).asBroadcastStream().where((event) => event != null);
-      stream.listen((part) => fetched.addAll(part)).onDone(() {
-        final fetchedJson = fetched.map((t) => t.toJson()).toList();
-        cacheFile.writeAsString(jsonEncode(fetchedJson));
-      });
-      yield* stream;
+      yield* _fetchAndPersist(cacheFile, endpoint, transformFun);
     }
   }
 

@@ -105,7 +105,6 @@ class TrackPageState extends State<TrackPage> {
   static const TEXT_SIZE = 40.0;
   List<SpotifyTrack> _tracks = [];
   StreamSubscription _streamSub;
-  bool _hasFetched = false;
 
   Color _gradientColor;
 
@@ -113,20 +112,16 @@ class TrackPageState extends State<TrackPage> {
   void initState() {
     super.initState();
     // Stream sub
-    if (widget.trackStream == null) {
-      _hasFetched = true;
-    } else {
-      _streamSub = widget.trackStream.listen((fetched) async {
+    _streamSub = widget.trackStream?.listen((fetched) async {
+      if (fetched == null) {
+        _tracks.clear();
+      } else {
         _tracks.addAll(fetched);
-        if (mounted) {
-          setState(() => _tracks = _tracks);
-        }
-        _streamSub.pause();
-        await Future<void>.delayed(const Duration(milliseconds: 400));
-        _streamSub.resume();
-      });
-      _streamSub.onDone(() => setState(() => _hasFetched = true));
-    }
+      }
+      if (mounted) {
+        setState(() => _tracks = _tracks);
+      }
+    });
 
     // Get color
     _gradientColor = widget.palette.vibrantColor?.color;
@@ -155,10 +150,8 @@ class TrackPageState extends State<TrackPage> {
    */
 
   void _onShuffle() {
-    if (_hasFetched) {
-      PlaybackManager().sendShuffling(true);
-      _onTrack(Random().nextInt(_tracks.length).abs());
-    }
+    PlaybackManager().sendShuffling(true);
+    _onTrack(Random().nextInt(_tracks.length).abs());
   }
 
   void _onTrack(int selected) {
