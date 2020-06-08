@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:optional/optional.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -95,7 +96,7 @@ class SpotifyApi {
     }
 
     // No caching key here - but usually a lot of data
-    const fileName = 'songs_v5.json';
+    const fileName = 'songs.json';
     final cacheFile = new File(p.join(_path, fileName));
     if (!cacheFile.existsSync()) {
       // Fetch and Persist
@@ -105,7 +106,8 @@ class SpotifyApi {
           _persist(cacheFile, buffer);
         });
     } else {
-      final cached = await _transformPersisted(cacheFile, endpoint, transform);
+      final cached =
+          await _transformFromPersisted(cacheFile, endpoint, transform);
       final controller = new StreamController<List<SpotifyTrack>>();
       controller.add(cached);
 
@@ -183,14 +185,7 @@ class SpotifyApi {
       File cacheFile, String endpoint, _TransformFunc<T> transformFun) {
     // Fetch and filter
     final fetched = <T>[];
-    final stream = _paginateLazy(endpoint, (json) {
-      try {
-        return transformFun(json);
-      } catch (e) {
-        print("Couldn't transform json: $json");
-        return null;
-      }
-    }).asBroadcastStream().where((event) => event != null);
+    final stream = _paginateLazy(endpoint, transformFun).asBroadcastStream();
     // Persist
     stream.listen((part) => fetched.addAll(part)).onDone(() {
       _persist(cacheFile, fetched);
@@ -198,7 +193,7 @@ class SpotifyApi {
     return stream;
   }
 
-  Future<List<T>> _transformPersisted<T extends Dto>(
+  Future<List<T>> _transformFromPersisted<T extends Dto>(
       File cacheFile, String endpoint, _TransformFunc<T> transformFun) async {
     final cachedJson = cacheFile.readAsStringSync();
     final jsonUntyped = jsonDecode(cachedJson) as List<dynamic>;
@@ -211,9 +206,18 @@ class SpotifyApi {
     assert(_client != null);
     final cacheFile = new File(p.join(_path, fileName));
     if (cacheFile.existsSync()) {
-      yield await _transformPersisted(cacheFile, endpoint, transformFun);
+      yield await _transformFromPersisted(cacheFile, endpoint, transformFun);
     } else {
       yield* _fetchAndPersist(cacheFile, endpoint, transformFun);
+    }
+  }
+
+  Optional<T> _tryTransform<T>(dynamic map, _TransformFunc<T> transformFun) {
+    try {
+      return Optional.of(transformFun(map as Map<String, dynamic>));
+    } catch (e) {
+      print("Couldn't transform json: $map");
+      return const Optional.empty();
     }
   }
 
@@ -227,14 +231,19 @@ class SpotifyApi {
     SpotifyPager pager =
         SpotifyPager.fromJson(jsonDecode(source) as Map<String, dynamic>);
     fetchedResult.addAll(pager.items
-        .map((dynamic item) => transformFun(item as Map<String, dynamic>)));
+        .map((dynamic item) => _tryTransform(item, transformFun))
+        .where((opt) => opt.isPresent)
+        .map((e) => e.value));
+
     // Repeat
     while (pager.next != null && fetchedResult.length <= max) {
       source = await _tryGet(pager.next, '');
       pager = SpotifyPager.fromJson(jsonDecode(source) as Map<String, dynamic>);
 
       fetchedResult.addAll(pager.items
-          .map((dynamic item) => transformFun(item as Map<String, dynamic>)));
+          .map((dynamic item) => _tryTransform(item, transformFun))
+          .where((opt) => opt.isPresent)
+          .map((e) => e.value));
     }
 
     return fetchedResult;
@@ -252,7 +261,10 @@ class SpotifyApi {
     SpotifyPager pager =
         SpotifyPager.fromJson(jsonDecode(source) as Map<String, dynamic>);
     items = pager.items
-        .map((dynamic item) => transformFun(item as Map<String, dynamic>))
+        .map((dynamic item) =>
+            _tryTransform(item as Map<String, dynamic>, transformFun))
+        .where((opt) => opt.isPresent)
+        .map((e) => e.value)
         .toList();
     count += items.length;
     yield items;
@@ -263,7 +275,10 @@ class SpotifyApi {
       pager = SpotifyPager.fromJson(jsonDecode(source) as Map<String, dynamic>);
 
       items = pager.items
-          .map((dynamic item) => transformFun(item as Map<String, dynamic>))
+          .map((dynamic item) =>
+              _tryTransform(item as Map<String, dynamic>, transformFun))
+          .where((opt) => opt.isPresent)
+          .map((e) => e.value)
           .toList();
       count += items.length;
       yield items;
