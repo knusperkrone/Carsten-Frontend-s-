@@ -10,12 +10,16 @@ class SenderPlaybackQueue extends BasePlaybackQueue {
   }
 
   factory SenderPlaybackQueue.fromQueue(
-      PlaybackQueueDto queueDto, bool isRepeating, bool isShuffling, int seed) {
+      PlaybackQueueDto queueDto,
+      List<PlaybackTrack> buffer,
+      bool isRepeating,
+      bool isShuffling,
+      int seed) {
     final name = queueDto.name;
     final currentTrack = queueDto.currentTrack;
     final trackHolder = queueDto.trackHolder;
     final prioTracks = queueDto.prioTracks;
-    final trackList = queueDto.immutableTracks;
+    final trackList = buffer;
 
     return new SenderPlaybackQueue._internal(name, seed, currentTrack,
         trackHolder, isShuffling, isRepeating, prioTracks, trackList);

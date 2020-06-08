@@ -7,7 +7,7 @@ import 'package:playback_interop/playback_interop.dart';
 import 'ipc/cast_playback_context.dart';
 
 class PlaybackSender {
-  static const _PAGINATE_WINDOW = 1024;
+  static const _PAGINATE_WINDOW = 512;
   static const _TIMER_DURATION = Duration(milliseconds: 125);
 
   Timer _nextTimeout = new Timer(const Duration(), () {});

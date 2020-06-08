@@ -35,12 +35,14 @@ class PlaybackReceiver extends PlaybackSender {
 
   final _completer = new StreamController<PlaybackUIEvent>.broadcast();
 
+
   int _currSeek = 0;
   bool _isRepeating = false;
   ShuffleStateDto _currShuffleState;
   SimplePlaybackState _currPlayerState = SimplePlaybackState.ENDED;
   DateTime _seekTimestamp = new DateTime.now();
   SenderPlaybackQueue _queue;
+  List<PlaybackTrack> _trackBuffer;
 
   /*
    * public getter
@@ -136,9 +138,15 @@ class PlaybackReceiver extends PlaybackSender {
   }
 
   void onQueue(PlaybackQueueDto queueDto) {
-    _queue = new SenderPlaybackQueue.fromQueue(
-        queueDto, isRepeating, isShuffled, _currShuffleState?.initSeed);
-    _completer.add(PlaybackUIEvent.QUEUE);
+    _trackBuffer ??= [];
+    if (queueDto.immutableTracks.isNotEmpty) {
+      _trackBuffer.addAll(queueDto.immutableTracks);
+    } else {
+      _queue = new SenderPlaybackQueue.fromQueue(queueDto, _trackBuffer,
+          isRepeating, isShuffled, _currShuffleState?.initSeed);
+      _trackBuffer = null;
+      _completer.add(PlaybackUIEvent.QUEUE);
+    }
   }
 
   void onTrackState(TrackStateDto trackStateDto) {
