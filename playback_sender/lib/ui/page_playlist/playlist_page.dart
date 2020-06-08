@@ -44,9 +44,10 @@ class _PlaylistPageState extends State<PlaylistPage> {
     if (!_isFetching) {
       _isFetching = true;
       await TrackPage.navigateTracks(context);
-      _controlKey.currentState.refreshMediaState();
-      _headerKey.currentState.refresh();
       _isFetching = false;
+      _controlKey.currentState?.refreshMediaState();
+      _headerKey.currentState?.refresh();
+
     }
   }
 
@@ -55,9 +56,9 @@ class _PlaylistPageState extends State<PlaylistPage> {
     if (!_isFetching) {
       _isFetching = true;
       await TrackPage.navigatePlaylist(context, playlist);
-      _controlKey.currentState.refreshMediaState();
-      _headerKey.currentState.refresh();
       _isFetching = false;
+      _controlKey.currentState?.refreshMediaState();
+      _headerKey.currentState?.refresh();
     }
   }
 
