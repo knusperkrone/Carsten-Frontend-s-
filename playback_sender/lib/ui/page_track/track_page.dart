@@ -7,6 +7,7 @@ import 'package:chrome_tube/spotify/spotify.dart';
 import 'package:chrome_tube/spotify/src/dto/spotify_featured.dart';
 import 'package:chrome_tube/ui/common/control/control_bar.dart';
 import 'package:chrome_tube/ui/common/transformer.dart';
+import 'package:chrome_tube/ui/common/transitions.dart';
 import 'package:chrome_tube/ui/tracking/feature_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -54,7 +55,7 @@ class TrackPage extends StatefulWidget {
     final palette =
         await PaletteGenerator.fromImageProvider(appBarImageProvider);
 
-    return Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+    return Navigator.push<void>(context, new FadeInRoute(builder: (context) {
       return new TrackPage._(
           stream,
           palette,
@@ -75,7 +76,7 @@ class TrackPage extends StatefulWidget {
     final palette =
         await PaletteGenerator.fromImageProvider(appBarImageProvider);
 
-    return Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+    return Navigator.push<void>(context, new FadeInRoute(builder: (context) {
       return new TrackPage._(stream, palette, album.name, album.artist,
           appBarImageProvider, appBarHeight, Optional.of(album),
           key: key);
@@ -90,7 +91,7 @@ class TrackPage extends StatefulWidget {
     final trackStream = SpotifyApi().getUserTracks();
     final palette = PaletteGenerator.fromColors(
         [PaletteColor(Theme.of(context).primaryColor, 1)]);
-    return Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+    return Navigator.push<void>(context, new FadeInRoute(builder: (context) {
       return new TrackPage._(trackStream, palette, 'Songs', null,
           appBarImageProvider, appBarHeight, const Optional.empty(),
           key: key);
