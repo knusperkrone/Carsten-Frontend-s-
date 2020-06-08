@@ -31,7 +31,11 @@ class FeatureService {
   }
 
   void addFeature(SpotifyFeatured newFeatured) {
-    final featured = getLastFeatured()..insert(0, newFeatured);
+    final featured = getLastFeatured();
+    if (featured.contains(newFeatured)) {
+      return;
+    }
+    featured.insert(0, newFeatured);
     while (featured.length > 6) {
       featured.removeLast();
     }

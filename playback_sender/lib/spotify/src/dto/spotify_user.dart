@@ -12,4 +12,15 @@ class SpotifyUser extends Dto {
 
   @override
   Map<String, dynamic> toJson() => _$SpotifyUserToJson(this);
+
+  @override
+  bool operator ==(dynamic other) {
+    if (other is SpotifyUser) {
+      return other.name == name;
+    }
+    return false;
+  }
+
+  @override
+  int get hashCode => name.hashCode;
 }

@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chrome_tube/spotify/spotify.dart';
 import 'package:chrome_tube/spotify/src/dto/spotify_featured.dart';
 import 'package:chrome_tube/ui/page_track/track_page.dart';
 import 'package:chrome_tube/ui/tracking/feature_service.dart';
@@ -7,9 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 class PlaylistHeader extends StatefulWidget {
-  final List<SpotifyPlaylist> playlists;
-
-  const PlaylistHeader({Key key, @required this.playlists}) : super(key: key);
+  const PlaylistHeader({Key key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => new PlaylistHeaderState();
@@ -24,6 +21,12 @@ class PlaylistHeaderState extends State<PlaylistHeader> {
     _featured = new FeatureService().getLastFeatured();
   }
 
+  void refresh() {
+    setState(() {
+      _featured = new FeatureService().getLastFeatured();
+    });
+  }
+
   Widget _buildHeaderText(String text) {
     return new Padding(
       padding: const EdgeInsets.symmetric(vertical: 10.0),
@@ -32,6 +35,9 @@ class PlaylistHeaderState extends State<PlaylistHeader> {
   }
 
   Widget _buildPlaylistTile(int index) {
+    if (index >= _featured.length) {
+      return Container();
+    }
     final feature = _featured[index];
     return Container(
       width: MediaQuery.of(context).size.width / 2 - 11.0,
@@ -67,7 +73,7 @@ class PlaylistHeaderState extends State<PlaylistHeader> {
     final content = <Widget>[];
     if (_featured.isNotEmpty) {
       content.add(_buildHeaderText('Zuletzt gehört'));
-      for (int i = 0; i < _featured.length ~/ 2; i++) {
+      for (int i = 0; i < (_featured.length / 2).round(); i++) {
         content.add(Row(
           children: List.generate(2, (j) => _buildPlaylistTile(i * 2 + j)),
         ));

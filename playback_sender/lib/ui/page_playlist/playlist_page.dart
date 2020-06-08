@@ -18,6 +18,7 @@ class PlaylistPage extends StatefulWidget {
 
 class _PlaylistPageState extends State<PlaylistPage> {
   bool _isFetching = false;
+  final _headerKey = new GlobalKey<PlaylistHeaderState>();
   final _controlKey = new GlobalKey<ControlBarState>();
 
   @override
@@ -44,6 +45,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
       _isFetching = true;
       await TrackPage.navigateTracks(context);
       _controlKey.currentState.refreshMediaState();
+      _headerKey.currentState.refresh();
       _isFetching = false;
     }
   }
@@ -54,6 +56,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
       _isFetching = true;
       await TrackPage.navigatePlaylist(context, playlist);
       _controlKey.currentState.refreshMediaState();
+      _headerKey.currentState.refresh();
       _isFetching = false;
     }
   }
@@ -64,7 +67,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
   Widget _buildTiles(BuildContext context, int i) {
     if (i == 0) {
-      return PlaylistHeader(playlists: widget.playlists);
+      return PlaylistHeader(key: _headerKey);
     } else if (i == 1) {
       return _buildTrackTile(context);
     }

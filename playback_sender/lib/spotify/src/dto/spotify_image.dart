@@ -13,4 +13,15 @@ class SpotifyImage extends Dto {
 
   @override
   Map<String, dynamic> toJson() => _$SpotifyImageToJson(this);
+
+  @override
+  bool operator ==(dynamic other) {
+    if (other is SpotifyImage) {
+      return other.url == url;
+    }
+    return false;
+  }
+
+  @override
+  int get hashCode => url.hashCode;
 }

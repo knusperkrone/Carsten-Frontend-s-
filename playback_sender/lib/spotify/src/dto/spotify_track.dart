@@ -17,6 +17,17 @@ class SpotifyTrack extends Dto {
   Map<String, dynamic> toJson() => _$SpotifyTrackToJson(this);
 
   String get artist => artists.map((a) => a.name).join(', ');
+
+  @override
+  bool operator ==(dynamic other) {
+    if (other is SpotifyTrack) {
+      return other.href == href;
+    }
+    return false;
+  }
+
+  @override
+  int get hashCode => href.hashCode;
 }
 
 @JsonSerializable(createToJson: true)
@@ -31,4 +42,15 @@ class SpotifyTracksLink extends Dto {
 
   @override
   Map<String, dynamic> toJson() => _$SpotifyTracksLinkToJson(this);
+
+  @override
+  bool operator ==(dynamic other) {
+    if (other is SpotifyTracksLink) {
+      return other.href == href;
+    }
+    return false;
+  }
+
+  @override
+  int get hashCode => href.hashCode;
 }

@@ -28,4 +28,15 @@ class SpotifyAlbum extends Dto implements SpotifyFeatured {
     final offset = images.length > 1 ? 2 : 1;
     return images[images.length - offset].url;
   }
+
+  @override
+  bool operator ==(dynamic other) {
+    if (other is SpotifyAlbum) {
+      return other.id == id;
+    }
+    return false;
+  }
+
+  @override
+  int get hashCode => id.hashCode;
 }

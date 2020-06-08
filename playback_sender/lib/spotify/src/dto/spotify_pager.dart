@@ -16,4 +16,15 @@ class SpotifyPager extends Dto {
   Map<String, dynamic> toJson() {
     throw UnimplementedError('Call this on this.items!');
   }
+
+  @override
+  bool operator ==(dynamic other) {
+    if (other is SpotifyPager) {
+      return other.next == next;
+    }
+    return false;
+  }
+
+  @override
+  int get hashCode => next.hashCode;
 }
