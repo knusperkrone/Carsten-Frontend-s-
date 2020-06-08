@@ -251,7 +251,7 @@ class TrackPageState extends State<TrackPage> {
                   ],
                 ),
               ),
-              ControlBar(),
+              const ControlBar(),
             ],
           ),
         ),

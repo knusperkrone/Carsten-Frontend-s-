@@ -146,7 +146,6 @@ class TrackSliderState extends LinearTrackSliderState {
    * UiListener contract
    */
 
-  @override
   void notifyTrackSeek() {
     if (_isUser) {
       setState(() => _isUser = false);

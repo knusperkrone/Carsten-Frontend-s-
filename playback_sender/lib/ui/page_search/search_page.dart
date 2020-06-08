@@ -213,7 +213,7 @@ class SearchPageState extends State<SearchPage> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomAppBar(
+      bottomNavigationBar: const BottomAppBar(
         child: ControlBar(),
       ),
       body: CustomScrollView(
