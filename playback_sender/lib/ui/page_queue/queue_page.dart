@@ -220,139 +220,129 @@ class _QueuePageState extends UIListenerState<QueuePage>
 
     return new Scaffold(
       appBar: AppBar(),
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            child: !_manager.track.isPresent
-                ? Container()
-                : CustomScrollView(
-                    slivers: <Widget>[
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 5.0, horizontal: 7.0),
-                          child: Text(
-                            'Current Title:',
-                            style: Theme.of(context).textTheme.headline6,
-                          ),
-                        ),
-                      ),
-                      SliverToBoxAdapter(
-                        child: ListTile(
-                          leading: CachedNetworkImage(
-                            imageUrl: _manager.track
-                                .orElse(_PLACEHOLDER_TRACK)
-                                .coverUrl,
-                            placeholder: (_, __) => Container(width: 56.0),
-                          ),
-                          title: Text(
-                              _manager.track.orElse(_PLACEHOLDER_TRACK).title),
-                          subtitle: Text(
-                              _manager.track.orElse(_PLACEHOLDER_TRACK).artist),
-                        ),
-                      ),
-                      SliverToBoxAdapter(
-                        child: AnimatedBuilder(
-                          animation: _animController,
-                          builder: (context, _) {
-                            return Container(
-                              width: double.infinity,
-                              height: 40 * _animController.value,
-                              child: _animController.value > 0.7
-                                  ? Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 5.0, horizontal: 7.0),
-                                      child: Opacity(
-                                        opacity: _animController.value,
-                                        child: Text(
-                                          'Next song from queue:',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .headline6,
-                                        ),
-                                      ),
-                                    )
-                                  : null,
-                            );
-                          },
-                        ),
-                      ),
-                      ReorderableSliverList(
-                        onStartReorder: _onStartReorder,
-                        canReorder: _canReorder,
-                        onReorder: _onReorder,
-                        delegate: ReorderableSliverChildListDelegate(
-                            _buildTrackList()),
-                      ),
-                    ],
+      body: !_manager.track.isPresent
+          ? Container()
+          : CustomScrollView(
+              slivers: <Widget>[
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 5.0, horizontal: 7.0),
+                    child: Text(
+                      'Current Title:',
+                      style: Theme.of(context).textTheme.headline6,
+                    ),
                   ),
-          ),
-          Stack(
-            children: <Widget>[
-              const LinearTrackSlider(
-                padding: 5.0,
-              ),
-              AnimatedOpacity(
-                duration: const Duration(milliseconds: 250),
-                child: const LinearProgressIndicator(),
-                opacity:
-                    (_manager.currPlayerState == SimplePlaybackState.BUFFERING)
-                        ? 1.0
-                        : 0.0,
-              ),
-            ],
-          ),
-          Container(
-            padding: const EdgeInsets.only(top: 5.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                IconButton(
-                  icon: Icon(Icons.skip_previous),
-                  iconSize: 35.0,
-                  onPressed: _manager.isConnected ? _onPrev : null,
-                  splashColor: Theme.of(context).accentColor,
                 ),
-                IconButton(
-                  icon: Icon(_manager.currPlayerState ==
-                              SimplePlaybackState.PAUSED ||
-                          _manager.currPlayerState == SimplePlaybackState.ENDED
-                      ? Icons.play_arrow
-                      : Icons.pause),
-                  iconSize: 40.0,
-                  onPressed: _manager.isConnected ? _onState : null,
-                  splashColor: Theme.of(context).accentColor,
+                SliverToBoxAdapter(
+                  child: ListTile(
+                    leading: CachedNetworkImage(
+                      imageUrl:
+                          _manager.track.orElse(_PLACEHOLDER_TRACK).coverUrl,
+                      placeholder: (_, __) => Container(width: 56.0),
+                    ),
+                    title:
+                        Text(_manager.track.orElse(_PLACEHOLDER_TRACK).title),
+                    subtitle:
+                        Text(_manager.track.orElse(_PLACEHOLDER_TRACK).artist),
+                  ),
                 ),
-                IconButton(
-                  icon: Icon(Icons.skip_next),
-                  iconSize: 35.0,
-                  onPressed: _manager.isConnected ? _onNext : null,
-                  splashColor: Theme.of(context).accentColor,
+                SliverToBoxAdapter(
+                  child: AnimatedBuilder(
+                    animation: _animController,
+                    builder: (context, _) {
+                      return Container(
+                        width: double.infinity,
+                        height: 40 * _animController.value,
+                        child: _animController.value > 0.7
+                            ? Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 5.0, horizontal: 7.0),
+                                child: Opacity(
+                                  opacity: _animController.value,
+                                  child: Text(
+                                    'Next song from queue:',
+                                    style:
+                                        Theme.of(context).textTheme.headline6,
+                                  ),
+                                ),
+                              )
+                            : null,
+                      );
+                    },
+                  ),
+                ),
+                ReorderableSliverList(
+                  onStartReorder: _onStartReorder,
+                  canReorder: _canReorder,
+                  onReorder: _onReorder,
+                  delegate:
+                      ReorderableSliverChildListDelegate(_buildTrackList()),
                 ),
               ],
             ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 5.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CastButtonWidget(
+      bottomNavigationBar: BottomAppBar(
+        child: Container(
+          height: 133,
+          child: Column(
+            children: [
+              Stack(
+                children: <Widget>[
+                  const LinearTrackSlider(
+                    padding: 5.0,
+                  ),
+                  AnimatedOpacity(
+                    duration: const Duration(milliseconds: 250),
+                    child: const LinearProgressIndicator(),
+                    opacity: (_manager.currPlayerState ==
+                            SimplePlaybackState.BUFFERING)
+                        ? 1.0
+                        : 0.0,
+                  ),
+                ],
+              ),
+              Container(
+                padding: const EdgeInsets.only(top: 5.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    IconButton(
+                      icon: Icon(Icons.skip_previous),
+                      iconSize: 35.0,
+                      onPressed: _manager.isConnected ? _onPrev : null,
+                      splashColor: Theme.of(context).accentColor,
+                    ),
+                    IconButton(
+                      icon: Icon(_manager.currPlayerState ==
+                                  SimplePlaybackState.PAUSED ||
+                              _manager.currPlayerState ==
+                                  SimplePlaybackState.ENDED
+                          ? Icons.play_arrow
+                          : Icons.pause),
+                      iconSize: 40.0,
+                      onPressed: _manager.isConnected ? _onState : null,
+                      splashColor: Theme.of(context).accentColor,
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.skip_next),
+                      iconSize: 35.0,
+                      onPressed: _manager.isConnected ? _onNext : null,
+                      splashColor: Theme.of(context).accentColor,
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 5.0),
+                child: CastButtonWidget(
                   bloc: _mediaRouteBloc,
                   tintColor: Colors.white70,
                   backgroundColor: Colors.transparent,
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                  child: Text(
-                    'Cast',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

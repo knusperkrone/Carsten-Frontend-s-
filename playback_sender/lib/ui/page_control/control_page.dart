@@ -223,34 +223,36 @@ class ControlPageState extends UIListenerState<ControlPage>
               padding: 20.0,
               delay: const Duration(milliseconds: 150),
               key: _sliderKey),
-          Flexible(
+          Expanded(
             flex: 6,
             child: TrackControl(key: _controlKey),
           ),
-          Container(
-            child: Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(left: 0.0),
-                    child: CastButtonWidget(
-                      bloc: _mediaRouteBloc,
-                      tintColor: Colors.white70,
-                      backgroundColor: Colors.transparent,
-                    ),
-                  ),
-                  Expanded(child: Container()),
-                  IconButton(
-                    padding: const EdgeInsets.only(right: 5.0),
-                    icon: Icon(Icons.format_list_bulleted),
-                    onPressed: _onQueue,
-                  ),
-                ],
-              ),
+        ],
+      ),
+      bottomNavigationBar: BottomAppBar(
+        elevation: 0.0,
+        color: Theme.of(context).canvasColor,
+        child: Container(
+          height: kToolbarHeight,
+          child: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                CastButtonWidget(
+                  bloc: _mediaRouteBloc,
+                  tintColor: Colors.white70,
+                  backgroundColor: Colors.transparent,
+                ),
+                Expanded(child: Container()),
+                IconButton(
+                  padding: const EdgeInsets.only(right: 5.0),
+                  icon: Icon(Icons.format_list_bulleted),
+                  onPressed: _onQueue,
+                ),
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
