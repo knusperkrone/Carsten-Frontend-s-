@@ -32,7 +32,7 @@ class ControlPage extends StatefulWidget {
     final baseColor = PlaybackManager().track.isPresent
         ? Theme.of(context).canvasColor
         : Theme.of(context).primaryColor;
-    Navigator.push<void>(context, new MaterialPageRoute(builder: (context) {
+    return Navigator.push<void>(context, new MaterialPageRoute(builder: (context) {
       return new ControlPage._(baseColor);
     }));
   }

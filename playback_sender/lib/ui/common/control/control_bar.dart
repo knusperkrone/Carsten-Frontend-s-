@@ -8,6 +8,8 @@ import 'package:playback_interop/playback_interop.dart';
 import '../ui_listener_state.dart';
 
 class ControlBar extends StatefulWidget {
+  const ControlBar({Key key}) : super(key: key);
+
   @override
   State createState() => ControlBarState();
 }
@@ -17,6 +19,7 @@ class ControlBarState extends UIListenerState<ControlBar> {
   static final _PLACEHOLDER_TRACK =
       PlaybackTrack.dummy(title: 'No Track', artist: '');
 
+  final _mediaKey = new GlobalKey<CastButtonWidgetState>();
   final _manager = new PlaybackManager();
   MediaRouteBloc _mediaRouteBloc;
 
@@ -30,6 +33,16 @@ class ControlBarState extends UIListenerState<ControlBar> {
   void dispose() {
     _mediaRouteBloc.close();
     super.dispose();
+  }
+
+  /*
+   * Business logic
+   */
+
+  void refreshMediaState() {
+    _mediaRouteBloc.close();
+    _mediaRouteBloc = new MediaRouteBloc();
+    _mediaKey.currentState.setBloc(_mediaRouteBloc);
   }
 
   /*
@@ -53,8 +66,8 @@ class ControlBarState extends UIListenerState<ControlBar> {
    * UI callbacks
    */
 
-  Future<void> _onOpen() async {
-    return await ControlPage.navigate(context);
+  void _onOpen() {
+    ControlPage.navigate(context).then((_) => refreshMediaState());
   }
 
   /*
@@ -77,6 +90,7 @@ class ControlBarState extends UIListenerState<ControlBar> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   CastButtonWidget(
+                    key: _mediaKey,
                     bloc: _mediaRouteBloc,
                     tintColor: Colors.white70,
                     backgroundColor: Colors.transparent,

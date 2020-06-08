@@ -18,6 +18,7 @@ class PlaylistPage extends StatefulWidget {
 
 class _PlaylistPageState extends State<PlaylistPage> {
   bool _isFetching = false;
+  final _controlKey = new GlobalKey<ControlBarState>();
 
   @override
   void initState() {
@@ -42,6 +43,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
     if (!_isFetching) {
       _isFetching = true;
       await TrackPage.navigateTracks(context);
+      _controlKey.currentState.refreshMediaState();
       _isFetching = false;
     }
   }
@@ -51,6 +53,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
     if (!_isFetching) {
       _isFetching = true;
       await TrackPage.navigatePlaylist(context, playlist);
+      _controlKey.currentState.refreshMediaState();
       _isFetching = false;
     }
   }
@@ -129,7 +132,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
         ),
       ),
       bottomNavigationBar: BottomAppBar(
-        child: ControlBar(),
+        child: ControlBar(key: _controlKey),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: FloatingActionButton(
