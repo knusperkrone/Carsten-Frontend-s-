@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:playback_caf_dart/playback_caf.dart';
 import 'package:playback_interop/playback_interop.dart';
 
@@ -10,7 +12,7 @@ class CastMessageDispatcher {
   CastMessageDispatcher(this._manager);
 
   void onMessage(CastReceiveMessage message) {
-    // window.console.dir(message);
+    window.console.dir(message);
     final msg = message.data;
 
     switch (msg.type) {
@@ -62,5 +64,6 @@ class CastMessageDispatcher {
       default:
         print('[ERROR] Invalid command! ${msg.type}');
     }
+    print('done!');
   }
 }

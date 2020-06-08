@@ -1,9 +1,13 @@
+import 'dart:math';
+
 import 'package:optional/optional.dart';
 import 'package:playback_interop/playback_interop.dart';
 
 import '../playback/caf_queue.dart';
 
 abstract class CommunicationChannel {
+  static const _PAGINATE_WINDOW = 512;
+
   /*
    * Business methods
    */
@@ -22,10 +26,28 @@ abstract class CommunicationChannel {
 
   void sendQueue(Optional<CafPlaybackQueue> queue) {
     if (queue.isPresent && queue.value.currentTrack != null && queue.value.trackHolder != null) {
+      // Paginate
+      final tracks = queue.value.immutableTracks;
+      int currIndex = 0;
+      do {
+        final sendList = tracks.sublist(currIndex, min(tracks.length, currIndex + _PAGINATE_WINDOW));
+        final dto = new PlaybackQueueDto(
+          currentTrack: null,
+          trackHolder: null,
+          immutableTracks: sendList,
+          prioTracks: null,
+          name: null,
+          hash: queue.value.hash,
+        );
+        currIndex += _PAGINATE_WINDOW;
+        final msg = new CastMessage<PlaybackQueueDto>(CafToSenderConstants.PB_QUEUE, dto);
+        sendMessage(msg);
+      } while (currIndex < tracks.length);
+
       final dto = new PlaybackQueueDto(
         currentTrack: queue.value.currentTrack,
         trackHolder: queue.value.trackHolder,
-        immutableTracks: queue.value.immutableTracks,
+        immutableTracks: [],
         prioTracks: queue.value.prioTracks,
         name: queue.value.name,
         hash: queue.value.hash,
