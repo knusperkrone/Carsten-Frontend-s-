@@ -23,7 +23,7 @@ dependencies:
   playback_interop:
     path: ../playback_interop
   flutter_google_cast_button:
-    path: ../flutter_google_cast_button
+    path: forked/flutter_google_cast_button
 
   optional: ^5.0.0
   cupertino_icons: ^0.1.3

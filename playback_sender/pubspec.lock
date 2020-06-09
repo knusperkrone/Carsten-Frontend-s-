@@ -233,7 +233,7 @@ packages:
   flutter_google_cast_button:
     dependency: "direct main"
     description:
-      path: "../flutter_google_cast_button"
+      path: "forked/flutter_google_cast_button"
       relative: true
     source: path
     version: "0.2.0"
