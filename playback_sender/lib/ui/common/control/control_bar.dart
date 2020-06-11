@@ -95,19 +95,23 @@ class ControlBarState extends UIListenerState<ControlBar> {
                     tintColor: Colors.white70,
                     backgroundColor: Colors.transparent,
                   ),
-                  Column(
+                  Expanded(child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Text(
                         _manager.track.orElse(_PLACEHOLDER_TRACK).title,
+                        overflow: TextOverflow.clip,
+                        maxLines: 2,
                         textAlign: TextAlign.center,
                       ),
                       Text(
                         _manager.track.orElse(_PLACEHOLDER_TRACK).artist,
                         textAlign: TextAlign.center,
+                        overflow: TextOverflow.clip,
+                        maxLines: 1,
                       )
                     ],
-                  ),
+                  ),),
                   Container(width: 56.0)
                 ],
               ),

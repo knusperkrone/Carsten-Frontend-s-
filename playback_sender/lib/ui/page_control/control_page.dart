@@ -216,7 +216,7 @@ class ControlPageState extends UIListenerState<ControlPage>
           ),
           TrackProgress(key: _progressKey),
           Flexible(
-            flex: 4,
+            flex: 10,
             child: TrackDetails(key: _detailKey),
           ),
           TrackSlider(

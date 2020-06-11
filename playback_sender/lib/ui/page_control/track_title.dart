@@ -37,6 +37,8 @@ class TrackDetailsState extends State<TrackDetails> {
             _track.orElse(_PLACEHOLDER_TRACK).title,
             textAlign: TextAlign.start,
             style: Theme.of(context).textTheme.headline6,
+            maxLines: 3,
+            overflow: TextOverflow.clip,
           ),
         ),
         Container(
@@ -46,6 +48,8 @@ class TrackDetailsState extends State<TrackDetails> {
             _track.orElse(_PLACEHOLDER_TRACK).artist,
             textAlign: TextAlign.start,
             style: Theme.of(context).textTheme.subtitle1,
+            maxLines: 3,
+            overflow: TextOverflow.clip,
           ),
         ),
       ],
