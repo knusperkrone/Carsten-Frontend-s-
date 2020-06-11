@@ -379,21 +379,17 @@ class _TrackPageAppBar extends SliverPersistentHeaderDelegate {
           top: max(minExtent - 10.0 - SHUFFLE_SIZE,
               expandedHeight - 10.0 - SHUFFLE_SIZE - shrinkOffset),
           left: qWidth / 6,
-          child: Card(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            elevation: 5,
-            color: Theme.of(context).accentColor,
-            child: SizedBox(
-              height: 47.0,
-              width: qWidth / 1.5,
-              child: FloatingActionButton.extended(
-                backgroundColor: Theme.of(context).accentColor,
-                heroTag: 'second',
-                elevation: 0.0,
-                label: const Text('Shuffle'),
-                foregroundColor: Colors.white,
-                onPressed: onShuffle,
+          child: Hero(
+            tag: 'second',
+            child: Card(
+              shape:
+                  RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              elevation: 5,
+              color: Theme.of(context).accentColor,
+              child: SizedBox(
+                height: 47.0,
+                width: qWidth / 1.5,
+                child: const Center(child: Text('Shuffle')),
               ),
             ),
           ),
