@@ -22,7 +22,7 @@ class CastPlaybackChannel: GCKCastChannel {
     }
 }
 
-class CastPlaybackContext: NSObject {
+class CastContext: NSObject {
     let channel: CastPlaybackChannel
     let context: GCKCastContext
     let listener: CastConnectionListener
@@ -34,8 +34,6 @@ class CastPlaybackContext: NSObject {
         channel.add(callback: listener.onMsg)
         context = GCKCastContext.sharedInstance()
         super.init()
-        
-        // CastSession state
         context.sessionManager.add(self)
         restoreSession()
     }
@@ -86,7 +84,7 @@ class CastPlaybackContext: NSObject {
     }
 }
 
-extension CastPlaybackContext: GCKSessionManagerListener {
+extension CastContext: GCKSessionManagerListener {
     func sessionManager(_ sessionManager: GCKSessionManager, didStart session: GCKCastSession) {
         onCastConnected(session: session)
     }
