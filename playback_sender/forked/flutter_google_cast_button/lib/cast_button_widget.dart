@@ -11,7 +11,7 @@ class CastButtonWidget extends StatefulWidget {
   final Color tintColor;
   final Color backgroundColor;
 
-  CastButtonWidget({Key key, this.bloc, this.tintColor, this.backgroundColor})
+  const CastButtonWidget({Key key, this.bloc, this.tintColor, this.backgroundColor})
       : super(key: key);
 
   @override
@@ -23,11 +23,11 @@ class CastButtonWidgetState extends State<CastButtonWidget>
   AnimationController _animationController;
   Animation<String> connectingIconTween;
   MediaRouteBloc _bloc;
-  static const packageName = "flutter_google_cast_button";
+  static const packageName = 'flutter_google_cast_button';
   static const connectingAssets = [
-    "images/ic_cast0_black_24dp.png",
-    "images/ic_cast1_black_24dp.png",
-    "images/ic_cast2_black_24dp.png",
+    'images/ic_cast0_black_24dp.png',
+    'images/ic_cast1_black_24dp.png',
+    'images/ic_cast2_black_24dp.png',
   ];
 
   void setBloc(MediaRouteBloc bloc) {
@@ -60,12 +60,12 @@ class CastButtonWidgetState extends State<CastButtonWidget>
     for (String path in connectingAssets) {
       Future(() async {
         final globalCache = PaintingBinding.instance.imageCache;
-        var image = ExactAssetImage(path, package: packageName);
-        var key = await image.obtainKey(
-            createLocalImageConfiguration(context, size: Size(24, 24)));
+        final image = ExactAssetImage(path, package: packageName);
+        final key = await image.obtainKey(
+            createLocalImageConfiguration(context, size: const Size(24, 24)));
         final codec = PaintingBinding.instance.instantiateImageCodec;
         globalCache.putIfAbsent(key, () => image.load(key, codec),
-            onError: (e, s) => print("preload casting asset error"));
+            onError: (dynamic _, s) => print('preload casting asset error'));
       });
     }
     connectingIconTween.addListener(() => setState(() {}));
@@ -84,7 +84,7 @@ class CastButtonWidgetState extends State<CastButtonWidget>
   Widget build(BuildContext context) {
     return BlocBuilder(
       bloc: _bloc,
-      builder: (context, newState) {
+      builder: (context, MediaRouteState newState) {
         if (newState is NoDeviceAvailable) {
           currentState = newState;
           return IconButton(

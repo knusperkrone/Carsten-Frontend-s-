@@ -12,13 +12,13 @@ class MediaRouteBloc extends Bloc<MediaRouteEvent, MediaRouteState> {
 
   MediaRouteBloc() {
     FlutterGoogleCastButton.castEventStream().listen(
-      (event) {
-        _printD("MediaRouteBloc listen state changed: $event");
+      (dynamic event) {
+        _printD('MediaRouteBloc listen state changed: $event');
         if (event is int) {
           add(UpdateRouteStateEvent(event));
         }
       },
-      onError: (e) {
+      onError: (dynamic _) {
         add(UpdateRouteStateEvent(1));
       },
     );
@@ -47,7 +47,7 @@ class MediaRouteBloc extends Bloc<MediaRouteEvent, MediaRouteState> {
     }
   }
 
-  _printD(String message) {
+  void _printD(String message) {
     if (debugMode) {
       print(message);
     }
@@ -85,12 +85,10 @@ class MediaRouteEvent extends Equatable {
 }
 
 class UpdateRouteStateEvent extends MediaRouteEvent {
-  int nativeState;
+  final int nativeState;
 
-  UpdateRouteStateEvent(int newState) {
-    nativeState = newState;
-  }
+  UpdateRouteStateEvent(this.nativeState);
 
   @override
-  List<Object> get props => ['UpdateRouteStateEvent ${nativeState}'];
+  List<Object> get props => ['UpdateRouteStateEvent $nativeState'];
 }
