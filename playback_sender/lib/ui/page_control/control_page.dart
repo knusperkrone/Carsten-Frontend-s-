@@ -32,7 +32,8 @@ class ControlPage extends StatefulWidget {
     final baseColor = PlaybackManager().track.isPresent
         ? Theme.of(context).canvasColor
         : Theme.of(context).primaryColor;
-    return Navigator.push<void>(context, new MaterialPageRoute(builder: (context) {
+    return Navigator.push<void>(context,
+        new MaterialPageRoute(builder: (context) {
       return new ControlPage._(baseColor);
     }));
   }
@@ -214,7 +215,10 @@ class ControlPageState extends UIListenerState<ControlPage>
               ],
             ),
           ),
-          TrackProgress(key: _progressKey),
+          Hero(
+            tag: 'progress',
+            child: TrackProgress(key: _progressKey),
+          ),
           Flexible(
             flex: 10,
             child: TrackDetails(key: _detailKey),
@@ -238,10 +242,16 @@ class ControlPageState extends UIListenerState<ControlPage>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                CastButtonWidget(
-                  bloc: _mediaRouteBloc,
-                  tintColor: Colors.white70,
-                  backgroundColor: Colors.transparent,
+                Hero(
+                  tag: 'cast',
+                  child: Material(
+                    color: Colors.transparent,
+                    child: CastButtonWidget(
+                      bloc: _mediaRouteBloc,
+                      tintColor: Colors.white70,
+                      backgroundColor: Colors.transparent,
+                    ),
+                  ),
                 ),
                 Expanded(child: Container()),
                 IconButton(

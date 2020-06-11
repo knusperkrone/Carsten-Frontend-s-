@@ -40,7 +40,7 @@ class CastButtonWidgetState extends State<CastButtonWidget>
     _bloc = widget.bloc ?? BlocProvider.of<MediaRouteBloc>(context);
     _animationController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 2000),
+      duration: const Duration(milliseconds: 2000),
     );
     connectingIconTween = TweenSequence<String>([
       TweenSequenceItem<String>(
@@ -87,10 +87,8 @@ class CastButtonWidgetState extends State<CastButtonWidget>
       builder: (context, newState) {
         if (newState is NoDeviceAvailable) {
           currentState = newState;
-          return FloatingActionButton(
-              child: Icon(Icons.cast, color: widget.tintColor),
-              elevation: 0.0,
-              backgroundColor: widget.backgroundColor,
+          return IconButton(
+              icon: Icon(Icons.cast, color: widget.tintColor),
               onPressed: () => FlutterGoogleCastButton.showCastDialog());
         }
         Widget icon;
@@ -100,7 +98,7 @@ class CastButtonWidgetState extends State<CastButtonWidget>
           icon = Icon(Icons.cast_connected, color: widget.tintColor);
         } else {
           if (!_animationController.isAnimating) {
-            Future.delayed(Duration(milliseconds: 20), () {
+            Future.delayed(const Duration(milliseconds: 20), () {
               _animationController.forward(from: 0.0);
             });
           }
@@ -111,10 +109,8 @@ class CastButtonWidgetState extends State<CastButtonWidget>
           );
         }
         currentState = newState;
-        return FloatingActionButton(
-          child: icon,
-          elevation: 0.0,
-          backgroundColor: widget.backgroundColor,
+        return IconButton(
+          icon: icon,
           onPressed: () => FlutterGoogleCastButton.showCastDialog(),
         );
       },

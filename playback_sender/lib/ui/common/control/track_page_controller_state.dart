@@ -52,7 +52,8 @@ abstract class TrackPageControllerState<T extends StatefulWidget>
   @protected
   List<Widget> buildPages() {
     if (hasNoTracks) {
-      return [Icon(Icons.all_out, size: 250)]; // Default icon
+      final size =  MediaQuery.of(context).size.height / 3;
+      return [Icon(Icons.all_out, size: size)]; // Default icon
     }
     return _shadowTracks.map((t) => onPageBuild(context, t)).toList();
   }

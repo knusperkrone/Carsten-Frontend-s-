@@ -288,8 +288,11 @@ class _QueuePageState extends UIListenerState<QueuePage>
             children: [
               Stack(
                 children: <Widget>[
-                  const LinearTrackSlider(
-                    padding: 5.0,
+                  const Hero(
+                    tag: 'progress',
+                    child: LinearTrackSlider(
+                      padding: 5.0,
+                    ),
                   ),
                   AnimatedOpacity(
                     duration: const Duration(milliseconds: 250),
@@ -303,41 +306,53 @@ class _QueuePageState extends UIListenerState<QueuePage>
               ),
               Container(
                 padding: const EdgeInsets.only(top: 5.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    IconButton(
-                      icon: Icon(Icons.skip_previous),
-                      iconSize: 35.0,
-                      onPressed: _manager.isConnected ? _onPrev : null,
-                      splashColor: Theme.of(context).accentColor,
+                child: Hero(
+                  tag: 'controls',
+                  child: Material(
+                    color: Colors.transparent,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        IconButton(
+                          icon: Icon(Icons.skip_previous),
+                          iconSize: 35.0,
+                          onPressed: _manager.isConnected ? _onPrev : null,
+                          splashColor: Theme.of(context).accentColor,
+                        ),
+                        IconButton(
+                          icon: Icon(_manager.currPlayerState ==
+                                      SimplePlaybackState.PAUSED ||
+                                  _manager.currPlayerState ==
+                                      SimplePlaybackState.ENDED
+                              ? Icons.play_arrow
+                              : Icons.pause),
+                          iconSize: 40.0,
+                          onPressed: _manager.isConnected ? _onState : null,
+                          splashColor: Theme.of(context).accentColor,
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.skip_next),
+                          iconSize: 35.0,
+                          onPressed: _manager.isConnected ? _onNext : null,
+                          splashColor: Theme.of(context).accentColor,
+                        ),
+                      ],
                     ),
-                    IconButton(
-                      icon: Icon(_manager.currPlayerState ==
-                                  SimplePlaybackState.PAUSED ||
-                              _manager.currPlayerState ==
-                                  SimplePlaybackState.ENDED
-                          ? Icons.play_arrow
-                          : Icons.pause),
-                      iconSize: 40.0,
-                      onPressed: _manager.isConnected ? _onState : null,
-                      splashColor: Theme.of(context).accentColor,
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.skip_next),
-                      iconSize: 35.0,
-                      onPressed: _manager.isConnected ? _onNext : null,
-                      splashColor: Theme.of(context).accentColor,
-                    ),
-                  ],
+                  ),
                 ),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(vertical: 5.0),
-                child: CastButtonWidget(
-                  bloc: _mediaRouteBloc,
-                  tintColor: Colors.white70,
-                  backgroundColor: Colors.transparent,
+                child: Hero(
+                  tag: 'cast',
+                  child: Material(
+                    color: Colors.transparent,
+                    child: CastButtonWidget(
+                      bloc: _mediaRouteBloc,
+                      tintColor: Colors.white70,
+                      backgroundColor: Colors.transparent,
+                    ),
+                  ),
                 ),
               ),
             ],
