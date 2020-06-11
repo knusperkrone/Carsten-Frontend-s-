@@ -17,10 +17,6 @@ class CastPlaybackContext {
     if (_isInited) {
       return;
     }
-    if (Platform.isIOS) {
-      throw UnsupportedError(
-          'iOS does currently not support \'CastPlaybackContext\'');
-    }
 
     // Start background service
     final handle = PluginUtilities.getCallbackHandle(backgroundDispatchEntry);
