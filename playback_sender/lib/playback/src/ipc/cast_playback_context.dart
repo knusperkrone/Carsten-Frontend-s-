@@ -47,16 +47,4 @@ class CastPlaybackContext {
       print('[ERROR] Couldn\'t dispatch: end()');
     }
   }
-
-  static Future<void> restoreSession() async {
-    for (int i = 0; i < 5; i++) {
-      final wasSend = await _METHOD_CHANNEL
-          .invokeMethod<bool>('restore_session', <dynamic>[]);
-      if (wasSend) {
-        return;
-      }
-      await Future.delayed(const Duration(milliseconds: 100), () {});
-    }
-    print('[ERROR] Couldn\'t dispatch: restoreSession()');
-  }
 }

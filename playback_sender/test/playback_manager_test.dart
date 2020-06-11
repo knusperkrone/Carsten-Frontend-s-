@@ -30,17 +30,25 @@ void main() {
         hash: 'hash');
   }
 
+  PlaybackQueueDto _generateEndingQueueDto() {
+    final PlaybackTrack first = generateTracks()[0];
+    return new PlaybackQueueDto(
+        currentTrack: first, trackHolder: first, prioTracks: [], immutableTracks: [], name: 'name', hash: 'hash');
+  }
+
   test('Interop manager not shuffling', () async {
     // Prepare
     final mockedTracks = generateTracks();
     final PlaybackTrack expectedFirst = mockedTracks.first;
     final List<PlaybackTrack> expectedTail = mockedTracks;
     final PlaybackQueueDto mockedDtoQueue = _generateMockQueueDto();
+    final PlaybackQueueDto endingDtoQueue = _generateEndingQueueDto();
 
     final mockedState = new ShuffleStateDto(expectedFirst, false, SHUFFLE_SEED);
 
     // Execute
     manager.onQueue(mockedDtoQueue);
+    manager.onQueue(endingDtoQueue);
     manager.onShuffling(mockedState);
 
     // Verify
@@ -58,11 +66,13 @@ void main() {
     final mockedTracks = generateTracks();
     final PlaybackTrack expectedFirst = mockedTracks.first;
     final PlaybackQueueDto mockedDtoQueue = _generateMockQueueDto();
+    final PlaybackQueueDto endingDtoQueue = _generateEndingQueueDto();
 
     final mockedState = new ShuffleStateDto(expectedFirst, true, SHUFFLE_SEED);
 
     // Execute
     manager.onQueue(mockedDtoQueue);
+    manager.onQueue(endingDtoQueue);
     manager.onShuffling(mockedState);
 
     // Verify
@@ -79,13 +89,16 @@ void main() {
     final mockedTracks = generateTracks();
     final PlaybackTrack expectedFirst = mockedTracks.first;
     final PlaybackQueueDto mockedDtoQueue = _generateMockQueueDto();
+    final PlaybackQueueDto endingDtoQueue = _generateEndingQueueDto();
 
     final mockedState = new ShuffleStateDto(expectedFirst, true, SHUFFLE_SEED);
 
     // Execute
     manager.onQueue(mockedDtoQueue);
+    manager.onQueue(endingDtoQueue);
     manager.onShuffling(mockedState);
     manager.onQueue(mockedDtoQueue);
+    manager.onQueue(endingDtoQueue);
 
     // Verify
     await Future.delayed(const Duration(milliseconds: 0), () {});

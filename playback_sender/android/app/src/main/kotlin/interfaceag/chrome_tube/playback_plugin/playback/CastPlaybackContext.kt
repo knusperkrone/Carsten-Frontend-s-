@@ -1,48 +1,41 @@
 package interfaceag.chrome_tube.playback_plugin.playback
 
-import com.google.android.gms.cast.framework.CastContext
-import com.google.android.gms.cast.framework.CastSession
-import com.google.android.gms.cast.framework.SessionManager
-import interfaceag.chrome_tube.playback_plugin.io.CastPlaybackChannel
-import interfaceag.chrome_tube.playback_plugin.io.EncodedMessageReceivedListener
+import com.google.android.gms.cast.framework.*
 
-class CastPlaybackContext(private val castContext: CastContext, listener: EncodedMessageReceivedListener, private val connectionListener: CastPlaybackConnectionListener) {
+interface CastConnectionListener {
+    fun onCastConnecting()
+    fun onCastConnected(context: CastPlaybackContext)
+    fun onCastDisconnected()
+    fun onCastFailed()
+}
 
-    private val castSessionManagerListener = CastSessionManagerListener(this)
-    private val sessionManager: SessionManager = castContext.sessionManager
-    private val castChannel = CastPlaybackChannel(sessionManager, listener)
+class CastPlaybackContext(private val castContext: CastContext, messageCallback: CastMessageCallback, private val connectionListener: CastConnectionListener) : SessionManagerListener<CastSession>, CastStateListener {
 
-    var isChromecastConnected = false
-        private set
+    private val castChannel = CastPlaybackChannel(castContext.sessionManager, messageCallback)
+    private var isCastConnected = false
 
     init {
-        castContext.addCastStateListener(castSessionManagerListener)
-        sessionManager.addSessionManagerListener(castSessionManagerListener, CastSession::class.java)
+        castContext.addCastStateListener(this)
+        castContext.sessionManager.addSessionManagerListener(this, CastSession::class.java)
+        restoreSession()
     }
 
     fun dispose() {
-        castContext.removeCastStateListener(castSessionManagerListener)
-        sessionManager.removeSessionManagerListener(castSessionManagerListener, CastSession::class.java)
+        castContext.removeCastStateListener(this)
+        castContext.sessionManager.removeSessionManagerListener(this, CastSession::class.java)
     }
 
     /*
      * Business methods
      */
 
-    fun restoreSession(): Boolean {
-        if (sessionManager.currentCastSession != null) {
-            castSessionManagerListener.onSessionResumed(sessionManager.currentCastSession, false)
-        }
-        return true
-    }
-
     fun endCurrentSession(): Boolean {
-        sessionManager.endCurrentSession(true)
+        castContext.sessionManager.endCurrentSession(true)
         return true
     }
 
     fun sendMessage(msg: String): Boolean {
-        if (!isChromecastConnected) {
+        if (!isCastConnected) {
             throw RuntimeException("Can't send before Chromecast connection is established.")
         }
         castChannel.sendMessage(msg)
@@ -50,30 +43,74 @@ class CastPlaybackContext(private val castContext: CastContext, listener: Encode
     }
 
     /*
-     * Connection contract
+     * Simplified CastStates
      */
 
-    fun onChromecastConnecting() {
-        connectionListener.onChromecastConnecting()
+    private fun restoreSession() {
+        val sessionManager = castContext.sessionManager
+        if (sessionManager.currentCastSession != null) {
+            onSessionResumed(sessionManager.currentCastSession, false)
+        }
     }
 
-    fun onChromecastConnected(castSession: CastSession) {
-        isChromecastConnected = true
+    private fun onCastConnecting() {
+        isCastConnected = false
+        connectionListener.onCastConnecting()
+    }
+
+    private fun onCastConnected(castSession: CastSession) {
+        isCastConnected = true
         castSession.removeMessageReceivedCallbacks(CastPlaybackChannel.NAMESPACE)
         castSession.setMessageReceivedCallbacks(CastPlaybackChannel.NAMESPACE, castChannel)
 
-        connectionListener.onChromecastConnected(this)
+        connectionListener.onCastConnected(this)
     }
 
-    fun onChromecastDisconnected(castSession: CastSession) {
-        isChromecastConnected = false
+    private fun onCastDisconnected(castSession: CastSession) {
+        isCastConnected = false
         castSession.removeMessageReceivedCallbacks(CastPlaybackChannel.NAMESPACE)
 
-        connectionListener.onChromecastDisconnected()
+        connectionListener.onCastDisconnected()
     }
 
-    fun onChromecastFailed() {
-        connectionListener.onChromecastFailed()
+    private fun onCastFailed() {
+        isCastConnected = false
+        connectionListener.onCastFailed()
+    }
+
+    /*
+     * SessionManagerListener<CastSession>, CastStateListener
+     */
+
+    override fun onSessionEnding(castSession: CastSession) {}
+    override fun onSessionSuspended(castSession: CastSession, p1: Int) {}
+
+    override fun onSessionStarting(castSession: CastSession) =
+            onCastConnecting()
+
+
+    override fun onSessionResuming(castSession: CastSession, p1: String) =
+            onCastConnecting()
+
+
+    override fun onSessionResumed(castSession: CastSession, wasSuspended: Boolean) =
+            onCastConnected(castSession)
+
+    override fun onSessionStarted(castSession: CastSession, sessionId: String) =
+            onCastConnected(castSession)
+
+    override fun onSessionEnded(castSession: CastSession, error: Int) =
+            onCastDisconnected(castSession)
+
+    override fun onSessionResumeFailed(castSession: CastSession, p1: Int) =
+            onCastFailed()
+
+    override fun onSessionStartFailed(castSession: CastSession, p1: Int) = onCastFailed()
+
+    override fun onCastStateChanged(state: Int) {
+        if (state == CastState.NOT_CONNECTED && isCastConnected) {
+            onCastFailed()
+        }
     }
 
 }

@@ -33,10 +33,6 @@ class PlaybackManager extends PlaybackReceiver {
     return await CastPlaybackContext.init();
   }
 
-  Future<void> restoreConnection() {
-    return CastPlaybackContext.restoreSession();
-  }
-
   /*
    * IPC serialization
    */

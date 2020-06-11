@@ -17,12 +17,15 @@ import interfaceag.chrome_tube.playback_plugin.NativeConstants.Companion.N_CONNE
 import interfaceag.chrome_tube.playback_plugin.NativeConstants.Companion.N_DISCONNECTED
 import interfaceag.chrome_tube.playback_plugin.NativeConstants.Companion.N_FAILED
 import interfaceag.chrome_tube.playback_plugin.NativeConstants.Companion.N_SYNC
-import interfaceag.chrome_tube.playback_plugin.io.EncodedMessageReceivedListener
 import interfaceag.chrome_tube.playback_plugin.notification.NativeNotificationBuilder
 import interfaceag.chrome_tube.playback_plugin.notification.NativeNotificationBuilder.Companion.NOTIFICATION_ID
-import interfaceag.chrome_tube.playback_plugin.playback.CastPlaybackConnectionListener
+import interfaceag.chrome_tube.playback_plugin.playback.CastConnectionListener
+import interfaceag.chrome_tube.playback_plugin.playback.CastMessageCallback
 import interfaceag.chrome_tube.playback_plugin.playback.CastPlaybackContext
-import io.flutter.plugin.common.*
+import io.flutter.plugin.common.BasicMessageChannel
+import io.flutter.plugin.common.MethodChannel
+import io.flutter.plugin.common.PluginRegistry
+import io.flutter.plugin.common.StringCodec
 import io.flutter.view.FlutterCallbackInformation
 import io.flutter.view.FlutterMain
 import io.flutter.view.FlutterNativeView
@@ -30,10 +33,11 @@ import io.flutter.view.FlutterRunArguments
 import java.util.concurrent.atomic.AtomicBoolean
 
 
-class CastConnectionService : Service(), MethodChannel.MethodCallHandler, CastPlaybackConnectionListener, EncodedMessageReceivedListener {
+class CastConnectionService : Service(), CastConnectionListener, CastMessageCallback {
 
     companion object {
         private const val TAG = "CastConnectionService"
+
         @JvmStatic
         private lateinit var sPluginRegistrantCallback: PluginRegistry.PluginRegistrantCallback
 
@@ -47,13 +51,11 @@ class CastConnectionService : Service(), MethodChannel.MethodCallHandler, CastPl
     private val mIsBackgroundInit: AtomicBoolean = AtomicBoolean(false)
     private val mIsForegroundInit: AtomicBoolean = AtomicBoolean(false)
 
-    private lateinit var mBackgroundMethodChannel: MethodChannel
     private lateinit var mBackgroundMessageChannel: BasicMessageChannel<String>
+    private var mForegroundMessageChannel: BasicMessageChannel<String>? = null
 
     private var mNotiBuilder: NativeNotificationBuilder? = null
     private var mBackgroundIsolate: FlutterNativeView? = null
-    private var mForegroundMethodChannel: MethodChannel? = null
-    private var mForegroundMessageChannel: BasicMessageChannel<String>? = null
     private var mCastContext: CastPlaybackContext? = null
 
     /*
@@ -80,9 +82,23 @@ class CastConnectionService : Service(), MethodChannel.MethodCallHandler, CastPl
         mBackgroundIsolate!!.runFromBundle(args)
 
         // Register callback channels
-        mBackgroundMethodChannel = MethodChannel(mBackgroundIsolate, SERVICE_CHANNEL_METHOD_NAME)
-        mBackgroundMessageChannel = BasicMessageChannel<String>(mBackgroundIsolate!!, SERVICE_CHANNEL_MESSAGE_NAME, StringCodec.INSTANCE)
-        mBackgroundMethodChannel.setMethodCallHandler(this)
+        val backgroundMethodChannel = MethodChannel(mBackgroundIsolate, SERVICE_CHANNEL_METHOD_NAME)
+        mBackgroundMessageChannel = BasicMessageChannel(mBackgroundIsolate!!, SERVICE_CHANNEL_MESSAGE_NAME, StringCodec.INSTANCE)
+        backgroundMethodChannel.setMethodCallHandler { call, result ->
+            if (call.method == "background_isolate_inited") {
+                if (mNotiBuilder != null) {
+                    val text = call.arguments<List<Any>>()[0] as String
+                    startForeground(NOTIFICATION_ID, mNotiBuilder?.buildUserNotification(text))
+                    mIsBackgroundInit.set(true)
+                    initCastContext()
+                    result.success(true)
+                } else {
+                    result.error("-1", "Service was already destroyed!", "")
+                }
+            } else {
+                result.notImplemented()
+            }
+        }
 
         return START_STICKY
     }
@@ -104,8 +120,9 @@ class CastConnectionService : Service(), MethodChannel.MethodCallHandler, CastPl
         super.onDestroy()
     }
 
-    private fun onIsolateInited() {
-        if (mCastContext == null && mIsBackgroundInit.get() && mIsForegroundInit.get()) {
+    private fun initCastContext() {
+        // All isolates are set up
+        if (mCastContext == null && mIsBackgroundInit.get() && mIsBackgroundInit.get()) {
             mCastContext = CastPlaybackContext(CastContext.getSharedInstance(this), this, this)
         }
     }
@@ -114,21 +131,17 @@ class CastConnectionService : Service(), MethodChannel.MethodCallHandler, CastPl
      * Business methods
      */
 
-    fun startUIBroadcast(methodChannel: MethodChannel, messageChannel: BasicMessageChannel<String>) {
-        mForegroundMethodChannel = methodChannel
+    fun initUIBroadcast(messageChannel: BasicMessageChannel<String>) {
         mForegroundMessageChannel = messageChannel
-        mForegroundMethodChannel!!.setMethodCallHandler(this)
         mIsForegroundInit.set(true)
-        onIsolateInited()
+        initCastContext()
 
         mBackgroundMessageChannel.send(buildIPCMessage(N_SYNC)) {
             messageChannel.send(it!!)
         }
     }
 
-    fun stopUIBroadcast() {
-        mForegroundMethodChannel?.setMethodCallHandler(null)
-        mForegroundMethodChannel = null
+    fun pauseUIBroadcast() {
         mForegroundMessageChannel = null
     }
 
@@ -144,41 +157,16 @@ class CastConnectionService : Service(), MethodChannel.MethodCallHandler, CastPl
         sendToBackgroundChannel(buildIPCMessage(type, data))
     }
 
+    /*
+     * helpers
+     */
+
     private fun sendToBackgroundChannel(msg: String) {
         mBackgroundMessageChannel.send(msg) {
             if (it != null) {
                 mNotiBuilder?.build(it)
             }
         }
-    }
-
-    /*
-     * MethodCall interface + helpers
-     */
-
-    @RequiresApi(Build.VERSION_CODES.ECLAIR)
-    override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
-        val args = call.arguments<List<Any>>()
-        when (call.method) {
-            "background_isolate_inited" -> onBackgroundInit(result, args[0] as String)
-            else -> result.notImplemented()
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.ECLAIR)
-    private fun onBackgroundInit(backgroundResult: MethodChannel.Result, text: String) {
-        if (mNotiBuilder != null) {
-            startForeground(NOTIFICATION_ID, mNotiBuilder?.buildUserNotification(text))
-            mIsBackgroundInit.set(true)
-            onIsolateInited()
-            backgroundResult.success(true)
-        } else {
-            backgroundResult.error("-1", "Service was already destroyed!", "")
-        }
-    }
-
-    fun restoreSession(): Boolean {
-        return mCastContext?.restoreSession() ?: false
     }
 
     /*
@@ -191,12 +179,12 @@ class CastConnectionService : Service(), MethodChannel.MethodCallHandler, CastPl
     }
 
     @RequiresApi(Build.VERSION_CODES.ECLAIR)
-    override fun onChromecastConnecting() {
+    override fun onCastConnecting() {
         Log.d(TAG, "onChromecastConnecting")
         sendToBackgroundChannel(buildIPCMessage(N_CONNECTING))
     }
 
-    override fun onChromecastConnected(context: CastPlaybackContext) {
+    override fun onCastConnected(context: CastPlaybackContext) {
         Log.d(TAG, "onChromecastConnected")
         val msg = buildIPCMessage(N_CONNECTED)
         sendToBackgroundChannel(msg)
@@ -204,7 +192,7 @@ class CastConnectionService : Service(), MethodChannel.MethodCallHandler, CastPl
     }
 
     @RequiresApi(Build.VERSION_CODES.ECLAIR)
-    override fun onChromecastDisconnected() {
+    override fun onCastDisconnected() {
         Log.d(TAG, "onChromecastDisconnected")
         val msg = buildIPCMessage(N_DISCONNECTED)
         mForegroundMessageChannel?.send(msg)
@@ -212,7 +200,7 @@ class CastConnectionService : Service(), MethodChannel.MethodCallHandler, CastPl
     }
 
     @RequiresApi(Build.VERSION_CODES.ECLAIR)
-    override fun onChromecastFailed() {
+    override fun onCastFailed() {
         Log.d(TAG, "onChromecastFailed")
         val msg = buildIPCMessage(N_FAILED)
         mForegroundMessageChannel?.send(msg)

@@ -1,1 +1,0 @@
-data class CastMessage(val type: String, val data: String)

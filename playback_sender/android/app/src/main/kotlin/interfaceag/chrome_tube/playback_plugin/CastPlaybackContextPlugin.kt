@@ -83,13 +83,11 @@ class CastPlaybackContextPlugin(private val mContext: Context, messenger: Binary
         val args = call.arguments() as? ArrayList<*>
         when (call.method) {
             "init" -> onInit(args, result)
-            "restore_session" -> onRestoreSession(result)
             "send_msg" -> onSend(args, result)
             "end" -> onEnd(result)
             else -> result.notImplemented()
         }
     }
-
 
     private fun onInit(args: ArrayList<*>?, result: MethodChannel.Result) {
         // Persist key - so system can kill service
@@ -120,15 +118,6 @@ class CastPlaybackContextPlugin(private val mContext: Context, messenger: Binary
         mIsInited = true
     }
 
-
-    private fun onRestoreSession(result: MethodChannel.Result) {
-        if (!mIsInited) {
-            result.error("-1", "Service not inited", "")
-        } else {
-            result.success(mServiceConnection.service?.restoreSession() ?: false)
-        }
-    }
-
     private fun onEnd(result: MethodChannel.Result) {
         if (!mIsInited) {
             result.error("-1", "Service not inited", "")
@@ -156,13 +145,13 @@ class ResultServiceConnection(messenger: BinaryMessenger) : ServiceConnection {
 
     override fun onServiceConnected(name: ComponentName?, binder: IBinder?) {
         service = (binder as CastConnectionService.LocalBinder).service
-        service!!.startUIBroadcast(mForegroundMethodChannel, mForegroundMessageChannel)
+        service!!.initUIBroadcast(mForegroundMessageChannel)
         result?.success(true)
         result = null
     }
 
     override fun onServiceDisconnected(name: ComponentName?) {
         mForegroundMethodChannel.setMethodCallHandler(null)
-        service!!.stopUIBroadcast()
+        service!!.pauseUIBroadcast()
     }
 }

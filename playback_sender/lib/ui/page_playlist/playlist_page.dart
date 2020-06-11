@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chrome_tube/playback/playback.dart';
 import 'package:chrome_tube/spotify/spotify.dart';
 import 'package:chrome_tube/ui/common/common.dart';
 import 'package:chrome_tube/ui/page_playlist/playlist_header.dart';
@@ -20,14 +19,6 @@ class _PlaylistPageState extends State<PlaylistPage> {
   bool _isFetching = false;
   final _headerKey = new GlobalKey<PlaylistHeaderState>();
   final _controlKey = new GlobalKey<ControlBarState>();
-
-  @override
-  void initState() {
-    super.initState();
-    if (!PlaybackManager().isConnected) {
-      PlaybackManager().restoreConnection();
-    }
-  }
 
   /*
    * UI-Callbacks

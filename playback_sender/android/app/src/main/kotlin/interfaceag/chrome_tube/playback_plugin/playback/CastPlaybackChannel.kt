@@ -1,11 +1,15 @@
-package interfaceag.chrome_tube.playback_plugin.io
+package interfaceag.chrome_tube.playback_plugin.playback
 
 import android.util.Log
 import com.google.android.gms.cast.Cast
 import com.google.android.gms.cast.CastDevice
 import com.google.android.gms.cast.framework.SessionManager
 
-internal class CastPlaybackChannel(private val sessionManager: SessionManager, private val mListener: EncodedMessageReceivedListener) : Cast.MessageReceivedCallback {
+interface CastMessageCallback {
+    fun onReceive(msg: String)
+}
+
+internal class CastPlaybackChannel(private val sessionManager: SessionManager, private val mCallback: CastMessageCallback) : Cast.MessageReceivedCallback {
     companion object {
         private const val TAG = "CastPlaybackChannel"
         const val NAMESPACE = "urn:x-cast:com.pierfrancescosoffritti.androidyoutubeplayer.chromecast.communication"
@@ -22,8 +26,7 @@ internal class CastPlaybackChannel(private val sessionManager: SessionManager, p
 
     override fun onMessageReceived(castDevice: CastDevice, namespace: String, parsedMessage: String) {
         Log.d(TAG, "Received: $parsedMessage")
-        mListener.onReceive(parsedMessage)
+        mCallback.onReceive(parsedMessage)
     }
-
 
 }
