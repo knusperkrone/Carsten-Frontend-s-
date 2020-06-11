@@ -173,7 +173,7 @@ class TrackPageState extends State<TrackPage> {
    * Build
    */
 
-  Widget _buildTrackTile(int i, BuildContext context) {
+  Widget _buildTrackTile(BuildContext context, int i) {
     final curr = _tracks[i];
     final key = new GlobalKey<SlidableState>();
     return Slidable(
@@ -242,10 +242,7 @@ class TrackPageState extends State<TrackPage> {
                     SliverToBoxAdapter(child: Container(height: 8.0)),
                     SliverFixedExtentList(
                       itemExtent: 80.0,
-                      delegate: SliverChildListDelegate(
-                        List.generate(
-                            _tracks.length, (i) => _buildTrackTile(i, context)),
-                      ),
+                      delegate: SliverChildBuilderDelegate(_buildTrackTile, childCount: _tracks.length),
                     ),
                     SliverToBoxAdapter(child: scrollPadding),
                   ],
@@ -382,8 +379,8 @@ class _TrackPageAppBar extends SliverPersistentHeaderDelegate {
           child: Hero(
             tag: 'second',
             child: Card(
-              shape:
-                  RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20)),
               elevation: 5,
               color: Theme.of(context).accentColor,
               child: SizedBox(

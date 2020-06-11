@@ -46,9 +46,10 @@ class TrackPagesState extends TrackPageControllerState<TrackPages> {
 
   @override
   Widget build(BuildContext context) {
-    return PageView(
+    return PageView.builder(
       controller: pageController,
-      children: buildPages(),
+      itemCount: trackCount,
+      itemBuilder: buildPage,
       onPageChanged: onScroll,
       physics: const BouncingScrollPhysics(),
     );

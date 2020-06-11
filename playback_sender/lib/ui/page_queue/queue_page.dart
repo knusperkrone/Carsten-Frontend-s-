@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chrome_tube/playback/playback.dart';
 import 'package:chrome_tube/ui/common/common.dart';
@@ -143,9 +145,35 @@ class _QueuePageState extends UIListenerState<QueuePage>
    * build
    */
 
-  Widget _buildTile(PlaybackTrack track) {
+  int get trackCount {
+    if (_queueTracks.isEmpty) {
+      return _prioTracks.length;
+    }
+    int count = _prioTracks.length;
+    count += 1; // barrier
+    count += _queueTracks.length - _manager.trackIndex; // rest list
+    return count - 1;
+  }
+
+  Widget _buildTile(BuildContext context, int i) {
+    PlaybackTrack curr;
+    if (i < _prioTracks.length) {
+      curr = _prioTracks[i];
+    } else if (i == _prioTracks.length) {
+      // Barrier
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 7.0),
+        child: Text(
+          'Next song from ${_manager.playlistName}:',
+          style: Theme.of(context).textTheme.headline6,
+        ),
+      );
+    } else {
+      final offset = _manager.trackIndex  + i  - _prioTracks.length;
+      curr = _queueTracks[offset];
+    }
+
     final theme = Theme.of(context);
-    final curr = track;
     return SafeArea(
       top: false,
       bottom: false,
@@ -185,29 +213,6 @@ class _QueuePageState extends UIListenerState<QueuePage>
         ),
       ),
     );
-  }
-
-  List<Widget> _buildTrackList() {
-    final prioTracks = _prioTracks.map((t) => _buildTile(t));
-
-    final barrier = Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 7.0),
-      child: Text(
-        'Next song from ${_manager.playlistName}:',
-        style: Theme.of(context).textTheme.headline6,
-      ),
-    );
-
-    final trackOffset = _manager.trackIndex + 1;
-    final queueTracks =
-        _queueTracks.skip(trackOffset).map((t) => _buildTile(t)).toList();
-
-    if (queueTracks.isEmpty) {
-      return prioTracks.toList();
-    }
-    return List.from(prioTracks)
-      ..add(barrier)
-      ..addAll(queueTracks);
   }
 
   @override
@@ -276,8 +281,8 @@ class _QueuePageState extends UIListenerState<QueuePage>
                   onStartReorder: _onStartReorder,
                   canReorder: _canReorder,
                   onReorder: _onReorder,
-                  delegate:
-                      ReorderableSliverChildListDelegate(_buildTrackList()),
+                  delegate: ReorderableSliverChildBuilderDelegate(_buildTile,
+                      childCount: trackCount),
                 ),
               ],
             ),

@@ -21,10 +21,11 @@ class TrackAppBarState extends State<TrackAppBar> {
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: widget.animController,
-      builder: (context, _) {
+      child: Text(_manager.playlistName),
+      builder: (context, child) {
         return AppBar(
           elevation: 0.0,
-          title: Text(_manager.playlistName),
+          title: child,
           backgroundColor:
               widget.colorTween.animate(widget.animController).value,
         );

@@ -50,12 +50,12 @@ abstract class TrackPageControllerState<T extends StatefulWidget>
   }
 
   @protected
-  List<Widget> buildPages() {
+  Widget buildPage(BuildContext context, int i) {
     if (hasNoTracks) {
-      final size =  MediaQuery.of(context).size.height / 3;
-      return [Icon(Icons.all_out, size: size)]; // Default icon
+      final size = MediaQuery.of(context).size.height / 3;
+      return Icon(Icons.all_out, size: size); // Default icon
     }
-    return _shadowTracks.map((t) => onPageBuild(context, t)).toList();
+    return onPageBuild(context, _shadowTracks[i]);
   }
 
   @protected
@@ -115,6 +115,21 @@ abstract class TrackPageControllerState<T extends StatefulWidget>
     allTracks.addAll(manager.prioTracks);
     allTracks.addAll(after);
     return allTracks;
+  }
+
+  int get trackCount {
+    if (hasNoTracks) {
+      return 1;
+    }
+    final currentIndex = manager.trackIndex ?? 0;
+    int count = currentIndex;
+    count += manager.queueTracks.length - currentIndex;
+    if (manager.track.value.isPrio) {
+      count += 1;
+    }
+    count += manager.prioTracks.length;
+
+    return count;
   }
 
   bool get hasNoTracks =>

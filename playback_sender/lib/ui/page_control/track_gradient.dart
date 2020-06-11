@@ -1,30 +1,27 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
-class TrackGradient extends StatelessWidget {
+class TrackGradient extends AnimatedWidget {
   final ColorTween colorTween;
   final Color canvasColor;
-  final AnimationController controller;
+
+  AnimationController get _progress => listenable as AnimationController;
 
   const TrackGradient({
     @required this.colorTween,
     @required this.canvasColor,
-    @required this.controller,
-  });
+    @required AnimationController controller,
+  }) : super(listenable: controller);
 
   @override
   Widget build(BuildContext context) {
-    return new AnimatedBuilder(
-        animation: controller,
-        builder: (context, _) {
-          return Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [colorTween.animate(controller).value, canvasColor],
-              ),
-            ),
-          );
-        });
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [colorTween.animate(_progress).value, canvasColor],
+        ),
+      ),
+    );
   }
 }
