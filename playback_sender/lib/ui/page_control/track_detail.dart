@@ -1,7 +1,9 @@
 part of 'control_page.dart';
 
 class TrackDetails extends StatefulWidget {
-  const TrackDetails({Key key}) : super(key: key);
+  final double padding;
+
+  const TrackDetails({Key key, @required this.padding}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => new TrackDetailsState();
@@ -28,7 +30,7 @@ class TrackDetailsState extends State<TrackDetails> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(widget.padding),
       width: double.infinity,
       child: TrackInfo(
         key: _infoKey,

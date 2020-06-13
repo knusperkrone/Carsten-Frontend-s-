@@ -219,14 +219,22 @@ class ControlPageState extends UIListenerState<ControlPage>
             tag: 'progress',
             child: TrackProgress(key: _progressKey),
           ),
-          TrackDetails(key: _detailKey),
+          TrackDetails(
+            key: _detailKey,
+            padding: 20.0,
+          ),
           TrackSlider(
+              key: _sliderKey,
               padding: 20.0,
-              delay: const Duration(milliseconds: 150),
-              key: _sliderKey),
-          Container(
-            height: 70,
-            child: TrackControl(key: _controlKey),
+              delay: const Duration(milliseconds: 150)),
+          Hero(
+            tag: 'controls',
+            child: Material(
+              child: TrackControl(
+                key: _controlKey,
+                height: 70,
+              ),
+            ),
           ),
         ],
       ),
