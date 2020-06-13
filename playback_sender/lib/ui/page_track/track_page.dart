@@ -15,6 +15,8 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:optional/optional.dart';
 import 'package:palette_generator/palette_generator.dart';
 
+import 'track_app_bar.dart';
+
 class TrackPage extends StatefulWidget {
   final Stream<List<SpotifyTrack>> trackStream;
   final String collectionName;
@@ -106,6 +108,7 @@ class TrackPageState extends State<TrackPage> {
   static const TEXT_SIZE = 40.0;
   List<SpotifyTrack> _tracks = [];
   StreamSubscription _streamSub;
+  String _text = '';
 
   Color _gradientColor;
 
@@ -120,7 +123,10 @@ class TrackPageState extends State<TrackPage> {
         _tracks.addAll(fetched);
       }
       if (mounted) {
-        setState(() => _tracks = _tracks);
+        setState(() {
+          _tracks = _tracks;
+          _text = 'Shuffle';
+        });
       }
     });
 
@@ -229,9 +235,10 @@ class TrackPageState extends State<TrackPage> {
                   slivers: <Widget>[
                     SliverPersistentHeader(
                       pinned: true,
-                      delegate: _TrackPageAppBar(
+                      delegate: TrackPageAppBar(
                         imageProvider: widget.appBarImageProvider,
                         gradientColor: _gradientColor,
+                        text: _text,
                         name: widget.collectionName,
                         owner: widget.collectionOwner,
                         expandedHeight: widget.expandedHeight,
@@ -242,7 +249,10 @@ class TrackPageState extends State<TrackPage> {
                     SliverToBoxAdapter(child: Container(height: 8.0)),
                     SliverFixedExtentList(
                       itemExtent: 80.0,
-                      delegate: SliverChildBuilderDelegate(_buildTrackTile, childCount: _tracks.length),
+                      delegate: SliverChildBuilderDelegate(
+                        _buildTrackTile,
+                        childCount: _tracks.length,
+                      ),
                     ),
                     SliverToBoxAdapter(child: scrollPadding),
                   ],
@@ -255,160 +265,4 @@ class TrackPageState extends State<TrackPage> {
       ),
     );
   }
-}
-
-class _TrackPageAppBar extends SliverPersistentHeaderDelegate {
-  static const SHUFFLE_SIZE = 35.0;
-
-  final double expandedHeight;
-  final String name;
-  final String owner;
-  final ImageProvider imageProvider;
-  final Color gradientColor;
-  final double textSize;
-  final VoidCallback onShuffle;
-
-  _TrackPageAppBar({
-    @required this.expandedHeight,
-    @required this.textSize,
-    @required this.name,
-    @required this.owner,
-    @required this.imageProvider,
-    @required this.gradientColor,
-    @required this.onShuffle,
-  });
-
-  /*
-   * Build
-   */
-
-  @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    final qWidth = MediaQuery.of(context).size.width;
-
-    final Color gradientVal = gradientColor ?? Theme.of(context).primaryColor;
-    final double colorRelation = min(0.2, shrinkOffset / expandedHeight);
-    final Color gradientStart = new Color.fromARGB(
-      255,
-      max(0, gradientVal.red - (gradientVal.red * colorRelation).toInt()),
-      max(0, gradientVal.green - (gradientVal.green * colorRelation).toInt()),
-      max(0, gradientVal.blue - (gradientVal.blue * colorRelation).toInt()),
-    );
-
-    return Stack(
-      fit: StackFit.expand,
-      overflow: Overflow.visible,
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              stops: const [0.0, 0.8, 0.8],
-              colors: [
-                gradientStart,
-                Theme.of(context).canvasColor,
-                Colors.transparent
-              ],
-            ),
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.only(top: kToolbarHeight / 2 + shrinkOffset / 4),
-          child: Opacity(
-            opacity: max(0, 1 - (shrinkOffset / expandedHeight) * 2),
-            child: Column(
-              children: <Widget>[
-                Image(
-                    image: imageProvider,
-                    width: qWidth - qWidth / 4 - shrinkOffset,
-                    height: expandedHeight -
-                        kToolbarHeight -
-                        shrinkOffset -
-                        40.0 -
-                        SHUFFLE_SIZE,
-                    fit: BoxFit.fitHeight),
-                Container(
-                  padding: const EdgeInsets.only(top: 12.0),
-                  height:
-                      textSize - (shrinkOffset / expandedHeight) * textSize + 6,
-                  child: owner == null
-                      ? Container()
-                      : Container(
-                          decoration: BoxDecoration(
-                            color: Colors.black12,
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(10.0)),
-                          ),
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            owner,
-                            style: Theme.of(context)
-                                .textTheme
-                                .subtitle1
-                                .copyWith(color: Colors.white),
-                          ),
-                        ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        Positioned(
-          top: kToolbarHeight / 4,
-          child: Container(
-            width: qWidth,
-            child: Opacity(
-              opacity: shrinkOffset / expandedHeight,
-              child: Text(
-                name,
-                textAlign: TextAlign.center,
-                style: Theme.of(context)
-                    .textTheme
-                    .headline6
-                    .copyWith(color: Colors.white),
-              ),
-            ),
-          ),
-        ),
-        Positioned(
-          top: max(minExtent - 10.0 - SHUFFLE_SIZE,
-              expandedHeight - 10.0 - SHUFFLE_SIZE - shrinkOffset),
-          left: qWidth / 6,
-          child: Hero(
-            tag: 'second',
-            child: Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20)),
-              elevation: 5,
-              color: Theme.of(context).accentColor,
-              child: SizedBox(
-                height: 47.0,
-                width: qWidth / 1.5,
-                child: const Center(child: Text('Shuffle')),
-              ),
-            ),
-          ),
-        ),
-        Positioned(
-          top: 0.0,
-          child: IconButton(
-            icon: Icon(Icons.arrow_back),
-            color: Colors.white70,
-            onPressed: () => Navigator.pop(context),
-          ),
-        ),
-      ],
-    );
-  }
-
-  @override
-  double get maxExtent => expandedHeight;
-
-  @override
-  double get minExtent => kToolbarHeight + SHUFFLE_SIZE;
-
-  @override
-  bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) => false;
 }
