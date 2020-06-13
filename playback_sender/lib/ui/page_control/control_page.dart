@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chrome_tube/playback/playback.dart';
 import 'package:chrome_tube/ui/common/common.dart';
+import 'package:chrome_tube/ui/common/track_info.dart';
 import 'package:chrome_tube/ui/common/ui_listener_state.dart';
 import 'package:chrome_tube/ui/page_control/track_app_bar.dart';
 import 'package:chrome_tube/ui/page_control/track_gradient.dart';
@@ -14,11 +15,11 @@ import 'package:playback_interop/playback_interop.dart';
 
 part 'track_control.dart';
 
+part 'track_detail.dart';
+
 part 'track_pages.dart';
 
 part 'track_progress.dart';
-
-part 'track_title.dart';
 
 class ControlPage extends StatefulWidget {
   @override
@@ -197,8 +198,7 @@ class ControlPageState extends UIListenerState<ControlPage>
       ),
       body: Column(
         children: <Widget>[
-          Flexible(
-            flex: 20,
+          Expanded(
             child: Stack(
               children: <Widget>[
                 TrackGradient(
@@ -219,16 +219,13 @@ class ControlPageState extends UIListenerState<ControlPage>
             tag: 'progress',
             child: TrackProgress(key: _progressKey),
           ),
-          Flexible(
-            flex: 10,
-            child: TrackDetails(key: _detailKey),
-          ),
+          TrackDetails(key: _detailKey),
           TrackSlider(
               padding: 20.0,
               delay: const Duration(milliseconds: 150),
               key: _sliderKey),
-          Expanded(
-            flex: 6,
+          Container(
+            height: 70,
             child: TrackControl(key: _controlKey),
           ),
         ],

@@ -1,4 +1,5 @@
 import 'package:chrome_tube/playback/playback.dart';
+import 'package:chrome_tube/ui/common/track_info.dart';
 import 'package:chrome_tube/ui/pages.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_cast_button/bloc_media_route.dart';
@@ -20,6 +21,7 @@ class ControlBarState extends UIListenerState<ControlBar> {
       PlaybackTrack.dummy(title: 'No Track', artist: '');
 
   final _mediaKey = new GlobalKey<CastButtonWidgetState>();
+  final _infoKey = new GlobalKey<TrackInfoState>();
   final _manager = new PlaybackManager();
   MediaRouteBloc _mediaRouteBloc;
 
@@ -56,7 +58,8 @@ class ControlBarState extends UIListenerState<ControlBar> {
       case PlaybackUIEvent.PLAYER_STATE:
       case PlaybackUIEvent.QUEUE:
       case PlaybackUIEvent.TRACK:
-        setState(() {});
+        final track = _manager.track.orElse(_PLACEHOLDER_TRACK);
+        _infoKey.currentState?.setTrack(track);
         break;
       default:
     }
@@ -95,23 +98,15 @@ class ControlBarState extends UIListenerState<ControlBar> {
                     tintColor: Colors.white70,
                     backgroundColor: Colors.transparent,
                   ),
-                  Expanded(child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        _manager.track.orElse(_PLACEHOLDER_TRACK).title,
-                        overflow: TextOverflow.clip,
-                        maxLines: 2,
-                        textAlign: TextAlign.center,
-                      ),
-                      Text(
-                        _manager.track.orElse(_PLACEHOLDER_TRACK).artist,
-                        textAlign: TextAlign.center,
-                        overflow: TextOverflow.clip,
-                        maxLines: 1,
-                      )
-                    ],
-                  ),),
+                  Expanded(
+                    child: TrackInfo(
+                      key: _infoKey,
+                      track: _manager.track.orElse(_PLACEHOLDER_TRACK),
+                      titleHeight: kToolbarHeight / 2.0,
+                      artistHeight: kToolbarHeight / 2.0,
+                      blank: 30,
+                    ),
+                  ),
                   Container(width: 56.0)
                 ],
               ),

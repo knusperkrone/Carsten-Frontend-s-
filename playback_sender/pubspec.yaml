@@ -30,6 +30,7 @@ dependencies:
   http: ^0.12.1
   tuple: ^1.0.3
   async: ^2.4.1
+  fading_edge_scrollview: ^1.1.1
   path_provider: ^1.6.10
   json_annotation: ^3.0.1
   shared_preferences: ^0.5.7+3
