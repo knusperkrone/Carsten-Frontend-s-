@@ -90,7 +90,7 @@ public class PlaybackPlugin: NSObject, FlutterPlugin, CastConnectionListener {
         let backgroundIsolate = FlutterEngine.init(name: "CarstenIsolate", project: nil, allowHeadlessExecution: true)
         
         // Register callback channels
-        backgroundMessageChannel = FlutterBasicMessageChannel(name: channelMessageName, binaryMessenger: backgroundIsolate.binaryMessenger, codec: FlutterStringCodec.sharedInstance())
+        backgroundMessageChannel = FlutterBasicMessageChannel(name: channelMessageName, binaryMessenger: backgroundIsolate.binaryMessenger, codec: FlutterJSONMessageCodec.sharedInstance())
         let backgroundMethodChannel = FlutterMethodChannel(name: bgChannelMethodName, binaryMessenger: backgroundIsolate.binaryMessenger)
         // Run isolate
         let info = FlutterCallbackCache.lookupCallbackInformation(startId.int64Value)
@@ -130,10 +130,10 @@ public class PlaybackPlugin: NSObject, FlutterPlugin, CastConnectionListener {
      */
     
     public func onForeground() {
-        isForeground = true
         // Sync foreground isolate
-        backgroundMessageChannel?.sendMessage(NativeConstants.N_SYNC, reply: { (reply) in
+        backgroundMessageChannel?.sendMessage(buildIPCMessage(type:NativeConstants.N_SYNC), reply: { (reply) in
             self.foregroundMessageChannel?.sendMessage(reply)
+            self.isForeground = true
         })
     }
     
@@ -148,10 +148,17 @@ public class PlaybackPlugin: NSObject, FlutterPlugin, CastConnectionListener {
     public func onMsg(msg: String) {
         // Dispatch native message
         NSLog("\nMSG: %@", msg)
-        if (isForeground) {
-            foregroundMessageChannel?.sendMessage(msg)
+        let data = Data(msg.utf8)
+        do {
+            if let parsedMsg = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                if (isForeground) {
+                    foregroundMessageChannel?.sendMessage(parsedMsg)
+                }
+                sendToBackground(msg: parsedMsg)
+            }
+        } catch let error as NSError {
+            print("Failed to send: \(error.localizedDescription)")
         }
-        sendToBackground(msg: msg)
     }
     
     public func onCastConnecting() {
@@ -178,16 +185,18 @@ public class PlaybackPlugin: NSObject, FlutterPlugin, CastConnectionListener {
      * Helpers
      */
     
-    private func buildIPCMessage(type: String) -> String {
+    private func buildIPCMessage(type: String) -> [String: Any] {
         return buildIPCMessage(type: type, data: "")
     }
     
-    private func buildIPCMessage(type: String, data: String) -> String {
-        return String.init(format: "{\"type\":\"%@\",\"data\":\"%@\"}", type, data)
-        
+    private func buildIPCMessage(type: String, data: String) -> [String: Any] {
+        return [
+            "type": type,
+            "data": data,
+        ]
     }
     
-    private func sendToBackground(msg: String) {
+    private func sendToBackground(msg: [String: Any]) {
         backgroundMessageChannel?.sendMessage(msg)
     }
 }

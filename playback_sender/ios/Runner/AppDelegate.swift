@@ -19,7 +19,7 @@ import GoogleCast
        
         // Get foreground channel
         let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
-        let foregroundMessageChannel = FlutterBasicMessageChannel(name: "interfaceag/cast_context/service_message", binaryMessenger: controller.binaryMessenger, codec: FlutterStringCodec.sharedInstance())
+        let foregroundMessageChannel = FlutterBasicMessageChannel(name: "interfaceag/cast_context/service_message", binaryMessenger: controller.binaryMessenger, codec: FlutterJSONMessageCodec.sharedInstance())
         
         // Register app plugin
         PlaybackPlugin.register(with: self.registrar(forPlugin: "interface_ag.cast_plugin"))
