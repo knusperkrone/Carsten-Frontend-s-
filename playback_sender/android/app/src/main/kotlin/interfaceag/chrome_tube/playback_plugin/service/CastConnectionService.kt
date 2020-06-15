@@ -9,6 +9,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.mediarouter.media.MediaRouter
 import com.google.android.gms.cast.framework.CastContext
+import interfaceag.chrome_tube.playback_plugin.CastPlaybackContextPlugin
 import interfaceag.chrome_tube.playback_plugin.CastPlaybackContextPlugin.Companion.DISPATCHER_HANDLE_KEY
 import interfaceag.chrome_tube.playback_plugin.CastPlaybackContextPlugin.Companion.SERVICE_CHANNEL_MESSAGE_NAME
 import interfaceag.chrome_tube.playback_plugin.CastPlaybackContextPlugin.Companion.SERVICE_CHANNEL_METHOD_NAME
@@ -175,12 +176,8 @@ class CastConnectionService : Service(), CastConnectionListener, CastMessageCall
 
     override fun onReceive(msg: String) {
         val parsed = JSONObject(msg)
-        mBackgroundMessageChannel.send(parsed) {
-            if (it != null) {
-                mNotiBuilder?.build(it as JSONObject)
-            }
-            mForegroundMessageChannel?.send(parsed);
-        }
+        mForegroundMessageChannel?.send(parsed)
+        sendToBackgroundChannel(parsed)
     }
 
     @RequiresApi(Build.VERSION_CODES.ECLAIR)
