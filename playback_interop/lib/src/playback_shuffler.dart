@@ -54,10 +54,13 @@ class PlaybackShuffler {
   /// @return a new allocated and "human-randomized" list
   List<PlaybackTrack> shuffle(int seed, List<PlaybackTrack> toShuffle) {
     _mRand = new JavaRandom(seed);
-    return _shuffle(toShuffle, [
-      (t) => t.artist,
-      (t) => t.album,
-    ]);
+    if (toShuffle.length < 256) {
+      return _shuffle(toShuffle, [
+        (t) => t.artist,
+        (t) => t.album,
+      ]);
+    }
+    return _shuffle(toShuffle, [(t) => t.artist]);
   }
 
   /// Algorithm by:
