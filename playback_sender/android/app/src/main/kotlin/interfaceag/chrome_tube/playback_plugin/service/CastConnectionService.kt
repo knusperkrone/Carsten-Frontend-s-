@@ -7,6 +7,7 @@ import android.os.Binder
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.mediarouter.media.MediaRouter
 import com.google.android.gms.cast.framework.CastContext
 import interfaceag.chrome_tube.playback_plugin.CastPlaybackContextPlugin.Companion.DISPATCHER_HANDLE_KEY
 import interfaceag.chrome_tube.playback_plugin.CastPlaybackContextPlugin.Companion.SERVICE_CHANNEL_MESSAGE_NAME
@@ -122,7 +123,7 @@ class CastConnectionService : Service(), CastConnectionListener, CastMessageCall
     private fun initCastContext() {
         // All isolates are set up
         if (mCastContext == null && mIsBackgroundInit.get() && mIsBackgroundInit.get()) {
-            mCastContext = CastPlaybackContext(CastContext.getSharedInstance(this), this, this)
+            mCastContext = CastPlaybackContext(MediaRouter.getInstance(this), CastContext.getSharedInstance(this), this, this)
         }
     }
 

@@ -1,6 +1,12 @@
 package interfaceag.chrome_tube.playback_plugin.playback
 
+import android.os.Handler
+import androidx.mediarouter.media.MediaRouteSelector
+import androidx.mediarouter.media.MediaRouter
+import com.google.android.gms.cast.CastDevice
+import com.google.android.gms.cast.CastMediaControlIntent
 import com.google.android.gms.cast.framework.*
+import interfaceag.chrome_tube.playback_plugin.CastOptionsProvider
 
 interface CastConnectionListener {
     fun onCastConnecting()
@@ -9,7 +15,7 @@ interface CastConnectionListener {
     fun onCastFailed()
 }
 
-class CastPlaybackContext(private val castContext: CastContext, messageCallback: CastMessageCallback, private val connectionListener: CastConnectionListener) : SessionManagerListener<CastSession>, CastStateListener {
+class CastPlaybackContext(private val router: MediaRouter, private val castContext: CastContext, messageCallback: CastMessageCallback, private val connectionListener: CastConnectionListener) : SessionManagerListener<CastSession>, CastStateListener {
 
     private val castChannel = CastPlaybackChannel(castContext.sessionManager, messageCallback)
     private var isCastConnected = false
@@ -46,10 +52,45 @@ class CastPlaybackContext(private val castContext: CastContext, messageCallback:
      * Simplified CastStates
      */
 
+    private fun checkRoute(route: MediaRouter.RouteInfo?): Boolean {
+        if (route?.extras != null) {
+            val device = CastDevice.getFromBundle(route.extras)
+            if (device != null && route.description == "SpotiTube") {
+                return true
+            }
+        }
+        return false
+    }
+
     private fun restoreSession() {
         val sessionManager = castContext.sessionManager
         if (sessionManager.currentCastSession != null) {
             onSessionResumed(sessionManager.currentCastSession, false)
+        } else {
+            val selector = MediaRouteSelector.Builder()
+                    .addControlCategory(CastMediaControlIntent.categoryForCast(CastOptionsProvider.RECEIVER_ID))
+                    .build()
+
+            val available = router.isRouteAvailable(selector, MediaRouter.AVAILABILITY_FLAG_IGNORE_DEFAULT_ROUTE)
+            if (available) {
+                for (route in router.routes) {
+                    if (checkRoute(route)) {
+                        router.selectRoute(route!!)
+                    }
+                }
+            } else {
+                val callback: MediaRouter.Callback = object : MediaRouter.Callback() {
+                    override fun onRouteAdded(router: MediaRouter?, route: MediaRouter.RouteInfo?) {
+                        if (checkRoute(route)) {
+                            router?.selectRoute(route!!)
+                        }
+                        super.onRouteAdded(router, route)
+                    }
+                }
+                // Perform active-scan for 2500ms
+                router.addCallback(selector, callback, MediaRouter.CALLBACK_FLAG_PERFORM_ACTIVE_SCAN)
+                Handler().postDelayed({ router.removeCallback(callback) }, 2500)
+            }
         }
     }
 
