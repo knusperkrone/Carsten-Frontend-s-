@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chrome_tube/spotify/spotify.dart';
 import 'package:chrome_tube/ui/common/common.dart';
+import 'package:chrome_tube/ui/common/localiation_state.dart';
 import 'package:chrome_tube/ui/page_playlist/playlist_header.dart';
 import 'package:chrome_tube/ui/pages.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +16,7 @@ class PlaylistPage extends StatefulWidget {
   State createState() => _PlaylistPageState();
 }
 
-class _PlaylistPageState extends State<PlaylistPage> {
+class _PlaylistPageState extends CachingState<PlaylistPage> {
   bool _isFetching = false;
   final _headerKey = new GlobalKey<PlaylistHeaderState>();
   final _controlKey = new GlobalKey<ControlBarState>();
@@ -67,7 +68,6 @@ class _PlaylistPageState extends State<PlaylistPage> {
   }
 
   Widget _buildTrackTile(BuildContext context) {
-    final theme = Theme.of(context);
     return ListTile(
       contentPadding: const EdgeInsets.only(top: 5.0, left: 15.0),
       leading: Container(
@@ -83,8 +83,8 @@ class _PlaylistPageState extends State<PlaylistPage> {
         ),
       ),
       title: Text(
-        'Songs',
-        style: Theme.of(context)
+        locale.translate('songs'),
+        style: theme
             .textTheme
             .subtitle1
             .copyWith(fontWeight: FontWeight.bold),
@@ -107,7 +107,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
       ),
       title: Text(
         playlist.name,
-        style: Theme.of(context)
+        style: theme
             .textTheme
             .subtitle1
             .copyWith(fontWeight: FontWeight.bold),
@@ -131,7 +131,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Theme.of(context).accentColor,
+        backgroundColor: theme.accentColor,
         heroTag: 'second',
         child: Icon(Icons.search),
         onPressed: _onSearch,

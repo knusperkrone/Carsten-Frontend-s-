@@ -16,9 +16,7 @@ class ControlBar extends StatefulWidget {
 }
 
 class ControlBarState extends UIListenerState<ControlBar> {
-  // ignore: non_constant_identifier_names
-  static final _PLACEHOLDER_TRACK =
-      PlaybackTrack.dummy(title: 'No Track', artist: '');
+  PlaybackTrack _trackSentinel;
 
   final _mediaKey = new GlobalKey<CastButtonWidgetState>();
   final _infoKey = new GlobalKey<TrackInfoState>();
@@ -58,7 +56,7 @@ class ControlBarState extends UIListenerState<ControlBar> {
       case PlaybackUIEvent.PLAYER_STATE:
       case PlaybackUIEvent.QUEUE:
       case PlaybackUIEvent.TRACK:
-        final track = _manager.track.orElse(_PLACEHOLDER_TRACK);
+        final track = _manager.track.orElse(_trackSentinel);
         _infoKey.currentState?.setTrack(track);
         break;
       default:
@@ -79,9 +77,14 @@ class ControlBarState extends UIListenerState<ControlBar> {
 
   @override
   Widget build(BuildContext context) {
+    _trackSentinel ??= new PlaybackTrack.dummy(
+      title: locale.translate('no_song_title'),
+      artist: '',
+    );
+
     return Container(
       height: kToolbarHeight,
-      color: Theme.of(context).primaryColor,
+      color: theme.primaryColor,
       child: Column(
         children: <Widget>[
           InkWell(
@@ -101,7 +104,7 @@ class ControlBarState extends UIListenerState<ControlBar> {
                   Expanded(
                     child: TrackInfo(
                       key: _infoKey,
-                      track: _manager.track.orElse(_PLACEHOLDER_TRACK),
+                      track: _manager.track.orElse(_trackSentinel),
                       titleHeight: kToolbarHeight / 2.0,
                       artistHeight: kToolbarHeight / 2.0,
                       blank: 30,

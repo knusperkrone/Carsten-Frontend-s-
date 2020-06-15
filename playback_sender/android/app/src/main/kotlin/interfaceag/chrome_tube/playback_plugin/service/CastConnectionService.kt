@@ -174,8 +174,12 @@ class CastConnectionService : Service(), CastConnectionListener, CastMessageCall
      */
 
     override fun onReceive(msg: String) {
-        sendToBackgroundChannel(msg)
-        mForegroundMessageChannel?.send(msg)
+        mBackgroundMessageChannel.send(msg) {
+            if (it != null) {
+                mNotiBuilder?.build(it)
+            }
+            mForegroundMessageChannel?.send(msg);
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.ECLAIR)

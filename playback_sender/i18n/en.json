@@ -1,0 +1,14 @@
+{
+  "error": "Error",
+  "retry": "Retry",
+  "shuffle": "Shuffle",
+  "queue_button": "Queue Track",
+  "songs": "Songs",
+  "search": "Seach",
+  "current_title": "Current title",
+  "next_prio_queue": "From queue",
+  "next_queue": "Next Songs",
+  "playlist_last": "You frequently listened",
+  "playlist_all": "Your playlists",
+  "no_song_title": "No song"
+}

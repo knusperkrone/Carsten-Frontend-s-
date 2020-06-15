@@ -7,6 +7,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chrome_tube/playback/playback.dart';
 import 'package:chrome_tube/spotify/spotify.dart';
 import 'package:chrome_tube/ui/common/control/control_bar.dart';
+import 'package:chrome_tube/ui/common/localiation_state.dart';
 import 'package:chrome_tube/ui/common/transformer.dart';
 import 'package:chrome_tube/ui/page_track/track_page.dart';
 import 'package:edit_distance/edit_distance.dart';
@@ -16,19 +17,19 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 part 'search_page.g.dart';
+
 part 'search_result.dart';
 
 class SearchPage extends StatefulWidget {
   final SharedPreferences prefs;
 
-  // ignore: prefer_const_constructors_in_immutables
-  SearchPage(this.prefs);
+  const SearchPage(this.prefs);
 
   @override
   State createState() => SearchPageState();
 }
 
-class SearchPageState extends State<SearchPage> {
+class SearchPageState extends CachingState<SearchPage> {
   static const _MAX_SEARCH_SIZE = 10;
   static const _SEARCH_PREFS_KEY = 'SEARCH_PREF_KEY';
 
@@ -168,7 +169,32 @@ class SearchPageState extends State<SearchPage> {
    * Build
    */
 
-  Widget _buildTile(BuildContext context, int i) {
+  Widget _buildSearchedTitle(BuildContext context, int i) {
+    final result = _prevSearches.skip(i).first;
+    return Slidable(
+      actionPane: const SlidableDrawerActionPane(),
+      actions: result.type != SearchType.TRACK
+          ? []
+          : <Widget>[
+              IconSlideAction(
+                caption: locale.translate('queue_button'),
+                color: theme.accentColor,
+                icon: Icons.queue_music,
+                onTap: () => _onTrackSecondary(result.serialized),
+              ),
+            ],
+      child: SearchResult(
+        parent: this,
+        searchResult: result,
+        trailing: IconButton(
+          icon: Icon(Icons.close),
+          onPressed: () => onClose(result),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildResultTile(BuildContext context, int i) {
     final curr = _results[i];
     final key = GlobalKey<SlidableState>();
     Widget tile = SearchResult(
@@ -189,8 +215,8 @@ class SearchPageState extends State<SearchPage> {
         actionPane: const SlidableDrawerActionPane(),
         actions: <Widget>[
           IconSlideAction(
-            caption: 'Queue Track',
-            color: Theme.of(context).accentColor,
+            caption: locale.translate('queue_button'),
+            color: theme.accentColor,
             icon: Icons.queue_music,
             onTap: () => _onTrackSecondary(curr.serialized),
           ),
@@ -208,8 +234,8 @@ class SearchPageState extends State<SearchPage> {
         title: TextField(
           autofocus: true,
           controller: _textController,
-          decoration: const InputDecoration(
-            hintText: 'Search',
+          decoration: InputDecoration(
+            hintText: locale.translate('search'),
           ),
         ),
       ),
@@ -221,40 +247,16 @@ class SearchPageState extends State<SearchPage> {
             ? <Widget>[
                 SliverList(
                   delegate: SliverChildBuilderDelegate(
-                    (context, i) {
-                      final result = _prevSearches.skip(i).first;
-                      return Slidable(
-                        actionPane: const SlidableDrawerActionPane(),
-                        actions: result.type != SearchType.TRACK
-                            ? []
-                            : <Widget>[
-                                IconSlideAction(
-                                  caption: 'Queue Track',
-                                  color: Theme.of(context).accentColor,
-                                  icon: Icons.queue_music,
-                                  onTap: () =>
-                                      _onTrackSecondary(result.serialized),
-                                ),
-                              ],
-                        child: SearchResult(
-                          parent: this,
-                          searchResult: result,
-                          trailing: IconButton(
-                            icon: Icon(Icons.close),
-                            onPressed: () => onClose(result),
-                          ),
-                        ),
-                      );
-                    },
+                    _buildSearchedTitle,
                     childCount: _prevSearches.length,
                   ),
                 ),
               ]
             : <Widget>[
                 SliverList(
-                  delegate: SliverChildListDelegate(
-                    List.generate(
-                        _results.length, (i) => _buildTile(context, i)),
+                  delegate: SliverChildBuilderDelegate(
+                    _buildResultTile,
+                    childCount: _results.length,
                   ),
                 ),
               ],

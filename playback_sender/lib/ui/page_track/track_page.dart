@@ -2,10 +2,12 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chrome_tube/localization.dart';
 import 'package:chrome_tube/playback/playback.dart';
 import 'package:chrome_tube/spotify/spotify.dart';
 import 'package:chrome_tube/spotify/src/dto/spotify_featured.dart';
 import 'package:chrome_tube/ui/common/control/control_bar.dart';
+import 'package:chrome_tube/ui/common/localiation_state.dart';
 import 'package:chrome_tube/ui/common/transformer.dart';
 import 'package:chrome_tube/ui/common/transitions.dart';
 import 'package:chrome_tube/ui/tracking/feature_service.dart';
@@ -43,7 +45,7 @@ class TrackPage extends StatefulWidget {
     } else if (feature is SpotifyAlbum) {
       navigateAlbum(context, feature);
     } else {
-      print('Invalid feature: $feature');
+      throw StateError('Invalid type: $feature');
     }
   }
 
@@ -94,7 +96,8 @@ class TrackPage extends StatefulWidget {
     final palette = PaletteGenerator.fromColors(
         [PaletteColor(Theme.of(context).primaryColor, 1)]);
     return Navigator.push<void>(context, new FadeInRoute(builder: (context) {
-      return new TrackPage._(trackStream, palette, 'Songs', null,
+      final songs = AppLocalizations.of(context).translate('songs');
+      return new TrackPage._(trackStream, palette, songs, null,
           appBarImageProvider, appBarHeight, const Optional.empty(),
           key: key);
     }));
@@ -104,7 +107,7 @@ class TrackPage extends StatefulWidget {
   State createState() => new TrackPageState();
 }
 
-class TrackPageState extends State<TrackPage> {
+class TrackPageState extends CachingState<TrackPage> {
   static const TEXT_SIZE = 40.0;
   List<SpotifyTrack> _tracks = [];
   StreamSubscription _streamSub;
@@ -123,9 +126,10 @@ class TrackPageState extends State<TrackPage> {
         _tracks.addAll(fetched);
       }
       if (mounted) {
+        _text = locale.translate('shuffle');
         setState(() {
           _tracks = _tracks;
-          _text = 'Shuffle';
+          _text = _text;
         });
       }
     });
@@ -187,8 +191,8 @@ class TrackPageState extends State<TrackPage> {
       actionPane: const SlidableDrawerActionPane(),
       actions: <Widget>[
         IconSlideAction(
-          caption: 'Queue Track',
-          color: Theme.of(context).accentColor,
+          caption: locale.translate('queue_button'),
+          color: theme.accentColor,
           icon: Icons.queue_music,
           onTap: () => _onTrackSecondary(curr),
         ),

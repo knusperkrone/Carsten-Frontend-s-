@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chrome_tube/playback/playback.dart';
 import 'package:chrome_tube/ui/common/common.dart';
+import 'package:chrome_tube/ui/common/localiation_state.dart';
 import 'package:chrome_tube/ui/common/track_info.dart';
 import 'package:chrome_tube/ui/common/ui_listener_state.dart';
 import 'package:chrome_tube/ui/page_control/track_app_bar.dart';
@@ -30,9 +31,10 @@ class ControlPage extends StatefulWidget {
   const ControlPage._(this.baseColor);
 
   static Future<void> navigate(BuildContext context) async {
+    final theme = Theme.of(context);
     final baseColor = PlaybackManager().track.isPresent
-        ? Theme.of(context).canvasColor
-        : Theme.of(context).primaryColor;
+        ? theme.canvasColor
+        : theme.primaryColor;
     return Navigator.push<void>(context,
         new MaterialPageRoute(builder: (context) {
       return new ControlPage._(baseColor);
@@ -113,7 +115,7 @@ class ControlPageState extends UIListenerState<ControlPage>
             await PaletteGenerator.fromImageProvider(_imageProvider);
         color = (palette.vibrantColor ?? palette.dominantColor).color;
       } else {
-        color = Theme.of(context).primaryColor;
+        color = theme.primaryColor;
       }
       _animateColor(color);
     }
@@ -203,7 +205,7 @@ class ControlPageState extends UIListenerState<ControlPage>
               children: <Widget>[
                 TrackGradient(
                   colorTween: _colorTween,
-                  canvasColor: Theme.of(context).canvasColor,
+                  canvasColor: theme.canvasColor,
                   controller: _animController,
                 ),
                 AnimatedOpacity(
@@ -240,7 +242,7 @@ class ControlPageState extends UIListenerState<ControlPage>
       ),
       bottomNavigationBar: BottomAppBar(
         elevation: 0.0,
-        color: Theme.of(context).canvasColor,
+        color: theme.canvasColor,
         child: Container(
           height: kToolbarHeight,
           child: Center(

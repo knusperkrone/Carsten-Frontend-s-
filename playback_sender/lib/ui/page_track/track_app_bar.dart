@@ -32,9 +32,10 @@ class TrackPageAppBar extends SliverPersistentHeaderDelegate {
   @override
   Widget build(
       BuildContext context, double shrinkOffset, bool overlapsContent) {
+    final theme = Theme.of(context);
     final qWidth = MediaQuery.of(context).size.width;
 
-    final Color gradientVal = gradientColor ?? Theme.of(context).primaryColor;
+    final Color gradientVal = gradientColor ?? theme.primaryColor;
     final double colorRelation = min(0.2, shrinkOffset / expandedHeight);
     final Color gradientStart = new Color.fromARGB(
       255,
@@ -53,11 +54,7 @@ class TrackPageAppBar extends SliverPersistentHeaderDelegate {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               stops: const [0.0, 0.8, 0.8],
-              colors: [
-                gradientStart,
-                Theme.of(context).canvasColor,
-                Colors.transparent
-              ],
+              colors: [gradientStart, theme.canvasColor, Colors.transparent],
             ),
           ),
         ),
@@ -91,9 +88,7 @@ class TrackPageAppBar extends SliverPersistentHeaderDelegate {
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
                             owner,
-                            style: Theme.of(context)
-                                .textTheme
-                                .subtitle1
+                            style: theme.textTheme.subtitle1
                                 .copyWith(color: Colors.white),
                           ),
                         ),
@@ -111,10 +106,7 @@ class TrackPageAppBar extends SliverPersistentHeaderDelegate {
               child: Text(
                 name,
                 textAlign: TextAlign.center,
-                style: Theme.of(context)
-                    .textTheme
-                    .headline6
-                    .copyWith(color: Colors.white),
+                style: theme.textTheme.headline6.copyWith(color: Colors.white),
               ),
             ),
           ),
@@ -131,7 +123,7 @@ class TrackPageAppBar extends SliverPersistentHeaderDelegate {
                 borderRadius: BorderRadius.circular(20),
               ),
               elevation: 5,
-              color: Theme.of(context).accentColor,
+              color: theme.accentColor,
               child: SizedBox(
                 height: 47.0,
                 width: qWidth / 1.5,

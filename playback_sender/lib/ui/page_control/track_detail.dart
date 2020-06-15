@@ -9,11 +9,9 @@ class TrackDetails extends StatefulWidget {
   State<StatefulWidget> createState() => new TrackDetailsState();
 }
 
-class TrackDetailsState extends State<TrackDetails> {
-  // ignore: non_constant_identifier_names
-  static final _PLACEHOLDER_TRACK =
-      new PlaybackTrack.dummy(title: 'No Song', artist: '');
+class TrackDetailsState extends CachingState<TrackDetails> {
   final _infoKey = new GlobalKey<TrackInfoState>();
+  PlaybackTrack _trackSentinel;
 
   Optional<PlaybackTrack> _track;
 
@@ -24,23 +22,28 @@ class TrackDetailsState extends State<TrackDetails> {
   }
 
   void setTrack(Optional<PlaybackTrack> track) {
-    _infoKey.currentState?.setTrack(track.orElse(_PLACEHOLDER_TRACK));
+    _infoKey.currentState?.setTrack(track.orElse(_trackSentinel));
   }
 
   @override
   Widget build(BuildContext context) {
+    _trackSentinel ??= new PlaybackTrack.dummy(
+      title: locale.translate('no_song_title'),
+      artist: '',
+    );
+
     return Container(
       padding: EdgeInsets.all(widget.padding),
       width: double.infinity,
       child: TrackInfo(
         key: _infoKey,
-        track: _track.orElse(_PLACEHOLDER_TRACK),
+        track: _track.orElse(_trackSentinel),
         titleHeight: 35,
         artistHeight: 25,
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
-        titleStyle: Theme.of(context).textTheme.headline6,
-        artistStyle: Theme.of(context).textTheme.subtitle1,
+        titleStyle: theme.textTheme.headline6,
+        artistStyle: theme.textTheme.subtitle1,
         blank: 50,
       ),
     );

@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chrome_tube/playback/playback.dart';
+import 'package:chrome_tube/ui/common/localiation_state.dart';
 import 'package:chrome_tube/utils/forked/reorderable_sliver/reorderable_sliver.dart';
 import 'package:flutter/material.dart';
 import 'package:playback_interop/playback_interop.dart';
@@ -11,38 +12,38 @@ class ReorderTrackList extends StatefulWidget {
   State createState() => ReorderTrackListState();
 }
 
-class ReorderTrackListState extends State<ReorderTrackList>
+class ReorderTrackListState extends CachingState<ReorderTrackList>
     with SingleTickerProviderStateMixin {
   // ignore: non_constant_identifier_names
   static final _PLACEHOLDER_TRACK =
       new PlaybackTrack.dummy(artist: '', coverUrl: '', title: '');
 
   final _manager = new PlaybackManager();
-  List<PlaybackTrack> _prioTracks;
-  List<PlaybackTrack> _queueTracks;
+  List<PlaybackTrack> _shadowPrioTracks;
+  List<PlaybackTrack> _shadowQueueTracks;
   AnimationController _animController;
 
   @override
   void initState() {
     super.initState();
-    _prioTracks = List.of(_manager.prioTracks);
-    _queueTracks = List.of(_manager.queueTracks);
+    _shadowPrioTracks = List.of(_manager.prioTracks);
+    _shadowQueueTracks = List.of(_manager.queueTracks);
 
     _animController = new AnimationController(
         vsync: this, duration: const Duration(milliseconds: 400));
-    _animController.value = _prioTracks.isEmpty ? 0.0 : 1.0;
+    _animController.value = _shadowPrioTracks.isEmpty ? 0.0 : 1.0;
   }
 
   void rebuild() {
     setState(() {
-      _prioTracks = List.of(_manager.prioTracks);
-      _queueTracks = List.of(_manager.queueTracks);
+      _shadowPrioTracks = List.of(_manager.prioTracks);
+      _shadowQueueTracks = List.of(_manager.queueTracks);
       _animateQueueText();
     });
   }
 
   void _animateQueueText() {
-    if (_prioTracks.isEmpty) {
+    if (_shadowPrioTracks.isEmpty) {
       _animController.reverse();
     } else {
       _animController.forward();
@@ -53,7 +54,7 @@ class ReorderTrackListState extends State<ReorderTrackList>
    * Ordering
    */
 
-  bool _canReorder(int i) => i != _prioTracks.length; // Is barrier
+  bool _canReorder(int i) => i != _shadowPrioTracks.length; // Is barrier
 
   void _onStartReorder() {
     if (_animController.value == 0.0) {}
@@ -61,35 +62,36 @@ class ReorderTrackListState extends State<ReorderTrackList>
 
   void _onReorder(int startIndex, int targetIndex) {
     setState(() {
-      final startPrio = startIndex <= _prioTracks.length;
-      bool targetPrio = targetIndex <= _prioTracks.length;
+      final startPrio = startIndex <= _shadowPrioTracks.length;
+      bool targetPrio = targetIndex <= _shadowPrioTracks.length;
       // targetPrio might be wrong, as we drag on the barrier
       if ((startPrio && targetPrio) &&
-          (_prioTracks.isNotEmpty && _prioTracks.length == targetIndex)) {
+          (_shadowPrioTracks.isNotEmpty &&
+              _shadowPrioTracks.length == targetIndex)) {
         targetPrio = false;
       }
 
       // get lists
-      final startList = startPrio ? _prioTracks : _queueTracks;
-      final targetList = targetPrio ? _prioTracks : _queueTracks;
+      final startList = startPrio ? _shadowPrioTracks : _shadowQueueTracks;
+      final targetList = targetPrio ? _shadowPrioTracks : _shadowQueueTracks;
       int localStartIndex;
       int localTargetIndex;
 
       if (!startPrio && !targetPrio) {
-        localStartIndex = startIndex - (_prioTracks.length - 1);
-        localTargetIndex = targetIndex - (_prioTracks.length - 1);
-        startIndex -= _prioTracks.length - 1;
-        targetIndex -= _prioTracks.length - 1;
+        localStartIndex = startIndex - (_shadowPrioTracks.length - 1);
+        localTargetIndex = targetIndex - (_shadowPrioTracks.length - 1);
+        startIndex -= _shadowPrioTracks.length - 1;
+        targetIndex -= _shadowPrioTracks.length - 1;
       } else if (!startPrio && targetPrio) {
-        localStartIndex = startIndex - (_prioTracks.length - 1);
+        localStartIndex = startIndex - (_shadowPrioTracks.length - 1);
         localTargetIndex = targetIndex;
-        startIndex -= _prioTracks.length - 1;
+        startIndex -= _shadowPrioTracks.length - 1;
         // targetIndex = targetIndex;
       } else if (startPrio && !targetPrio) {
         localStartIndex = startIndex;
-        localTargetIndex = targetIndex - (_prioTracks.length - 2);
+        localTargetIndex = targetIndex - (_shadowPrioTracks.length - 2);
         // startIndex = startIndex;
-        targetIndex -= _prioTracks.length - 2;
+        targetIndex -= _shadowPrioTracks.length - 2;
       } else {
         localStartIndex = startIndex;
         localTargetIndex = targetIndex;
@@ -107,33 +109,32 @@ class ReorderTrackListState extends State<ReorderTrackList>
    */
 
   int get trackCount {
-    if (_queueTracks.isEmpty) {
-      return _prioTracks.length;
+    if (_shadowQueueTracks.isEmpty) {
+      return _shadowPrioTracks.length;
     }
-    int count = _prioTracks.length;
-    count += _queueTracks.length - _manager.trackIndex; // rest list
+    int count = _shadowPrioTracks.length;
+    count += _shadowQueueTracks.length - _manager.trackIndex; // rest list
     return count;
   }
 
   Widget _buildTile(BuildContext context, int i) {
     PlaybackTrack curr;
-    if (i < _prioTracks.length) {
-      curr = _prioTracks[i];
-    } else if (i == _prioTracks.length) {
+    if (i < _shadowPrioTracks.length) {
+      curr = _shadowPrioTracks[i];
+    } else if (i == _shadowPrioTracks.length) {
       // Barrier
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 7.0),
         child: Text(
-          'Next song from ${_manager.playlistName}:',
-          style: Theme.of(context).textTheme.headline6,
+          locale.translate('next_queue'),
+          style: theme.textTheme.headline6,
         ),
       );
     } else {
-      final offset = _manager.trackIndex + i - _prioTracks.length;
-      curr = _queueTracks[offset];
+      final offset = _manager.trackIndex + i - _shadowPrioTracks.length;
+      curr = _shadowQueueTracks[offset];
     }
 
-    final theme = Theme.of(context);
     return SafeArea(
       top: false,
       bottom: false,
@@ -188,8 +189,8 @@ class ReorderTrackListState extends State<ReorderTrackList>
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 7.0),
             child: Text(
-              'Current Title:',
-              style: Theme.of(context).textTheme.headline6,
+              locale.translate('current_title'),
+              style: theme.textTheme.headline6,
             ),
           ),
         ),
@@ -217,8 +218,8 @@ class ReorderTrackListState extends State<ReorderTrackList>
                         child: Opacity(
                           opacity: _animController.value,
                           child: Text(
-                            'Next song from queue:',
-                            style: Theme.of(context).textTheme.headline6,
+                            locale.translate('next_prio_queue'),
+                            style: theme.textTheme.headline6,
                           ),
                         ),
                       )

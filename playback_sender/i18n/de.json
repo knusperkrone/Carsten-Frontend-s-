@@ -1,0 +1,14 @@
+{
+  "error": "Fehler",
+  "retry": "Nochmal versuchen",
+  "shuffle": "Zufällige Wiedergabe",
+  "queue_button": "Warteschlange",
+  "songs": "Lieblingssongs",
+  "search": "Suche",
+  "current_title": "Aktueller Titel",
+  "next_prio_queue": "Aus der Warteschlange",
+  "next_queue": "Nächste Songs",
+  "playlist_last": "Zuletzt gehört",
+  "playlist_all": "Deine Playlists",
+  "no_song_title": "Kein Song"
+}

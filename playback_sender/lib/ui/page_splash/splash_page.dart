@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:chrome_tube/playback/playback.dart';
 import 'package:chrome_tube/spotify/spotify.dart';
+import 'package:chrome_tube/ui/common/localiation_state.dart';
 import 'package:chrome_tube/ui/page_playlist/playlist_page.dart';
 import 'package:chrome_tube/ui/tracking/feature_service.dart';
 import 'package:flutter/cupertino.dart';
@@ -12,7 +13,7 @@ class SplashScreen extends StatefulWidget {
   State createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
+class _SplashScreenState extends CachingState<SplashScreen>
     with SingleTickerProviderStateMixin {
   static const PACKAGE_NAME = 'flutter_google_cast_button';
   static const CONNECTION_ASSETS = [
@@ -88,7 +89,6 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return new Scaffold(
       body: Center(
         child: _errorMsg == null
@@ -103,13 +103,19 @@ class _SplashScreenState extends State<SplashScreen>
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  Text('Error:', style: theme.textTheme.headline6),
-                  Text(_errorMsg,
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.headline6
-                          .copyWith(color: theme.errorColor)),
+                  Text(
+                    "${locale.translate('error')}:",
+                    style: theme.textTheme.headline6,
+                  ),
+                  Text(
+                    _errorMsg,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.headline6.copyWith(
+                      color: theme.errorColor,
+                    ),
+                  ),
                   OutlineButton(
-                    child: const Text('Retry'),
+                    child: Text(locale.translate('error')),
                     onPressed: _initToken,
                   ),
                 ],
