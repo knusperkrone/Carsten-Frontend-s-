@@ -138,7 +138,7 @@ class CastPlaybackContextPlugin(private val mContext: Context, messenger: Binary
 
 class ResultServiceConnection(messenger: BinaryMessenger) : ServiceConnection {
     private val mForegroundMethodChannel = MethodChannel(messenger, CastPlaybackContextPlugin.SERVICE_CHANNEL_METHOD_NAME)
-    private val mForegroundMessageChannel = BasicMessageChannel<String>(messenger, CastPlaybackContextPlugin.SERVICE_CHANNEL_MESSAGE_NAME, StringCodec.INSTANCE)
+    private val mForegroundMessageChannel = BasicMessageChannel<Any>(messenger, CastPlaybackContextPlugin.SERVICE_CHANNEL_MESSAGE_NAME, JSONMessageCodec.INSTANCE)
 
     var result: MethodChannel.Result? = null
     var service: CastConnectionService? = null

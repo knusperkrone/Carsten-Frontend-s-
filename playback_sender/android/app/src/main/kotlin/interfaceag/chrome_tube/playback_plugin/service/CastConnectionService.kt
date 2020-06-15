@@ -22,14 +22,12 @@ import interfaceag.chrome_tube.playback_plugin.notification.NativeNotificationBu
 import interfaceag.chrome_tube.playback_plugin.playback.CastConnectionListener
 import interfaceag.chrome_tube.playback_plugin.playback.CastMessageCallback
 import interfaceag.chrome_tube.playback_plugin.playback.CastPlaybackContext
-import io.flutter.plugin.common.BasicMessageChannel
-import io.flutter.plugin.common.MethodChannel
-import io.flutter.plugin.common.PluginRegistry
-import io.flutter.plugin.common.StringCodec
+import io.flutter.plugin.common.*
 import io.flutter.view.FlutterCallbackInformation
 import io.flutter.view.FlutterMain
 import io.flutter.view.FlutterNativeView
 import io.flutter.view.FlutterRunArguments
+import org.json.JSONObject
 import java.util.concurrent.atomic.AtomicBoolean
 
 
@@ -51,8 +49,8 @@ class CastConnectionService : Service(), CastConnectionListener, CastMessageCall
     private val mIsBackgroundInit: AtomicBoolean = AtomicBoolean(false)
     private val mIsForegroundInit: AtomicBoolean = AtomicBoolean(false)
 
-    private lateinit var mBackgroundMessageChannel: BasicMessageChannel<String>
-    private var mForegroundMessageChannel: BasicMessageChannel<String>? = null
+    private lateinit var mBackgroundMessageChannel: BasicMessageChannel<Any>
+    private var mForegroundMessageChannel: BasicMessageChannel<Any>? = null
 
     private var mNotiBuilder: NativeNotificationBuilder? = null
     private var mBackgroundIsolate: FlutterNativeView? = null
@@ -83,7 +81,8 @@ class CastConnectionService : Service(), CastConnectionListener, CastMessageCall
 
         // Register callback channels
         val backgroundMethodChannel = MethodChannel(mBackgroundIsolate, SERVICE_CHANNEL_METHOD_NAME)
-        mBackgroundMessageChannel = BasicMessageChannel(mBackgroundIsolate!!, SERVICE_CHANNEL_MESSAGE_NAME, StringCodec.INSTANCE)
+
+        mBackgroundMessageChannel = BasicMessageChannel(mBackgroundIsolate!!, SERVICE_CHANNEL_MESSAGE_NAME, JSONMessageCodec.INSTANCE)
         backgroundMethodChannel.setMethodCallHandler { call, result ->
             if (call.method == "background_isolate_inited") {
                 if (mNotiBuilder != null) {
@@ -131,7 +130,7 @@ class CastConnectionService : Service(), CastConnectionListener, CastMessageCall
      * Business methods
      */
 
-    fun initUIBroadcast(messageChannel: BasicMessageChannel<String>) {
+    fun initUIBroadcast(messageChannel: BasicMessageChannel<Any>) {
         mForegroundMessageChannel = messageChannel
         mIsForegroundInit.set(true)
         initCastContext()
@@ -161,10 +160,10 @@ class CastConnectionService : Service(), CastConnectionListener, CastMessageCall
      * helpers
      */
 
-    private fun sendToBackgroundChannel(msg: String) {
+    private fun sendToBackgroundChannel(msg: JSONObject) {
         mBackgroundMessageChannel.send(msg) {
             if (it != null) {
-                mNotiBuilder?.build(it)
+                mNotiBuilder?.build(it as JSONObject)
             }
         }
     }
@@ -174,11 +173,12 @@ class CastConnectionService : Service(), CastConnectionListener, CastMessageCall
      */
 
     override fun onReceive(msg: String) {
-        mBackgroundMessageChannel.send(msg) {
+        val parsed = JSONObject(msg)
+        mBackgroundMessageChannel.send(parsed) {
             if (it != null) {
-                mNotiBuilder?.build(it)
+                mNotiBuilder?.build(it as JSONObject)
             }
-            mForegroundMessageChannel?.send(msg);
+            mForegroundMessageChannel?.send(parsed);
         }
     }
 
@@ -211,8 +211,12 @@ class CastConnectionService : Service(), CastConnectionListener, CastMessageCall
         sendToBackgroundChannel(msg)
     }
 
-    private fun buildIPCMessage(type: String, data: String = ""): String =
-            "{\"type\":\"$type\",\"$data\":\"\"}"
+    private fun buildIPCMessage(type: String, data: String = ""): JSONObject {
+        val msg = JSONObject()
+        msg.put("type", type)
+        msg.put("data", data)
+        return msg
+    }
 
     /*
      * Helper class

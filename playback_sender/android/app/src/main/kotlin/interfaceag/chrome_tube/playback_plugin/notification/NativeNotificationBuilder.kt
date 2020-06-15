@@ -15,7 +15,6 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.palette.graphics.Palette
-import com.beust.klaxon.Klaxon
 import interfaceag.chrome_tube.MainActivity
 import interfaceag.chrome_tube.R
 import interfaceag.chrome_tube.playback_plugin.NativeConstants
@@ -25,6 +24,7 @@ import interfaceag.chrome_tube.playback_plugin.notification.PlaybackNotification
 import interfaceag.chrome_tube.playback_plugin.notification.PlaybackNotificationReceiver.Companion.PREVIOUS_INTENT_NAME
 import interfaceag.chrome_tube.playback_plugin.notification.PlaybackNotificationReceiver.Companion.STOP_INTENT_NAME
 import interfaceag.chrome_tube.playback_plugin.service.CastConnectionService
+import org.json.JSONObject
 
 
 private data class TrackIndicatorMessage(val title: String, val artist: String,
@@ -50,7 +50,6 @@ class NativeNotificationBuilder(private val mContext: Context, private val mServ
     }
 
 
-    private val mParser = Klaxon()
     private val mNotiManager = NotificationManagerCompat.from(mContext)
 
     init {
@@ -59,23 +58,22 @@ class NativeNotificationBuilder(private val mContext: Context, private val mServ
     }
 
     @RequiresApi(Build.VERSION_CODES.FROYO)
-    fun build(plainMsg: String) {
+    fun build(parsedMsg: JSONObject) {
         // Proguard workaround
         val noti: Notification?
-        val parsedMsg = mParser.parse<Map<String, Any>>(plainMsg)!!
         val data = parsedMsg["data"] as String
 
         when (parsedMsg["type"]) {
             NativeConstants.N_MSG_INFO -> noti = buildUserNotification(data)
             NativeConstants.N_MSG_TRACK -> {
-                val dataObj = mParser.parse<Map<String, Any>>(data)!!
+                val dataObj = JSONObject(data)
                 val msg = TrackIndicatorMessage(
-                        dataObj["title"] as String,
-                        dataObj["artist"] as String,
-                        dataObj["playlistName"] as String,
-                        dataObj["coverB64"] as String?,
-                        dataObj["isBuffering"] as Boolean,
-                        dataObj["isPlaying"] as Boolean
+                        dataObj.getString("title"),
+                        dataObj.getString("artist"),
+                        dataObj.getString("playlistName"),
+                        dataObj.getString("coverB64"),
+                        dataObj.getBoolean("isBuffering"),
+                        dataObj.getBoolean("isPlaying")
                 )
                 noti = buildTrackNoti(msg)
             }

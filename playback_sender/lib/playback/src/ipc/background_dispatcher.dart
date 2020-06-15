@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:playback_interop/playback_interop.dart';
@@ -17,15 +15,14 @@ void backgroundDispatchEntry() {
   WidgetsFlutterBinding.ensureInitialized();
 
   const methodChannel = MethodChannel(NativeConstants.CHANNEL_METHOD_NAME);
-  const ipcChannel =
-      BasicMessageChannel(NativeConstants.CHANNEL_MESSAGE_NAME, StringCodec());
+  const ipcChannel = BasicMessageChannel<dynamic>(NativeConstants.CHANNEL_MESSAGE_NAME, JSONMessageCodec());
   final dispatcher = new BackgroundDispatcher();
   final manager = new PlaybackManager();
   manager.isBackground = true;
 
   ipcChannel.setMessageHandler(dispatcher.dispatchMessage);
-  methodChannel.invokeMethod<void>('background_isolate_inited',
-      ['Mit einem Chromecast verbinden!']); // Native init cast_context
+  methodChannel
+      .invokeMethod<void>('background_isolate_inited', ['Mit einem Chromecast verbinden!']); // Native init cast_context
 }
 
 /*
@@ -57,8 +54,7 @@ class BackgroundDispatcher extends MessageDispatcher {
       case NativeConstants.N_DISCONNECTED:
       case NativeConstants.N_FAILED:
         manager.onConnect(new ReadyDto(false));
-        return new CastMessage(
-            NativeConstants.N_MSG_INFO, 'Mit einem Chromecast verbinden!');
+        return new CastMessage(NativeConstants.N_MSG_INFO, 'Mit einem Chromecast verbinden!');
       case NativeConstants.N_SYNC:
         return new CastMessage(NativeConstants.N_SYNC, manager.serialize());
       case NativeConstants.N_PB_TOGGLE:
@@ -82,7 +78,7 @@ class BackgroundDispatcher extends MessageDispatcher {
   }
 
   @override
-  Future<String> dispatchPlaybackMessage(CastMessage<String> msg) async {
+  Future<Map<String, dynamic>> dispatchPlaybackMessage(CastMessage<String> msg) async {
     super.dispatchPlaybackMessage(msg);
 
     switch (msg.type) {
@@ -92,9 +88,7 @@ class BackgroundDispatcher extends MessageDispatcher {
       case CafToSenderConstants.PB_QUEUE:
         final msg = await TrackIndicatorNoti.withTrack(manager);
         if (msg != null) {
-          return jsonEncode(
-            new CastMessage(NativeConstants.N_MSG_TRACK, msg),
-          );
+          return new CastMessage(NativeConstants.N_MSG_TRACK, msg).toJson();
         }
     }
     return null;

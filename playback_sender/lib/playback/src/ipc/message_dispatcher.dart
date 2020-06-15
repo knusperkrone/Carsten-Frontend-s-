@@ -30,22 +30,21 @@ abstract class MessageDispatcher {
    * Business methods
    */
 
-  Future<String> dispatchMessage(String sourceMsg) async {
-    final msg = new CastMessage<String>.fromJson(
-        jsonDecode(sourceMsg) as Map<String, dynamic>);
+  Future<Map<String, dynamic>> dispatchMessage(dynamic sourceMsg) async {
+    final msg = new CastMessage<String>.fromJson(sourceMsg as Map<String, dynamic>);
 
     final ipcResponse = await dispatchIPCMessage(msg);
     if (ipcResponse != null) {
       if (ipcResponse == IPC_MESSAGE_HANDLED) {
         return null;
       }
-      return jsonEncode(ipcResponse);
+      return ipcResponse.toJson();
     }
     return dispatchPlaybackMessage(msg);
   }
 
   @protected
-  Future<String> dispatchPlaybackMessage(CastMessage<String> msg) {
+  Future<Map<String, dynamic>> dispatchPlaybackMessage(CastMessage<String> msg) {
     Map<String, dynamic> json;
     try {
       json = jsonDecode(msg.data) as Map<String, dynamic>;

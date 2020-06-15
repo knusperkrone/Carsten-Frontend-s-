@@ -88,10 +88,10 @@ dependencies {
 
     // MediaRoute-Button
     implementation 'androidx.mediarouter:mediarouter:1.1.0'
-    api 'com.google.android.gms:play-services-cast-framework:18.0.0'
+    api 'com.google.android.gms:play-services-cast-framework:18.1.0'
 
     // Service notification
     implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'androidx.core:core:1.1.0'
-    implementation 'com.beust:klaxon:5.0.1'
+    implementation 'androidx.core:core:1.3.0'
+    implementation 'org.json:json:20200518'
 }
