@@ -153,5 +153,10 @@ class TrackPageAppBar extends SliverPersistentHeaderDelegate {
   double get minExtent => kToolbarHeight + SHUFFLE_SIZE;
 
   @override
-  bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) => false;
+  bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) {
+    if (oldDelegate is TrackPageAppBar) {
+      return text != oldDelegate.text;
+    }
+    return false;
+  }
 }
