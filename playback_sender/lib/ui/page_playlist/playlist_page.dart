@@ -1,7 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chrome_tube/playback/src/playback_listeners.dart';
 import 'package:chrome_tube/spotify/spotify.dart';
 import 'package:chrome_tube/ui/common/common.dart';
-import 'package:chrome_tube/ui/common/localiation_state.dart';
+import 'package:chrome_tube/ui/common/state.dart';
 import 'package:chrome_tube/ui/page_playlist/playlist_header.dart';
 import 'package:chrome_tube/ui/pages.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +17,7 @@ class PlaylistPage extends StatefulWidget {
   State createState() => _PlaylistPageState();
 }
 
-class _PlaylistPageState extends CachingState<PlaylistPage> {
+class _PlaylistPageState extends RootState<PlaylistPage> {
   bool _isFetching = false;
   final _headerKey = new GlobalKey<PlaylistHeaderState>();
   final _controlKey = new GlobalKey<ControlBarState>();
@@ -24,6 +25,11 @@ class _PlaylistPageState extends CachingState<PlaylistPage> {
   /*
    * UI-Callbacks
    */
+
+  @override
+  void onEvent(PlaybackUIEvent event) {
+    // No-Op
+  }
 
   Future<void> _onSearch() async {
     final prefs = await SharedPreferences.getInstance();

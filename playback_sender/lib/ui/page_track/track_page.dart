@@ -7,7 +7,7 @@ import 'package:chrome_tube/playback/playback.dart';
 import 'package:chrome_tube/spotify/spotify.dart';
 import 'package:chrome_tube/spotify/src/dto/spotify_featured.dart';
 import 'package:chrome_tube/ui/common/control/control_bar.dart';
-import 'package:chrome_tube/ui/common/localiation_state.dart';
+import 'package:chrome_tube/ui/common/state.dart';
 import 'package:chrome_tube/ui/common/transformer.dart';
 import 'package:chrome_tube/ui/common/transitions.dart';
 import 'package:chrome_tube/ui/tracking/feature_service.dart';

@@ -7,6 +7,8 @@ import com.google.android.gms.cast.CastDevice
 import com.google.android.gms.cast.CastMediaControlIntent
 import com.google.android.gms.cast.framework.*
 import interfaceag.chrome_tube.playback_plugin.CastOptionsProvider
+import kotlin.math.max
+import kotlin.math.min
 
 interface CastConnectionListener {
     fun onCastConnecting()
@@ -34,6 +36,33 @@ class CastPlaybackContext(private val router: MediaRouter, private val castConte
     /*
      * Business methods
      */
+
+    fun isConnected(): Boolean? = castContext.sessionManager?.currentCastSession != null
+
+    fun setVolume(volume: Double): Double? {
+        castContext.sessionManager?.currentCastSession?.volume = volume
+        return volume
+    }
+
+    fun volumeUp(): Double? {
+        val session = castContext.sessionManager?.currentCastSession
+        if (session != null) {
+            val newVolume = min(1.0, session.volume + 0.04)
+            session.volume = newVolume
+            return newVolume
+        }
+        return castContext.sessionManager?.currentCastSession?.volume
+    }
+
+    fun volumeDown(): Double? {
+        val session = castContext.sessionManager?.currentCastSession
+        if (session != null) {
+            val newVolume = max(0.0, session.volume - 0.04)
+            session.volume = newVolume
+            return newVolume
+        }
+        return castContext.sessionManager?.currentCastSession?.volume
+    }
 
     fun endCurrentSession(): Boolean {
         castContext.sessionManager.endCurrentSession(true)

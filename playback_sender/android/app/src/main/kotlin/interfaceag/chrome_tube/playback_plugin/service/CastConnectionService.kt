@@ -146,17 +146,25 @@ class CastConnectionService : Service(), CastConnectionListener, CastMessageCall
         mForegroundMessageChannel = null
     }
 
-    fun endConnection(): Boolean {
-        return mCastContext?.endCurrentSession() ?: false
-    }
-
-    fun send(msg: String): Boolean {
-        return mCastContext?.sendMessage(msg) ?: false
-    }
-
     fun sendToBackgroundChannel(type: String, data: String) {
         sendToBackgroundChannel(buildIPCMessage(type, data))
     }
+
+    /*
+     * Delegate to background service
+     */
+
+    fun isConnected(): Boolean = mCastContext?.isConnected() ?: false
+
+    fun setVolume(volume: Double): Double? = mCastContext?.setVolume(volume)
+
+    fun volumeUp(): Double? = mCastContext?.volumeUp()
+
+    fun volumeDown(): Double? = mCastContext?.volumeDown()
+
+    fun endConnection(): Boolean = mCastContext?.endCurrentSession() ?: false
+
+    fun send(msg: String): Boolean = mCastContext?.sendMessage(msg) ?: false
 
     /*
      * helpers

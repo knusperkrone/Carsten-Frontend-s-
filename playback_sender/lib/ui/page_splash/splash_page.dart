@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:chrome_tube/playback/playback.dart';
 import 'package:chrome_tube/spotify/spotify.dart';
-import 'package:chrome_tube/ui/common/localiation_state.dart';
+import 'package:chrome_tube/ui/common/state.dart';
 import 'package:chrome_tube/ui/page_playlist/playlist_page.dart';
 import 'package:chrome_tube/ui/tracking/feature_service.dart';
 import 'package:flutter/cupertino.dart';

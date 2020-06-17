@@ -1,9 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chrome_tube/playback/playback.dart';
 import 'package:chrome_tube/ui/common/common.dart';
-import 'package:chrome_tube/ui/common/localiation_state.dart';
+import 'package:chrome_tube/ui/common/state.dart';
 import 'package:chrome_tube/ui/common/track_info.dart';
-import 'package:chrome_tube/ui/common/ui_listener_state.dart';
 import 'package:chrome_tube/ui/page_control/track_app_bar.dart';
 import 'package:chrome_tube/ui/page_control/track_gradient.dart';
 import 'package:chrome_tube/ui/pages.dart';

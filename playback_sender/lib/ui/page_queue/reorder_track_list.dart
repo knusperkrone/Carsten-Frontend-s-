@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chrome_tube/playback/playback.dart';
-import 'package:chrome_tube/ui/common/localiation_state.dart';
+import 'package:chrome_tube/ui/common/state.dart';
 import 'package:chrome_tube/utils/forked/reorderable_sliver/reorderable_sliver.dart';
 import 'package:flutter/material.dart';
 import 'package:playback_interop/playback_interop.dart';

@@ -10,5 +10,6 @@
   "next_queue": "Nächste Songs",
   "playlist_last": "Zuletzt gehört",
   "playlist_all": "Deine Playlists",
-  "no_song_title": "Kein Song"
+  "no_song_title": "Kein Song",
+  "volume": "Lautstärke"
 }

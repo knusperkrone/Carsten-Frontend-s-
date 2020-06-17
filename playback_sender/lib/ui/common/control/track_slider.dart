@@ -1,5 +1,5 @@
 import 'package:chrome_tube/playback/playback.dart';
-import 'package:chrome_tube/ui/common/ui_listener_state.dart';
+import 'package:chrome_tube/ui/common/state.dart';
 import 'package:flutter/material.dart';
 
 class LinearTrackSlider extends StatefulWidget {

@@ -6,7 +6,7 @@ import 'package:flutter_google_cast_button/bloc_media_route.dart';
 import 'package:flutter_google_cast_button/cast_button_widget.dart';
 import 'package:playback_interop/playback_interop.dart';
 
-import '../ui_listener_state.dart';
+import '../state.dart';
 
 class ControlBar extends StatefulWidget {
   const ControlBar({Key key}) : super(key: key);

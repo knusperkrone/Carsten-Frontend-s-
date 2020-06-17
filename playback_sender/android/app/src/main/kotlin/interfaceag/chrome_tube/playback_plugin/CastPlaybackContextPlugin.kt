@@ -19,6 +19,7 @@ class CastPlaybackContextPlugin(private val mContext: Context, messenger: Binary
     companion object {
         private const val TAG = "CastPlaybackCxtPlugin"
         private const val CHANNEL_NAME = "interfaceag/cast_context_plugin"
+        private const val EVENT_NAME = "interfaceag/cast_context_plugin_event"
 
         internal const val SERVICE_CHANNEL_METHOD_NAME = "interfaceag/cast_context/service_method"
         internal const val SERVICE_CHANNEL_MESSAGE_NAME = "interfaceag/cast_context/service_message"
@@ -29,11 +30,13 @@ class CastPlaybackContextPlugin(private val mContext: Context, messenger: Binary
 
         @JvmStatic
         fun registerWith(registrar: PluginRegistry.Registrar) {
-            val channel = MethodChannel(registrar.messenger(), CHANNEL_NAME)
             if (instance == null) {
                 instance = CastPlaybackContextPlugin(registrar.context(), registrar.messenger())
             }
+            val channel = MethodChannel(registrar.messenger(), CHANNEL_NAME)
+            val event = EventChannel(registrar.messenger(), EVENT_NAME)
             channel.setMethodCallHandler(instance)
+            event.setStreamHandler(instance!!.mServiceConnection)
         }
     }
 
@@ -75,6 +78,26 @@ class CastPlaybackContextPlugin(private val mContext: Context, messenger: Binary
     }
 
     /*
+     * Business methods
+     */
+
+    fun sendVolumeUp(): Boolean {
+        if (mServiceConnection.service?.isConnected() == true) {
+            mServiceConnection.eventSink?.success("UP")
+            return true
+        }
+        return false
+    }
+
+    fun sendVolumeDown(): Boolean {
+        if (mServiceConnection.service?.isConnected() == true) {
+            mServiceConnection.eventSink?.success("DOWN")
+            return true
+        }
+        return false
+    }
+
+    /*
      * MethodCall interface + helpers
      */
 
@@ -85,6 +108,9 @@ class CastPlaybackContextPlugin(private val mContext: Context, messenger: Binary
             "init" -> onInit(args, result)
             "send_msg" -> onSend(args, result)
             "end" -> onEnd(result)
+            "set_volume" -> onSetVolume(args, result)
+            "volume_up" -> onVolumeUp(result)
+            "volume_down" -> onVolumeDown(result)
             else -> result.notImplemented()
         }
     }
@@ -134,12 +160,38 @@ class CastPlaybackContextPlugin(private val mContext: Context, messenger: Binary
         }
     }
 
+
+    private fun onSetVolume(args: ArrayList<*>?, result: MethodChannel.Result) {
+        if (!mIsInited) {
+            result.error("-1", "Service not inited", "")
+        } else {
+            result.success(mServiceConnection.service?.setVolume(args!![0] as Double) ?: 0.0)
+        }
+    }
+
+    private fun onVolumeUp(result: MethodChannel.Result) {
+        if (!mIsInited) {
+            result.error("-1", "Service not inited", "")
+        } else {
+            result.success(mServiceConnection.service?.volumeUp() ?: 0.0)
+        }
+    }
+
+    private fun onVolumeDown(result: MethodChannel.Result) {
+        if (!mIsInited) {
+            result.error("-1", "Service not inited", "")
+        } else {
+            result.success(mServiceConnection.service?.volumeDown() ?: 0.0)
+        }
+    }
+
 }
 
-class ResultServiceConnection(messenger: BinaryMessenger) : ServiceConnection {
+class ResultServiceConnection(messenger: BinaryMessenger) : ServiceConnection, EventChannel.StreamHandler {
     private val mForegroundMethodChannel = MethodChannel(messenger, CastPlaybackContextPlugin.SERVICE_CHANNEL_METHOD_NAME)
     private val mForegroundMessageChannel = BasicMessageChannel<Any>(messenger, CastPlaybackContextPlugin.SERVICE_CHANNEL_MESSAGE_NAME, JSONMessageCodec.INSTANCE)
 
+    var eventSink: EventChannel.EventSink? = null
     var result: MethodChannel.Result? = null
     var service: CastConnectionService? = null
 
@@ -153,5 +205,13 @@ class ResultServiceConnection(messenger: BinaryMessenger) : ServiceConnection {
     override fun onServiceDisconnected(name: ComponentName?) {
         mForegroundMethodChannel.setMethodCallHandler(null)
         service!!.pauseUIBroadcast()
+    }
+
+    override fun onListen(args: Any?, sink: EventChannel.EventSink?) {
+        eventSink = sink;
+    }
+
+    override fun onCancel(args: Any?) {
+        eventSink = null;
     }
 }

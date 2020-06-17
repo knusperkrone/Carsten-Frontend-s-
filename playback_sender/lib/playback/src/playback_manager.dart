@@ -25,12 +25,39 @@ class PlaybackManager extends PlaybackReceiver {
 
   PlaybackManager._internal(CastPlaybackContext cxt) : super.internal(cxt);
 
+  Stream<VolumeEvent> _volumeEvents;
+
   /*
    * Wrap native calls
    */
 
-  Future<void> init() async {
-    return await CastPlaybackContext.init();
+  Future<void> init() {
+    return CastPlaybackContext.init();
+  }
+
+  Future<double> volumeUp() {
+    return CastPlaybackContext.volumeUp();
+  }
+
+  Future<double> volumeDown() {
+    return CastPlaybackContext.volumeDown();
+  }
+
+  Future<double> setVolume(double volume) {
+    return CastPlaybackContext.setVolume(volume);
+  }
+
+
+  /*
+   * Non Playback-events
+   */
+
+  Stream<VolumeEvent> get volumeEvents {
+    _volumeEvents ??= CastPlaybackContext.EVENT_CHANNEL
+        .receiveBroadcastStream()
+        .map((dynamic event) =>
+            event == 'UP' ? VolumeEvent.UP : VolumeEvent.DOWN);
+    return _volumeEvents;
   }
 
   /*

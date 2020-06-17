@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chrome_tube/spotify/src/dto/spotify_featured.dart';
-import 'package:chrome_tube/ui/common/localiation_state.dart';
+import 'package:chrome_tube/ui/common/state.dart';
 import 'package:chrome_tube/ui/page_track/track_page.dart';
 import 'package:chrome_tube/ui/tracking/feature_service.dart';
 import 'package:flutter/material.dart';

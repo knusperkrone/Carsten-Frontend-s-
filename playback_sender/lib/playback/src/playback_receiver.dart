@@ -35,7 +35,6 @@ class PlaybackReceiver extends PlaybackSender {
 
   final _completer = new StreamController<PlaybackUIEvent>.broadcast();
 
-
   int _currSeek = 0;
   bool _isRepeating = false;
   ShuffleStateDto _currShuffleState;

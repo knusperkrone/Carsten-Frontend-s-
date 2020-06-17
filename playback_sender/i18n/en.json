@@ -10,5 +10,6 @@
   "next_queue": "Next Songs",
   "playlist_last": "You frequently listened",
   "playlist_all": "Your playlists",
-  "no_song_title": "No song"
+  "no_song_title": "No song",
+  "volume": "Volume"
 }
