@@ -1,5 +1,5 @@
 import 'package:chrome_tube/playback/playback.dart';
-import 'package:chrome_tube/ui/common/ui_listener_state.dart';
+import 'package:chrome_tube/ui/common/state.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
