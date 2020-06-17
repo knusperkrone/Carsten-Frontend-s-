@@ -69,7 +69,9 @@ class SpotifyLoginPage extends StatelessWidget {
       body: Container(
         child: WebView(
           initialUrl: url,
+          debuggingEnabled: false,
           javascriptMode: JavascriptMode.unrestricted,
+          initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
           onPageFinished: (uri) => _onTokenCheck(uri, context),
         ),
       ),
