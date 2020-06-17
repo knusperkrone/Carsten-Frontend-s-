@@ -34,7 +34,7 @@ protocol CastConnectionListener {
     func onCastFailed()
 }
 
-public class PlaybackPlugin: NSObject, FlutterPlugin, CastConnectionListener {
+public class PlaybackPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, CastConnectionListener {
     public static var instance: PlaybackPlugin?
     
     let channelMessageName = "interfaceag/cast_context/service_message"
@@ -42,6 +42,7 @@ public class PlaybackPlugin: NSObject, FlutterPlugin, CastConnectionListener {
     let kNameSpace = "urn:x-cast:com.pierfrancescosoffritti.androidyoutubeplayer.chromecast.communication"
     let kDebugLoggingEnabled = false
     
+    var eventSink: FlutterEventSink? = nil
     var foregroundMessageChannel: FlutterBasicMessageChannel? = nil
     var backgroundMessageChannel: FlutterBasicMessageChannel? = nil
     var castContext: CastContext?
@@ -52,11 +53,14 @@ public class PlaybackPlugin: NSObject, FlutterPlugin, CastConnectionListener {
      */
     
     public static func register(with registrar: FlutterPluginRegistrar) {
+        let eventName = "interfaceag/cast_context_plugin_event"
         let channelMethodName = "interfaceag/cast_context_plugin"
-        let channel = FlutterMethodChannel(name: channelMethodName, binaryMessenger: registrar.messenger())
         if (instance == nil) {
             instance = PlaybackPlugin()
         }
+        let channel = FlutterMethodChannel(name: channelMethodName, binaryMessenger: registrar.messenger())
+        let event = FlutterEventChannel(name: eventName, binaryMessenger: registrar.messenger())
+        event.setStreamHandler(instance!)
         registrar.addMethodCallDelegate(instance!, channel: channel)
     }
     
@@ -76,6 +80,13 @@ public class PlaybackPlugin: NSObject, FlutterPlugin, CastConnectionListener {
             break
         case "send_msg":
             self.onSend(result: result, msg:  arguments[0] as! String)
+            break
+        case "set_volumne":
+            self.onSetVolume(result: result, volume: arguments[0] as! NSNumber)
+            break
+        case "volume_up":
+            break
+        case "volume_down":
             break
         default:
             result(FlutterMethodNotImplemented)
@@ -125,6 +136,21 @@ public class PlaybackPlugin: NSObject, FlutterPlugin, CastConnectionListener {
         result(ret)
     }
     
+    private func onSetVolume(result: FlutterResult, volume: NSNumber) {
+        let ret = castContext?.setVolume(volume: volume.doubleValue) ?? 0.0
+        result(ret)
+    }
+    
+    private func onVolumeUp(result: FlutterResult) {
+        let ret = castContext?.volumeUp() ?? 0.0
+        result(ret)
+    }
+    
+    private func onVolumeDown(result: FlutterResult) {
+        let ret = castContext?.volumeDown() ?? 0.0
+        result(ret)
+    }
+    
     /*
      * App Lifecycle
      */
@@ -139,6 +165,20 @@ public class PlaybackPlugin: NSObject, FlutterPlugin, CastConnectionListener {
     
     public func onBackground() {
         isForeground = false
+    }
+    
+    /*
+     * Listener Contract
+     */
+    
+    public func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
+        eventSink = events
+        return nil
+    }
+    
+    public func onCancel(withArguments arguments: Any?) -> FlutterError? {
+        eventSink = nil
+        return nil
     }
     
     /*

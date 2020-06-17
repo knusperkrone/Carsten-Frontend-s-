@@ -38,6 +38,31 @@ class CastContext: NSObject {
         restoreSession()
     }
     
+    public func setVolume(volume: Double) -> Double? {
+        context.sessionManager.currentCastSession?.setDeviceVolume(Float(volume))
+        return volume
+    }
+    
+    public func volumeUp() -> Double? {
+        let session = context.sessionManager.currentCastSession
+        if (session != nil) {
+            let newVolume = min(1.0, session!.currentDeviceVolume + 0.04)
+            session?.setDeviceVolume(newVolume)
+            return Double(newVolume)
+        }
+        return nil
+    }
+    
+    public func volumeDown() -> Double? {
+        let session = context.sessionManager.currentCastSession
+        if (session != nil) {
+            let newVolume = max(0.0, session!.currentDeviceVolume - 0.04)
+            session?.setDeviceVolume(newVolume)
+            return Double(newVolume)
+        }
+        return nil
+    }
+ 
     public func sendMessage(msg: String) -> Bool{
         if (!castConnected) {
             return false
