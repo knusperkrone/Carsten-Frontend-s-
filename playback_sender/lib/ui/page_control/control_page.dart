@@ -52,7 +52,6 @@ class ControlPageState extends UIListenerState<ControlPage>
   final GlobalKey<TrackPagesState> _pageKey = new GlobalKey();
   final GlobalKey<TrackProgressState> _progressKey = new GlobalKey();
   final GlobalKey<TrackControlState> _controlKey = new GlobalKey();
-  final GlobalKey<TrackSliderState> _sliderKey = new GlobalKey();
 
   Color _gradientStart;
   AnimationController _animController;
@@ -127,9 +126,6 @@ class ControlPageState extends UIListenerState<ControlPage>
       case PlaybackUIEvent.REPEATING:
         _controlKey.currentState?.rebuild();
         break;
-      case PlaybackUIEvent.SEEK:
-        _sliderKey.currentState?.notifyTrackSeek();
-        break;
       case PlaybackUIEvent.QUEUE:
         _barKey.currentState?.rebuild();
         _pageKey.currentState?.rebuild();
@@ -144,6 +140,8 @@ class ControlPageState extends UIListenerState<ControlPage>
         break;
       case PlaybackUIEvent.PLAYER_STATE:
         _notifyPlayingState();
+        break;
+      case PlaybackUIEvent.SEEK:
         break;
     }
   }
@@ -224,10 +222,10 @@ class ControlPageState extends UIListenerState<ControlPage>
             key: _detailKey,
             padding: 20.0,
           ),
-          TrackSlider(
-              key: _sliderKey,
-              padding: 20.0,
-              delay: const Duration(milliseconds: 150)),
+          const TrackSlider(
+            padding: 20.0,
+            delay: Duration(milliseconds: 150),
+          ),
           Hero(
             tag: 'controls',
             child: Material(

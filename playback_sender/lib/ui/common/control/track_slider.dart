@@ -8,7 +8,7 @@ class LinearTrackSlider extends StatefulWidget {
 
   const LinearTrackSlider({
     Key key,
-    this.delay,
+    this.delay = const Duration(milliseconds: 0),
     @required this.padding,
   }) : super(key: key);
 
@@ -41,11 +41,7 @@ class LinearTrackSliderState extends UIListenerState<LinearTrackSlider>
   void initState() {
     super.initState();
     _animController = new AnimationController(vsync: this);
-    if (widget.delay == null) {
-      _startSeekInterpolation();
-    } else {
-      Future.delayed(widget.delay, _startSeekInterpolation);
-    }
+    Future.delayed(widget.delay, _doSeekInterpolation);
   }
 
   /*
@@ -64,7 +60,7 @@ class LinearTrackSliderState extends UIListenerState<LinearTrackSlider>
       case PlaybackUIEvent.TRACK:
       case PlaybackUIEvent.PLAYER_STATE:
       case PlaybackUIEvent.SEEK:
-        setState(() {});
+        _doSeekInterpolation();
         break;
       default:
     }
@@ -74,7 +70,7 @@ class LinearTrackSliderState extends UIListenerState<LinearTrackSlider>
    * Build
    */
 
-  void _startSeekInterpolation() {
+  void _doSeekInterpolation() {
     _manager.track.ifPresent((track) {
       if (track.durationMs == null) {
         setState(() {
@@ -146,11 +142,12 @@ class TrackSliderState extends LinearTrackSliderState {
    * UiListener contract
    */
 
-  void notifyTrackSeek() {
-    if (_isUser) {
+  @override
+  void onEvent(PlaybackUIEvent event) {
+    if (event == PlaybackUIEvent.SEEK) {
       setState(() => _isUser = false);
     }
-    _startSeekInterpolation();
+    super.onEvent(event);
   }
 
   /*
