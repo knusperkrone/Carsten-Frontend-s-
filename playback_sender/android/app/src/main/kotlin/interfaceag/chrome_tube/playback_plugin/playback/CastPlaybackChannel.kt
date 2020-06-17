@@ -17,7 +17,7 @@ internal class CastPlaybackChannel(private val sessionManager: SessionManager, p
 
     fun sendMessage(message: String) {
         try {
-            Log.d(TAG, "Send: $message")
+            // Log.d(TAG, "Send: $message")
             sessionManager.currentCastSession.sendMessage(NAMESPACE, message)
         } catch (e: Exception) {
             Log.e(TAG, e.toString())
@@ -25,7 +25,7 @@ internal class CastPlaybackChannel(private val sessionManager: SessionManager, p
     }
 
     override fun onMessageReceived(castDevice: CastDevice, namespace: String, parsedMessage: String) {
-        Log.d(TAG, "Received: $parsedMessage")
+        // Log.d(TAG, "Received: $parsedMessage")
         mCallback.onReceive(parsedMessage)
     }
 
