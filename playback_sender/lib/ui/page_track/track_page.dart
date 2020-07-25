@@ -186,27 +186,30 @@ class TrackPageState extends CachingState<TrackPage> {
   Widget _buildTrackTile(BuildContext context, int i) {
     final curr = _tracks[i];
     final key = new GlobalKey<SlidableState>();
-    return Slidable(
-      key: key,
-      actionPane: const SlidableDrawerActionPane(),
-      actions: <Widget>[
-        IconSlideAction(
-          caption: locale.translate('queue_button'),
-          color: theme.accentColor,
-          icon: Icons.queue_music,
-          onTap: () => _onTrackSecondary(curr),
+    return Padding(
+      padding: const EdgeInsets.only(left: 10.0),
+      child: Slidable(
+        key: key,
+        actionPane: const SlidableDrawerActionPane(),
+        actions: <Widget>[
+          IconSlideAction(
+            caption: locale.translate('queue_button'),
+            color: theme.accentColor,
+            icon: Icons.queue_music,
+            onTap: () => _onTrackSecondary(curr),
+          ),
+        ],
+        child: ListTile(
+          contentPadding: const EdgeInsets.all(8.0),
+          title: Text(curr.name ?? ''),
+          subtitle: Text(curr.artist ?? ''),
+          trailing: IconButton(
+            icon: Icon(Icons.more_vert),
+            onPressed: () =>
+                key.currentState?.open(actionType: SlideActionType.primary),
+          ),
+          onTap: () => _onTrack(i),
         ),
-      ],
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(8.0),
-        title: Text(curr.name ?? ''),
-        subtitle: Text(curr.artist ?? ''),
-        trailing: IconButton(
-          icon: Icon(Icons.more_vert),
-          onPressed: () =>
-              key.currentState?.open(actionType: SlideActionType.primary),
-        ),
-        onTap: () => _onTrack(i),
       ),
     );
   }

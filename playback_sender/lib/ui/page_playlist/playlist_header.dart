@@ -83,7 +83,7 @@ class PlaylistHeaderState extends CachingState<PlaylistHeader> {
     content.add(_buildHeaderText(locale.translate('playlist_all')));
 
     return new Padding(
-      padding: const EdgeInsets.only(left: 11.0, right: 11.0, top: 5.0),
+      padding: const EdgeInsets.only(left: 15.0, right: 7.0, top: 5.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,

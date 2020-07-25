@@ -45,7 +45,6 @@ class _PlaylistPageState extends RootState<PlaylistPage> {
       _isFetching = false;
       _controlKey.currentState?.refreshMediaState();
       _headerKey.currentState?.refresh();
-
     }
   }
 
@@ -74,52 +73,54 @@ class _PlaylistPageState extends RootState<PlaylistPage> {
   }
 
   Widget _buildTrackTile(BuildContext context) {
-    return ListTile(
-      contentPadding: const EdgeInsets.only(top: 5.0, left: 15.0),
-      leading: Container(
-        width: 60,
-        height: 60,
-        child: Icon(Icons.album),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.centerLeft,
-            end: Alignment.bottomRight,
-            colors: [theme.accentColor, theme.canvasColor],
+    return Padding(
+      padding: const EdgeInsets.only(left: 20.0),
+      child: ListTile(
+        contentPadding: const EdgeInsets.only(top: 5.0),
+        leading: Container(
+          width: 60,
+          height: 60,
+          child: Icon(Icons.album),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.bottomRight,
+              colors: [theme.accentColor, theme.canvasColor],
+            ),
           ),
         ),
+        title: Text(
+          locale.translate('songs'),
+          style:
+              theme.textTheme.subtitle1.copyWith(fontWeight: FontWeight.bold),
+        ),
+        onTap: () => _navigateToSongPage(context),
       ),
-      title: Text(
-        locale.translate('songs'),
-        style: theme
-            .textTheme
-            .subtitle1
-            .copyWith(fontWeight: FontWeight.bold),
-      ),
-      onTap: () => _navigateToSongPage(context),
     );
   }
 
   Widget _buildPlaylistTile(BuildContext context, int i) {
     final playlist = widget.playlists[i];
-    return ListTile(
-      contentPadding: const EdgeInsets.only(top: 5.0, left: 15.0),
-      leading: Image(
-        image: CachedNetworkImageProvider(
-          playlist.imageUrl,
+    return Padding(
+      padding: const EdgeInsets.only(left: 20.0),
+      child: ListTile(
+        contentPadding: const EdgeInsets.only(top: 5.0),
+        leading: Image(
+          image: CachedNetworkImageProvider(
+            playlist.imageUrl,
+          ),
+          fit: BoxFit.cover,
+          height: 60,
+          width: 60,
         ),
-        fit: BoxFit.cover,
-        height: 60,
-        width: 60,
+        title: Text(
+          playlist.name,
+          style:
+              theme.textTheme.subtitle1.copyWith(fontWeight: FontWeight.bold),
+        ),
+        subtitle: Text(playlist.owner.name),
+        onTap: () => _navigateToTrackPage(context, playlist),
       ),
-      title: Text(
-        playlist.name,
-        style: theme
-            .textTheme
-            .subtitle1
-            .copyWith(fontWeight: FontWeight.bold),
-      ),
-      subtitle: Text(playlist.owner.name),
-      onTap: () => _navigateToTrackPage(context, playlist),
     );
   }
 
