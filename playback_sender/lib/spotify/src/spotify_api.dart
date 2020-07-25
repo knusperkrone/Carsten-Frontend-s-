@@ -76,6 +76,21 @@ class SpotifyApi {
     return null;
   }
 
+  Future<void> resetAuth(BuildContext context) async {
+    // Await user authorization
+    final SpotifyLoginPageResult credentials = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => new SpotifyLoginPage()),
+    );
+
+    // Save token and return possible error
+    if (credentials.code != null) {
+      final authCode = credentials.code;
+      _prefs.setString(
+      _AUTH_CODE_KEY, authCode); // No leak, as it expires after 3600secs
+    }
+  }
+
   Future<List<SpotifyPlaylist>> getUserPlaylists() {
     assert(_client != null);
     const endpoint = '/v1/me/playlists';

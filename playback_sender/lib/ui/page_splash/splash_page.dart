@@ -63,7 +63,7 @@ class _SplashScreenState extends CachingState<SplashScreen>
           final typedError = error;
           setState(() => _errorMsg = typedError.message);
         } else {
-          setState(() => _errorMsg = error.toString());
+          SpotifyApi().resetAuth(context);
         }
         return;
       }
