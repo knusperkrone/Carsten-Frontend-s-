@@ -9,12 +9,13 @@ import android.os.IBinder
 import android.util.Log
 import androidx.annotation.RequiresApi
 import interfaceag.chrome_tube.playback_plugin.service.CastConnectionService
+import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.*
 
 /*
  * https://medium.com/flutter/executing-dart-in-the-background-with-flutter-plugins-and-geofencing-2b3e40a1a124
  */
-class CastPlaybackContextPlugin(private val mContext: Context, messenger: BinaryMessenger) : MethodChannel.MethodCallHandler {
+class CastPlaybackContextPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
 
     companion object {
         private const val TAG = "CastPlaybackCxtPlugin"
@@ -25,24 +26,31 @@ class CastPlaybackContextPlugin(private val mContext: Context, messenger: Binary
         internal const val SERVICE_CHANNEL_MESSAGE_NAME = "interfaceag/cast_context/service_message"
         internal const val SHARED_PREFS_NAME = "interfaceag_cast_context_prefs"
         internal const val DISPATCHER_HANDLE_KEY = "entry_handle_key"
-
-        var instance: CastPlaybackContextPlugin? = null
-
-        @JvmStatic
-        fun registerWith(registrar: PluginRegistry.Registrar) {
-            if (instance == null) {
-                instance = CastPlaybackContextPlugin(registrar.context(), registrar.messenger())
-            }
-            val channel = MethodChannel(registrar.messenger(), CHANNEL_NAME)
-            val event = EventChannel(registrar.messenger(), EVENT_NAME)
-            channel.setMethodCallHandler(instance)
-            event.setStreamHandler(instance!!.mServiceConnection)
-        }
     }
 
     private var mIsBound = false
     private var mIsInited = false
-    private val mServiceConnection = ResultServiceConnection(messenger)
+    private var mIsForegroundEngine = true
+    private lateinit var mContext: Context
+    private lateinit var mServiceConnection: ResultServiceConnection
+
+
+    override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+        if (mIsForegroundEngine) {
+            mContext = binding.applicationContext
+            mServiceConnection = ResultServiceConnection(binding.binaryMessenger)
+            mIsForegroundEngine = false
+        }
+
+        val channel = MethodChannel(binding.binaryMessenger, CHANNEL_NAME)
+        val event = EventChannel(binding.binaryMessenger, EVENT_NAME)
+        channel.setMethodCallHandler(this)
+        event.setStreamHandler(mServiceConnection)
+    }
+
+    override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+        // No-clean up
+    }
 
     /*
      * lifecycle method
@@ -58,14 +66,17 @@ class CastPlaybackContextPlugin(private val mContext: Context, messenger: Binary
 
     fun onPause() {
         if (mIsInited && mIsBound) {
-            mContext.unbindService(mServiceConnection)
-            mIsBound = false
+            try {
+                mContext.unbindService(mServiceConnection)
+                mIsBound = false
+            } catch (_: Exception) {
+
+            }
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.ECLAIR)
     fun onDestroy() {
-        instance = null
         if (mIsInited) {
             mIsInited = false
             if (mIsBound) {
@@ -208,10 +219,10 @@ class ResultServiceConnection(messenger: BinaryMessenger) : ServiceConnection, E
     }
 
     override fun onListen(args: Any?, sink: EventChannel.EventSink?) {
-        eventSink = sink;
+        eventSink = sink
     }
 
     override fun onCancel(args: Any?) {
-        eventSink = null;
+        eventSink = null
     }
 }

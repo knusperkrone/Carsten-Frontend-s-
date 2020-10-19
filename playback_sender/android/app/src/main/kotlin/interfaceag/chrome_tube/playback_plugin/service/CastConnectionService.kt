@@ -9,7 +9,6 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.mediarouter.media.MediaRouter
 import com.google.android.gms.cast.framework.CastContext
-import interfaceag.chrome_tube.playback_plugin.CastPlaybackContextPlugin
 import interfaceag.chrome_tube.playback_plugin.CastPlaybackContextPlugin.Companion.DISPATCHER_HANDLE_KEY
 import interfaceag.chrome_tube.playback_plugin.CastPlaybackContextPlugin.Companion.SERVICE_CHANNEL_MESSAGE_NAME
 import interfaceag.chrome_tube.playback_plugin.CastPlaybackContextPlugin.Companion.SERVICE_CHANNEL_METHOD_NAME
@@ -24,25 +23,32 @@ import interfaceag.chrome_tube.playback_plugin.notification.NativeNotificationBu
 import interfaceag.chrome_tube.playback_plugin.playback.CastConnectionListener
 import interfaceag.chrome_tube.playback_plugin.playback.CastMessageCallback
 import interfaceag.chrome_tube.playback_plugin.playback.CastPlaybackContext
-import io.flutter.plugin.common.*
+import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.embedding.engine.dart.DartExecutor
+import io.flutter.plugin.common.BasicMessageChannel
+import io.flutter.plugin.common.JSONMessageCodec
+import io.flutter.plugin.common.MethodChannel
 import io.flutter.view.FlutterCallbackInformation
 import io.flutter.view.FlutterMain
-import io.flutter.view.FlutterNativeView
-import io.flutter.view.FlutterRunArguments
 import org.json.JSONObject
 import java.util.concurrent.atomic.AtomicBoolean
 
 
 class CastConnectionService : Service(), CastConnectionListener, CastMessageCallback {
 
+    interface RegistryCallback {
+        fun registerWith(flutterEngine: FlutterEngine)
+    }
+
+
     companion object {
         private const val TAG = "CastConnectionService"
 
         @JvmStatic
-        private lateinit var sPluginRegistrantCallback: PluginRegistry.PluginRegistrantCallback
+        private lateinit var sPluginRegistrantCallback: RegistryCallback
 
         @JvmStatic
-        fun setPluginRegistrant(callback: PluginRegistry.PluginRegistrantCallback) {
+        fun setPluginRegistrant(callback: RegistryCallback) {
             sPluginRegistrantCallback = callback
         }
     }
@@ -55,7 +61,7 @@ class CastConnectionService : Service(), CastConnectionListener, CastMessageCall
     private var mForegroundMessageChannel: BasicMessageChannel<Any>? = null
 
     private var mNotiBuilder: NativeNotificationBuilder? = null
-    private var mBackgroundIsolate: FlutterNativeView? = null
+    private var mBackgroundIsolate: FlutterEngine? = null
     private var mCastContext: CastPlaybackContext? = null
 
     /*
@@ -66,25 +72,22 @@ class CastConnectionService : Service(), CastConnectionListener, CastMessageCall
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         mNotiBuilder = NativeNotificationBuilder(applicationContext, this)
-        mBackgroundIsolate = FlutterNativeView(this, true)
+        mBackgroundIsolate = FlutterEngine(this, null, false)
 
         // Setup plugin registry
-        val registry = mBackgroundIsolate!!.pluginRegistry
-        sPluginRegistrantCallback.registerWith(registry)
+        sPluginRegistrantCallback.registerWith(mBackgroundIsolate!!)
         // Get function entryPoint
         val handle = getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE).getLong(DISPATCHER_HANDLE_KEY, -1)
         val callbackInfo = FlutterCallbackInformation.lookupCallbackInformation(handle)
         // Run isolate
-        val args = FlutterRunArguments()
-        args.bundlePath = FlutterMain.findAppBundlePath()
-        args.entrypoint = callbackInfo.callbackName
-        args.libraryPath = callbackInfo.callbackLibraryPath
-        mBackgroundIsolate!!.runFromBundle(args)
+        val callback = DartExecutor.DartCallback(assets, FlutterMain.findAppBundlePath(), callbackInfo)
+        mBackgroundIsolate!!.dartExecutor.executeDartCallback(callback)
 
         // Register callback channels
-        val backgroundMethodChannel = MethodChannel(mBackgroundIsolate, SERVICE_CHANNEL_METHOD_NAME)
+        val messenger = mBackgroundIsolate!!.dartExecutor.binaryMessenger
+        val backgroundMethodChannel = MethodChannel(messenger, SERVICE_CHANNEL_METHOD_NAME)
 
-        mBackgroundMessageChannel = BasicMessageChannel(mBackgroundIsolate!!, SERVICE_CHANNEL_MESSAGE_NAME, JSONMessageCodec.INSTANCE)
+        mBackgroundMessageChannel = BasicMessageChannel(messenger, SERVICE_CHANNEL_MESSAGE_NAME, JSONMessageCodec.INSTANCE)
         backgroundMethodChannel.setMethodCallHandler { call, result ->
             if (call.method == "background_isolate_inited") {
                 if (mNotiBuilder != null) {

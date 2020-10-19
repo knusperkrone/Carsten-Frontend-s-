@@ -1,24 +1,16 @@
 import 'dart:convert';
 
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 
 import '../../playback.dart';
 
 /*
  * Just hardcoded boilerplate
  */
-class _BackgroundCacheManager extends BaseCacheManager {
+class _BackgroundCacheManager extends CacheManager {
   static const key = 'background_db';
 
-  _BackgroundCacheManager() : super(key);
-
-  @override
-  Future<String> getFilePath() async {
-    final directory = await getTemporaryDirectory();
-    return p.join(directory.path, key);
-  }
+  _BackgroundCacheManager() : super(Config(key));
 }
 
 class TrackIndicatorNoti {
