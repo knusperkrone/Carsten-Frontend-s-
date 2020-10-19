@@ -15,7 +15,7 @@ class SpotifyLoginPage extends StatelessWidget {
    */
 
   static const _REDIRECT_URL =
-      'https://spotitube.if-lab.de/api/spotify/callback';
+      'https://192.168.178.47:8443/api/spotify/callback';
   static const _CLIENT_ID = '2b217a32857645b79e60dda0a56b2268';
   static const _TYPE = 'code';
   static const _SCOPES = [
