@@ -15,7 +15,7 @@ class SpotifyLoginPage extends StatelessWidget {
    */
 
   static const _REDIRECT_URL =
-      'https://192.168.178.47:8443/api/spotify/callback';
+      'https://integration.if-lab.de/arme-spotitube-backend/api/spotify/callback';
   static const _CLIENT_ID = '2b217a32857645b79e60dda0a56b2268';
   static const _TYPE = 'code';
   static const _SCOPES = [
@@ -71,7 +71,8 @@ class SpotifyLoginPage extends StatelessWidget {
           initialUrl: url,
           debuggingEnabled: false,
           javascriptMode: JavascriptMode.unrestricted,
-          initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
+          initialMediaPlaybackPolicy:
+              AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
           onPageFinished: (uri) => _onTokenCheck(uri, context),
         ),
       ),

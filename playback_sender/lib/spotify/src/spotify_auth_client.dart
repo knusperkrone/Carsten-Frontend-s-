@@ -41,7 +41,7 @@ class AuthorizedSpotifyClient with DartHttpClientMixin {
    */
 
   static const String _BACKEND_BASE_URL =
-      'https://192.168.178.47:8443/api/spotify';
+      'https://integration.if-lab.de/arme-spotitube-backend/api/spotify';
   static const String _BASE_URL = 'https://api.spotify.com';
   static const String _TOKEN_KEY = 'SPOTIFY_API_SERIALIZED_TOKEN_KEY';
 
