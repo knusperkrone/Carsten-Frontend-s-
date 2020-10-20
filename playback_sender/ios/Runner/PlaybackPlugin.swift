@@ -42,6 +42,7 @@ public class PlaybackPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, Cast
     let kNameSpace = "urn:x-cast:com.pierfrancescosoffritti.androidyoutubeplayer.chromecast.communication"
     let kDebugLoggingEnabled = false
     
+    var backgroundIsolate: FlutterEngine? = nil // EXC_BAD_ACCESS workaround
     var eventSink: FlutterEventSink? = nil
     var foregroundMessageChannel: FlutterBasicMessageChannel? = nil
     var backgroundMessageChannel: FlutterBasicMessageChannel? = nil
@@ -98,19 +99,20 @@ public class PlaybackPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, Cast
      */
     
     private func onInit(foregroundResult: @escaping FlutterResult, startId: NSNumber) {
-        let backgroundIsolate = FlutterEngine.init(name: "CarstenIsolate", project: nil, allowHeadlessExecution: true)
+        backgroundIsolate = FlutterEngine.init(name: "CarstenIsolate", project: nil, allowHeadlessExecution: true)
         
         // Register callback channels
-        backgroundMessageChannel = FlutterBasicMessageChannel(name: channelMessageName, binaryMessenger: backgroundIsolate.binaryMessenger, codec: FlutterJSONMessageCodec.sharedInstance())
-        let backgroundMethodChannel = FlutterMethodChannel(name: bgChannelMethodName, binaryMessenger: backgroundIsolate.binaryMessenger)
+        backgroundMessageChannel = FlutterBasicMessageChannel(name: channelMessageName, binaryMessenger: backgroundIsolate!.binaryMessenger, codec: FlutterJSONMessageCodec.sharedInstance())
+        let backgroundMethodChannel = FlutterMethodChannel(name: bgChannelMethodName, binaryMessenger: backgroundIsolate!.binaryMessenger)
         // Run isolate
         let info = FlutterCallbackCache.lookupCallbackInformation(startId.int64Value)
         let entrypoint = info!.callbackName
         let uri = info!.callbackLibraryPath
-        backgroundIsolate.run(withEntrypoint: entrypoint, libraryURI: uri)
+        backgroundIsolate!.run(withEntrypoint: entrypoint, libraryURI: uri)
+        
         // Setup plugin registry
-        PlaybackPlugin.register(with: backgroundIsolate.registrar(forPlugin: "interface_ag.cast_plugin"))
-        GeneratedPluginRegistrant.register(with: backgroundIsolate)
+        PlaybackPlugin.register(with: backgroundIsolate!.registrar(forPlugin: "interface_ag.cast_plugin")!)
+        GeneratedPluginRegistrant.register(with: backgroundIsolate!)
         
         // Set method handler
         backgroundMethodChannel.setMethodCallHandler({

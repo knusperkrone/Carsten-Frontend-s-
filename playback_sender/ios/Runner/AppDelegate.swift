@@ -18,11 +18,11 @@ import GoogleCast
         GCKLogger.sharedInstance().delegate = self // logger
        
         // Get foreground channel
-        let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
+        let controller = window?.rootViewController as! FlutterViewController
         let foregroundMessageChannel = FlutterBasicMessageChannel(name: "interfaceag/cast_context/service_message", binaryMessenger: controller.binaryMessenger, codec: FlutterJSONMessageCodec.sharedInstance())
         
         // Register app plugin
-        PlaybackPlugin.register(with: self.registrar(forPlugin: "interface_ag.cast_plugin"))
+        PlaybackPlugin.register(with: self.registrar(forPlugin: "interface_ag.cast_plugin")!)
         PlaybackPlugin.foregroundBroadcast(channel: foregroundMessageChannel)
         GeneratedPluginRegistrant.register(with: self)
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
