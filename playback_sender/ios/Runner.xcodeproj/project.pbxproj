@@ -11,6 +11,7 @@
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
 		537AD60E24917E7A0074B9F6 /* CastContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 537AD60D24917E7A0074B9F6 /* CastContext.swift */; };
 		537AD6102492604E0074B9F6 /* PlaybackPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 537AD60F2492604E0074B9F6 /* PlaybackPlugin.swift */; };
+		538EDADE253F2ED4009AA4C4 /* CastNotificationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 538EDADD253F2ED4009AA4C4 /* CastNotificationBuilder.swift */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
 		9740EEB41CF90195004384FC /* Debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 9740EEB21CF90195004384FC /* Debug.xcconfig */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
@@ -38,6 +39,7 @@
 		3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
 		537AD60D24917E7A0074B9F6 /* CastContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CastContext.swift; sourceTree = "<group>"; };
 		537AD60F2492604E0074B9F6 /* PlaybackPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackPlugin.swift; sourceTree = "<group>"; };
+		538EDADD253F2ED4009AA4C4 /* CastNotificationBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CastNotificationBuilder.swift; sourceTree = "<group>"; };
 		74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Runner-Bridging-Header.h"; sourceTree = "<group>"; };
 		74858FAE1ED2DC5600515810 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
@@ -128,6 +130,7 @@
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
 				537AD60D24917E7A0074B9F6 /* CastContext.swift */,
 				537AD60F2492604E0074B9F6 /* PlaybackPlugin.swift */,
+				538EDADD253F2ED4009AA4C4 /* CastNotificationBuilder.swift */,
 			);
 			path = Runner;
 			sourceTree = "<group>";
@@ -236,8 +239,8 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources.sh",
-				"${PODS_ROOT}/google-cast-sdk/GoogleCastSDK-ios-4.3.2_static/GoogleCast.framework/GoogleCastCoreResources.bundle",
-				"${PODS_ROOT}/google-cast-sdk/GoogleCastSDK-ios-4.3.2_static/GoogleCast.framework/GoogleCastUIResources.bundle",
+				"${PODS_ROOT}/google-cast-sdk/GoogleCastSDK-ios-4.5.1_static/GoogleCast.framework/GoogleCastCoreResources.bundle",
+				"${PODS_ROOT}/google-cast-sdk/GoogleCastSDK-ios-4.5.1_static/GoogleCast.framework/GoogleCastUIResources.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
@@ -272,6 +275,7 @@
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/FMDB/FMDB.framework",
 				"${PODS_ROOT}/../Flutter/Flutter.framework",
+				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
 				"${BUILT_PRODUCTS_DIR}/Protobuf/Protobuf.framework",
 				"${BUILT_PRODUCTS_DIR}/path_provider/path_provider.framework",
 				"${BUILT_PRODUCTS_DIR}/shared_preferences/shared_preferences.framework",
@@ -282,6 +286,7 @@
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FMDB.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Flutter.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Protobuf.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/path_provider.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/shared_preferences.framework",
@@ -323,6 +328,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
+				538EDADE253F2ED4009AA4C4 /* CastNotificationBuilder.swift in Sources */,
 				537AD6102492604E0074B9F6 /* PlaybackPlugin.swift in Sources */,
 				537AD60E24917E7A0074B9F6 /* CastContext.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,

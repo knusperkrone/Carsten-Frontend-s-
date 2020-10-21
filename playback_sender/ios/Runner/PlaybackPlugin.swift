@@ -42,6 +42,7 @@ public class PlaybackPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, Cast
     let kNameSpace = "urn:x-cast:com.pierfrancescosoffritti.androidyoutubeplayer.chromecast.communication"
     let kDebugLoggingEnabled = false
     
+    var notificationBuilder = CastNotificationBuilder()
     var backgroundIsolate: FlutterEngine? = nil // EXC_BAD_ACCESS workaround
     var eventSink: FlutterEventSink? = nil
     var foregroundMessageChannel: FlutterBasicMessageChannel? = nil
@@ -239,6 +240,10 @@ public class PlaybackPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, Cast
     }
     
     private func sendToBackground(msg: [String: Any]) {
-        backgroundMessageChannel?.sendMessage(msg)
+        backgroundMessageChannel?.sendMessage(msg, reply: {(reply: Any?) -> Void in
+            if (reply != nil) {
+                self.notificationBuilder.build(parsedMsg: reply as! [String: Any])
+            }
+        })
     }
 }
