@@ -260,7 +260,7 @@ class ControlPageState extends UIListenerState<ControlPage>
                 Expanded(child: Container()),
                 IconButton(
                   padding: const EdgeInsets.only(right: 5.0),
-                  icon: Icon(Icons.format_list_bulleted),
+                  icon: const Icon(Icons.format_list_bulleted),
                   onPressed: _onQueue,
                 ),
               ],
