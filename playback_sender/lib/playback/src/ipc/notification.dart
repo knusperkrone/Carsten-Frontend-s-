@@ -36,9 +36,11 @@ class TrackIndicatorNoti {
     }
 
     return jsonEncode({
+      'seekMs': manager.trackSeek ?? 0.0,
+      'durationMs': track.durationMs?.toDouble() ?? 0.0,
       'title': track.title,
       'artist': track.artist,
-      'playlistName': 'Connected',
+      'playlistName': manager.playlistName,
       'coverB64': imgB64,
       'isBuffering': manager.currPlayerState == SimplePlaybackState.BUFFERING,
       'isPlaying': manager.currPlayerState == SimplePlaybackState.PLAYING,

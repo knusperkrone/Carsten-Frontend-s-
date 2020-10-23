@@ -50,6 +50,11 @@ public class PlaybackPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, Cast
     var castContext: CastContext?
     var isForeground = true
     
+    public override init() {
+        super.init()
+        notificationBuilder.sender = self
+    }
+    
     /*
      * Plugin contract
      */
@@ -155,6 +160,14 @@ public class PlaybackPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, Cast
     }
     
     /*
+     * Business methods
+     */
+    
+    public func sendToBackgroundChannel(topic: String, msg: String) {
+        sendToBackground(msg: buildIPCMessage(type: topic, data: msg))
+    }
+    
+    /*
      * App Lifecycle
      */
     
@@ -242,8 +255,11 @@ public class PlaybackPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, Cast
     private func sendToBackground(msg: [String: Any]) {
         backgroundMessageChannel?.sendMessage(msg, reply: {(reply: Any?) -> Void in
             if (reply != nil) {
-                self.notificationBuilder.build(parsedMsg: reply as! [String: Any])
+                if #available(iOS 10.0, *) {
+                    self.notificationBuilder.build(parsedMsg: reply as! [String: Any])
+                }
             }
         })
     }
+    
 }

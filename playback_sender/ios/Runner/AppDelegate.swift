@@ -13,24 +13,13 @@ import GoogleCast
     ) -> Bool {
         // Notification
         if #available(iOS 10, *) {
-            /*
-            let center = UNUserNotificationCenter.current()
-            center.delegate = self as UNUserNotificationCenterDelegate
-            // set the type as sound or badge
-            center.requestAuthorization(options: [.sound,.alert,.badge]) { (granted, error) in
-                if granted {
-                    print("Notification Enable Successfully")
-                }else{
-                    print("Some Error Occure")
-                }
-            }
-            application.registerForRemoteNotifications()
-            */
+            application.beginReceivingRemoteControlEvents()
         }
         
         // Enable Chromecast support
         let criteria = GCKDiscoveryCriteria(applicationID: kReceiverAppID)
         let options = GCKCastOptions(discoveryCriteria: criteria)
+        options.suspendSessionsWhenBackgrounded = false
         GCKCastContext.setSharedInstanceWith(options)
         GCKLogger.sharedInstance().delegate = self // logger
         
@@ -45,7 +34,7 @@ import GoogleCast
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
     
-    override func applicationWillEnterForeground(_ application: UIApplication) {
+    override func applicationDidBecomeActive(_ application: UIApplication) {
         PlaybackPlugin.instance?.onForeground()
     }
     
