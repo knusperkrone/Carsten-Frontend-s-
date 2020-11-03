@@ -24,6 +24,8 @@
 	<true/>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>Chromecast detection</string>
+	<key>NSBluetoothAlwaysUsageDescription</key
+	<string>Chromecast detection</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Chromecast control</string>
 	<key>UIBackgroundModes</key>
