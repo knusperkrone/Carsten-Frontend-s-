@@ -47,5 +47,9 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Chromecast detection</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Chromecast control</string>
 </dict>
 </plist>
