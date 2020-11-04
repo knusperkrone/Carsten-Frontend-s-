@@ -239,8 +239,9 @@ class SearchPageState extends CachingState<SearchPage> {
           ),
         ),
       ),
-      bottomNavigationBar: const BottomAppBar(
-        child: ControlBar(),
+      bottomNavigationBar: BottomAppBar(
+        child: const ControlBar(),
+        color: Theme.of(context).primaryColor,
       ),
       body: CustomScrollView(
         slivers: _textController.text.isEmpty

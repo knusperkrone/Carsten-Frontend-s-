@@ -135,6 +135,7 @@ class _PlaylistPageState extends RootState<PlaylistPage> {
       ),
       bottomNavigationBar: BottomAppBar(
         child: ControlBar(key: _controlKey),
+        color: Theme.of(context).primaryColor,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: FloatingActionButton(

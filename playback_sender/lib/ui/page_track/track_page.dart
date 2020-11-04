@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -234,6 +235,7 @@ class TrackPageState extends CachingState<TrackPage> {
     return Container(
       color: statusBarColor,
       child: SafeArea(
+        bottom: false,
         child: Material(
           child: Column(
             children: <Widget>[
@@ -266,6 +268,10 @@ class TrackPageState extends CachingState<TrackPage> {
                 ),
               ),
               const ControlBar(),
+              Container(
+                height: MediaQuery.of(context).padding.bottom,
+                color: Theme.of(context).primaryColor,
+              ),
             ],
           ),
         ),
