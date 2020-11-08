@@ -13,12 +13,13 @@ class PlaybackSender {
   Timer _nextTimeout = new Timer(const Duration(), () {});
   Timer _prevTimeout = new Timer(const Duration(), () {});
   final CastPlaybackContext _context;
+
   bool isBackground = false;
 
   PlaybackSender(this._context);
 
   /*
-   * Getters?setters
+   * Getters/setters
    */
 
   bool _isConnected = false;
@@ -32,8 +33,8 @@ class PlaybackSender {
    * Business methods
    */
 
-  void sendTracks(
-      List<PlaybackTrack> tracks, int selected, String playlistName) {
+  Future<void> sendTracks(
+      List<PlaybackTrack> tracks, int selected, String playlistName) async {
     tracks.insert(0, PlaybackTrack.dtoHack(selected, playlistName));
 
     _sendMsg(SenderToCafConstants.PB_CLEAR_QUEUE); // Clear current queue
@@ -44,71 +45,72 @@ class PlaybackSender {
       final sendList = tracks.sublist(
           currIndex, min(tracks.length, currIndex + _PAGINATE_WINDOW));
       currIndex += _PAGINATE_WINDOW;
-      _sendMsg(SenderToCafConstants.PB_APPEND_TO_QUEUE, sendList);
+      await _sendMsg(SenderToCafConstants.PB_APPEND_TO_QUEUE, sendList);
     } while (currIndex < tracks.length);
 
     // Notify last msg
-    _sendMsg(SenderToCafConstants.PB_APPEND_TO_QUEUE, <PlaybackTrack>[]);
+    await _sendMsg(SenderToCafConstants.PB_APPEND_TO_QUEUE, <PlaybackTrack>[]);
   }
 
   /*
    * stubs
    */
 
-  void sendPlay() => _sendMsg(SenderToCafConstants.PB_PLAY);
+  Future<void> sendPlay() async => await _sendMsg(SenderToCafConstants.PB_PLAY);
 
-  void sendPause() => _sendMsg(SenderToCafConstants.PB_PAUSE);
+  Future<void> sendPause() async =>
+      await _sendMsg(SenderToCafConstants.PB_PAUSE);
 
-  void sendPlayTrack(PlaybackTrack track) =>
-      _sendMsg(SenderToCafConstants.PB_PLAY_TRACK, track);
+  Future<void> sendPlayTrack(PlaybackTrack track) async =>
+      await _sendMsg(SenderToCafConstants.PB_PLAY_TRACK, track);
 
   void sendStop() => _sendMsg(SenderToCafConstants.PB_STOP);
 
-  void sendNext() {
+  Future<void> sendNext() async {
     if (!_nextTimeout.isActive) {
-      _sendMsg(SenderToCafConstants.PB_NEXT_TRACK);
+      await _sendMsg(SenderToCafConstants.PB_NEXT_TRACK);
     }
-    _nextTimeout = _createTimer();
+    _nextTimeout = _createTimeout();
   }
 
-  void sendPrevious() {
+  Future<void> sendPrevious() async {
     if (!_prevTimeout.isActive) {
-      _sendMsg(SenderToCafConstants.PB_PREV_TRACK);
+      await _sendMsg(SenderToCafConstants.PB_PREV_TRACK);
     }
-    _prevTimeout = _createTimer();
+    _prevTimeout = _createTimeout();
   }
 
-  void sendShuffling(bool isShuffling) =>
-      _sendMsg(SenderToCafConstants.PB_SHUFFLING, isShuffling);
+  Future<void> sendShuffling(bool isShuffling) async =>
+      await _sendMsg(SenderToCafConstants.PB_SHUFFLING, isShuffling);
 
-  void sendRepeating(bool isRepeating) =>
-      _sendMsg(SenderToCafConstants.PB_REPEATING, isRepeating);
+  Future<void> sendRepeating(bool isRepeating) async =>
+      await _sendMsg(SenderToCafConstants.PB_REPEATING, isRepeating);
 
-  void sendSeek(int seekMs) =>
-      _sendMsg(SenderToCafConstants.PB_SEEK_TO, seekMs);
+  Future<void> sendSeek(int seekMs) async =>
+      await _sendMsg(SenderToCafConstants.PB_SEEK_TO, seekMs);
 
-  void scheduleFullSync() {
+  Future<void> scheduleFullSync() async {
     if (isBackground) {
-      _sendMsg(SenderToCafConstants.PB_SCHEDULE_SYNC);
+      await _sendMsg(SenderToCafConstants.PB_SCHEDULE_SYNC);
     }
   }
 
-  void sendAddToPrio(PlaybackTrack track) =>
+  Future<void> sendAddToPrio(PlaybackTrack track) =>
       _sendMsg(SenderToCafConstants.PB_APPEND_TO_PRIO, track);
 
-  void sendMove(
-          bool startPrio, int startIndex, bool targetPrio, int targetIndex) =>
-      _sendMsg(SenderToCafConstants.PB_MOVE,
+  Future<void> sendMove(bool startPrio, int startIndex, bool targetPrio,
+          int targetIndex) async =>
+      await _sendMsg(SenderToCafConstants.PB_MOVE,
           [startPrio, startIndex, targetPrio, targetIndex]);
 
   /*
    * Helpers
    */
 
-  Timer _createTimer() => new Timer(_TIMER_DURATION, () {});
+  Timer _createTimeout() => new Timer(_TIMER_DURATION, () {});
 
-  void _sendMsg(String type, [dynamic payload = '']) {
+  Future<void> _sendMsg(String type, [dynamic payload = '']) async {
     final msg = new CastMessage<dynamic>(type, payload);
-    _context.send(msg);
+    await _context.send(msg);
   }
 }
