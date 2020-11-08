@@ -80,10 +80,10 @@ class TrackPageAppBar extends SliverPersistentHeaderDelegate {
                   child: owner == null
                       ? Container()
                       : Container(
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             color: Colors.black12,
                             borderRadius:
-                                const BorderRadius.all(Radius.circular(10.0)),
+                                BorderRadius.all(Radius.circular(10.0)),
                           ),
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
@@ -137,7 +137,7 @@ class TrackPageAppBar extends SliverPersistentHeaderDelegate {
         Positioned(
           top: 0.0,
           child: IconButton(
-            icon: Icon(Icons.arrow_back),
+            icon: const Icon(Icons.arrow_back),
             color: Colors.white70,
             onPressed: () => Navigator.pop(context),
           ),

@@ -196,7 +196,7 @@ class SearchPageState extends CachingState<SearchPage> {
         parent: this,
         searchResult: result,
         trailing: IconButton(
-          icon: Icon(Icons.close),
+          icon: const Icon(Icons.close),
           onPressed: () => onClose(result),
         ),
       ),
@@ -211,7 +211,7 @@ class SearchPageState extends CachingState<SearchPage> {
       parent: this,
       trailing: curr.type == SearchType.TRACK
           ? IconButton(
-              icon: Icon(Icons.more_vert),
+              icon: const Icon(Icons.more_vert),
               onPressed: () =>
                   key.currentState.open(actionType: SlideActionType.primary),
             )

@@ -143,8 +143,8 @@ class ReorderTrackListState extends CachingState<ReorderTrackList>
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(8.0),
+            const Padding(
+              padding: EdgeInsets.all(8.0),
               child: Icon(
                 Icons.album,
               ),
@@ -171,8 +171,8 @@ class ReorderTrackListState extends CachingState<ReorderTrackList>
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(right: 10.0),
+            const Padding(
+              padding: EdgeInsets.only(right: 10.0),
               child: Icon(Icons.drag_handle),
             ),
           ],

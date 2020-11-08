@@ -87,7 +87,7 @@ class QueueControlState extends State<QueueControl> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
                     IconButton(
-                      icon: Icon(Icons.skip_previous),
+                      icon: const Icon(Icons.skip_previous),
                       iconSize: 35.0,
                       onPressed: _manager.isConnected ? _onPrev : null,
                       splashColor: Theme.of(context).accentColor,
@@ -104,7 +104,7 @@ class QueueControlState extends State<QueueControl> {
                       splashColor: Theme.of(context).accentColor,
                     ),
                     IconButton(
-                      icon: Icon(Icons.skip_next),
+                      icon: const Icon(Icons.skip_next),
                       iconSize: 35.0,
                       onPressed: _manager.isConnected ? _onNext : null,
                       splashColor: Theme.of(context).accentColor,

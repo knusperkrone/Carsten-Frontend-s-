@@ -214,7 +214,7 @@ class TrackPageState extends CachingState<TrackPage> {
           title: Text(curr.name ?? ''),
           subtitle: Text(curr.artist ?? ''),
           trailing: IconButton(
-            icon: Icon(Icons.more_vert),
+            icon: const Icon(Icons.more_vert),
             onPressed: () =>
                 key.currentState?.open(actionType: SlideActionType.primary),
           ),

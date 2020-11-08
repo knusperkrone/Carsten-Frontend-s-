@@ -188,7 +188,7 @@ class ControlPageState extends UIListenerState<ControlPage>
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size(double.infinity, kToolbarHeight),
+        preferredSize: const Size(double.infinity, kToolbarHeight),
         child: TrackAppBar(
           key: _barKey,
           colorTween: _colorTween,

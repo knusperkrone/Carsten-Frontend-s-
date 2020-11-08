@@ -131,7 +131,7 @@ class _VolumeDialogState extends CachingState<_VolumeDialog> {
   Widget build(BuildContext context) {
     return SimpleDialog(
       children: <Widget>[
-        Icon(
+        const Icon(
           Icons.airplay,
           size: 70,
         ),
