@@ -22,10 +22,7 @@ abstract class BasePlaybackQueue {
       {PlaybackTrack trackHolder, int seed = 0})
       : _immutableTrackList = new List.unmodifiable(_mutableTrackList),
         _hash = const ListEquality<dynamic>().hash(_mutableTrackList).toString(),
-        assert(isShuffling != null &&
-            _isRepeating != null &&
-            _prioTracks != null &&
-            _mutableTrackList != null) {
+        assert(isShuffling != null && _isRepeating != null && _prioTracks != null && _mutableTrackList != null) {
     _currTrackOpt = currentTrack;
     if (trackHolder != null) {
       _trackHolderOpt = trackHolder;
@@ -215,9 +212,14 @@ abstract class BasePlaybackQueue {
       throw new ArgumentError('[ERROR] move:\nInvalid index!');
     }
 
+    // Swap
     PlaybackTrack moveTrack = startList.removeAt(startIndex);
     moveTrack = new PlaybackTrack.copyWithPrio(targetPrio, moveTrack);
-    targetList.insert(targetIndex, moveTrack);
+    if (targetList.length == targetIndex) {
+      targetList.add(moveTrack);
+    } else {
+      targetList.insert(targetIndex, moveTrack);
+    }
 
     final makesDirty = !startPrio || !targetPrio;
     if (makesDirty) {

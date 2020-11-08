@@ -78,26 +78,33 @@ class ReorderTrackListState extends CachingState<ReorderTrackList>
       int localTargetIndex;
 
       if (!startPrio && !targetPrio) {
-        localStartIndex = startIndex - (_shadowPrioTracks.length - 1);
-        localTargetIndex = targetIndex - (_shadowPrioTracks.length - 1);
-        startIndex -= _shadowPrioTracks.length - 1;
-        targetIndex -= _shadowPrioTracks.length - 1;
+        localStartIndex = startIndex - _shadowPrioTracks.length;
+        localTargetIndex = targetIndex - _shadowPrioTracks.length;
+        startIndex -= _shadowPrioTracks.length;
+        targetIndex -= _shadowPrioTracks.length;
       } else if (!startPrio && targetPrio) {
-        localStartIndex = startIndex - (_shadowPrioTracks.length - 1);
+        localStartIndex = startIndex - _shadowPrioTracks.length;
         localTargetIndex = targetIndex;
-        startIndex -= _shadowPrioTracks.length - 1;
-        // targetIndex = targetIndex;
+        startIndex -= _shadowPrioTracks.length;
+        targetIndex = targetIndex;
       } else if (startPrio && !targetPrio) {
         localStartIndex = startIndex;
-        localTargetIndex = targetIndex - (_shadowPrioTracks.length - 2);
-        // startIndex = startIndex;
-        targetIndex -= _shadowPrioTracks.length - 2;
+        localTargetIndex = targetIndex - _shadowPrioTracks.length + 1;
+        startIndex = startIndex;
+        targetIndex -= _shadowPrioTracks.length - 1;
       } else {
         localStartIndex = startIndex;
         localTargetIndex = targetIndex;
       }
+
+      // Shadow swap
       final row = startList.removeAt(localStartIndex);
-      targetList.insert(localTargetIndex, row);
+      if (targetList.length == localTargetIndex) {
+        targetList.add(row);
+      } else {
+        targetList.insert(localTargetIndex, row);
+      }
+
       // send to manager and wait for the broadcast
       _manager.sendMove(startPrio, startIndex, targetPrio, targetIndex);
       _animateQueueText();
