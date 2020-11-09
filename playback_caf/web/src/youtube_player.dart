@@ -24,8 +24,8 @@ class YoutubePlayer extends PlaybackPlayer {
     _iplayer = new yt.Player(
       'youTubePlayerDOM',
       yt.PlayerOptions(
-        height: '98%',
-        width: '98%',
+        height: '100%',
+        width: '100%',
         events: yt.PlayerEvents(
           onReady: allowInterop((dynamic _) => _onReady()),
           onError: allowInterop((e) => _onError(e.data)),

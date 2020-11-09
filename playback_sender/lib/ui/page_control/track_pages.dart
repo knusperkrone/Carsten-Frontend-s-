@@ -11,7 +11,16 @@ class TrackPages extends StatefulWidget {
   State createState() => new TrackPagesState();
 }
 
-class TrackPagesState extends TrackPageControllerState<TrackPages> {
+class TrackPagesState extends TrackPageControllerState<TrackPages>
+    with WidgetsBindingObserver {
+  Timer _resumeTimeout;
+
+  @override
+  void initState() {
+    super.initState();
+    _resumeTimeout = new Timer(const Duration(milliseconds: 125), () {});
+  }
+
   void setTrack(Optional<PlaybackTrack> track) {
     track.ifPresent((track) => animateToTrack(track));
   }
@@ -36,11 +45,21 @@ class TrackPagesState extends TrackPageControllerState<TrackPages> {
 
   @override
   void onUserScroll(PlaybackTrack track, bool next) {
-    widget.onTrackChanged(track);
-    if (next) {
-      PlaybackManager().sendNext();
-    } else {
-      PlaybackManager().sendPrevious();
+    // This fires sometimes, even the user didn't touch the screen
+    if (!_resumeTimeout.isActive) {
+      widget.onTrackChanged(track);
+      if (next) {
+        PlaybackManager().sendNext();
+      } else {
+        PlaybackManager().sendPrevious();
+      }
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _resumeTimeout = new Timer(const Duration(milliseconds: 250), () {});
     }
   }
 

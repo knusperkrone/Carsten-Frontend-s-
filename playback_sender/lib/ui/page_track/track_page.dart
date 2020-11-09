@@ -7,6 +7,7 @@ import 'package:chrome_tube/localization.dart';
 import 'package:chrome_tube/playback/playback.dart';
 import 'package:chrome_tube/spotify/spotify.dart';
 import 'package:chrome_tube/spotify/src/dto/spotify_featured.dart';
+import 'package:chrome_tube/ui/common/connect_dialog.dart';
 import 'package:chrome_tube/ui/common/control/control_bar.dart';
 import 'package:chrome_tube/ui/common/state.dart';
 import 'package:chrome_tube/ui/common/transformer.dart';
@@ -166,12 +167,21 @@ class TrackPageState extends CachingState<TrackPage> {
     _onTrack(Random().nextInt(_tracks.length).abs());
   }
 
-  void _onTrack(int selected) {
+  Future<void> _onTrack(int selected) async {
     final sendList = new List.generate(_tracks.length, (i) {
       return PlaybackTransformer.fromSpotify(_tracks[i], i);
     });
     widget.featured.ifPresent((curr) => FeatureService().addFeature(curr));
-    PlaybackManager().sendTracks(sendList, selected, widget.collectionName);
+
+    try {
+      await PlaybackManager()
+          .sendTracks(sendList, selected, widget.collectionName);
+    } catch (e) {
+      showDialog<void>(
+        context: context,
+        builder: (_) => ConnectChromeCastDialog(),
+      );
+    }
   }
 
   void _onTrackSecondary(SpotifyTrack track) {
@@ -205,7 +215,7 @@ class TrackPageState extends CachingState<TrackPage> {
           title: Text(curr.name ?? ''),
           subtitle: Text(curr.artist ?? ''),
           trailing: IconButton(
-            icon: Icon(Icons.more_vert),
+            icon: const Icon(Icons.more_vert),
             onPressed: () =>
                 key.currentState?.open(actionType: SlideActionType.primary),
           ),

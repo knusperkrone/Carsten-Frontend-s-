@@ -30,7 +30,7 @@ class CarstenApplication extends StatelessWidget {
         }
         return const Locale('en', 'US');
       },
-      localizationsDelegates: [
+      localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,

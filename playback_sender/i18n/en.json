@@ -1,4 +1,8 @@
 {
+  "ok": "Ok",
+  "cancel": "Cancel",
+  "diag_co_cast_title": "Chromecast not connected",
+  "diag_co_cast_text": "In order to play your Songs, you need to connect to a Chromecast.",
   "error": "Error",
   "retry": "Retry",
   "shuffle": "Shuffle",

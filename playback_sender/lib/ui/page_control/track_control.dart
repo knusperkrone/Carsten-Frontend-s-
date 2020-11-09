@@ -42,13 +42,13 @@ class TrackControlState extends State<TrackControl> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           IconButton(
-            icon: Icon(Icons.shuffle),
+            icon: const Icon(Icons.shuffle),
             iconSize: ICON_SIZE - ICON_SIZE / 4,
             color: _manager.isShuffled ? Theme.of(context).accentColor : null,
             onPressed: _manager.isConnected ? _onShuffle : null,
           ),
           IconButton(
-            icon: Icon(Icons.arrow_left),
+            icon: const Icon(Icons.arrow_left),
             iconSize: ICON_SIZE,
             onPressed: _manager.isConnected ? _onPrevious : null,
           ),
@@ -61,12 +61,12 @@ class TrackControlState extends State<TrackControl> {
             onPressed: _manager.isConnected ? _onPlayState : null,
           ),
           IconButton(
-            icon: Icon(Icons.arrow_right),
+            icon: const Icon(Icons.arrow_right),
             iconSize: ICON_SIZE,
             onPressed: _manager.isConnected ? _onNext : null,
           ),
           IconButton(
-            icon: Icon(Icons.repeat),
+            icon: const Icon(Icons.repeat),
             iconSize: ICON_SIZE - ICON_SIZE / 4,
             color: _manager.isRepeating ? Theme.of(context).accentColor : null,
             onPressed: _manager.isConnected ? _onRepeat : null,

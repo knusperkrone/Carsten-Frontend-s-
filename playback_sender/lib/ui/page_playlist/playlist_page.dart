@@ -80,7 +80,7 @@ class _PlaylistPageState extends RootState<PlaylistPage> {
         leading: Container(
           width: 60,
           height: 60,
-          child: Icon(Icons.album),
+          child: const Icon(Icons.album),
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.centerLeft,
@@ -141,7 +141,7 @@ class _PlaylistPageState extends RootState<PlaylistPage> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: theme.accentColor,
         heroTag: 'second',
-        child: Icon(Icons.search),
+        child: const Icon(Icons.search),
         onPressed: _onSearch,
       ),
     );

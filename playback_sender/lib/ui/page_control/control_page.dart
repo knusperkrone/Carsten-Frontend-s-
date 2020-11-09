@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chrome_tube/playback/playback.dart';
 import 'package:chrome_tube/ui/common/common.dart';
@@ -188,7 +190,7 @@ class ControlPageState extends UIListenerState<ControlPage>
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size(double.infinity, kToolbarHeight),
+        preferredSize: const Size(double.infinity, kToolbarHeight),
         child: TrackAppBar(
           key: _barKey,
           colorTween: _colorTween,

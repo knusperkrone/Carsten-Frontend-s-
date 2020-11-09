@@ -6,6 +6,7 @@ import 'package:async/async.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chrome_tube/playback/playback.dart';
 import 'package:chrome_tube/spotify/spotify.dart';
+import 'package:chrome_tube/ui/common/connect_dialog.dart';
 import 'package:chrome_tube/ui/common/control/control_bar.dart';
 import 'package:chrome_tube/ui/common/state.dart';
 import 'package:chrome_tube/ui/common/transformer.dart';
@@ -126,13 +127,21 @@ class SearchPageState extends CachingState<SearchPage> {
     }
   }
 
-  void onTrack(SpotifyTrack track) {
+  Future<void> onTrack(SpotifyTrack track) async {
     final result = new SerializableSearchResult.fromTrack(track);
     _addToSearchResults(result);
 
     final playbackTrack =
         PlaybackTransformer.fromSpotify(track, -1, isPrio: true);
-    _manager.sendPlayTrack(playbackTrack);
+
+    try {
+      await _manager.sendPlayTrack(playbackTrack);
+    } catch (_) {
+      showDialog<void>(
+        context: context,
+        builder: (_) => ConnectChromeCastDialog(),
+      );
+    }
   }
 
   Future<void> onAlbum(SpotifyAlbum album) async {
@@ -187,7 +196,7 @@ class SearchPageState extends CachingState<SearchPage> {
         parent: this,
         searchResult: result,
         trailing: IconButton(
-          icon: Icon(Icons.close),
+          icon: const Icon(Icons.close),
           onPressed: () => onClose(result),
         ),
       ),
@@ -202,7 +211,7 @@ class SearchPageState extends CachingState<SearchPage> {
       parent: this,
       trailing: curr.type == SearchType.TRACK
           ? IconButton(
-              icon: Icon(Icons.more_vert),
+              icon: const Icon(Icons.more_vert),
               onPressed: () =>
                   key.currentState.open(actionType: SlideActionType.primary),
             )
