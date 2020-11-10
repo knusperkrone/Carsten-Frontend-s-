@@ -1,5 +1,3 @@
-import 'dart:html';
-
 import 'package:playback_caf_dart/playback_caf.dart';
 import 'package:playback_interop/playback_interop.dart';
 

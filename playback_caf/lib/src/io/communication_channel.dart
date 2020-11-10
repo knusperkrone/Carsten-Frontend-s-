@@ -6,7 +6,7 @@ import 'package:playback_interop/playback_interop.dart';
 import '../playback/caf_queue.dart';
 
 abstract class CommunicationChannel {
-  static const _PAGINATE_WINDOW = 512;
+  static const _PAGINATE_WINDOW = 256;
 
   /*
    * Business methods
