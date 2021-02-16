@@ -87,7 +87,7 @@ dependencies {
 
 
     // MediaRoute-Button
-    implementation 'androidx.mediarouter:mediarouter:1.2.0'
+    implementation 'androidx.mediarouter:mediarouter:1.2.2'
     api 'com.google.android.gms:play-services-cast-framework:19.0.0'
 
     // Service notification
