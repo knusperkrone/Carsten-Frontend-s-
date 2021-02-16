@@ -27,12 +27,12 @@ class SpotifyPlaylist extends Dto implements SpotifyFeatured {
 
   @override
   String get imageUrl {
-    if (images == null) {
-      return '';
+    SpotifyImage selected;
+    if (images != null && images.isNotEmpty) {
+      selected = images.first;
     }
-
-    final offset = images.length > 1 ? 2 : 1;
-    return images[images.length - offset].url;
+    return selected?.url ??
+        'https://www.interface-ag.com/wp-content/uploads/elementor/thumbs/Logo_Mockup_InterFace_AG-oon15ikn17jbmwg17r1mswv2u8z4wu2pi3d8xdzz0o.png';
   }
 
   @override
