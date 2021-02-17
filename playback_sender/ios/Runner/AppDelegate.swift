@@ -22,6 +22,10 @@ import GoogleCast
         options.suspendSessionsWhenBackgrounded = false
         GCKCastContext.setSharedInstanceWith(options)
         GCKLogger.sharedInstance().delegate = self // logger
+        GCKCastContext.sharedInstance().discoveryManager.startDiscovery()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+            GCKCastContext.sharedInstance().discoveryManager.stopDiscovery()
+        }
         
         // Get foreground channel
         let controller = window?.rootViewController as! FlutterViewController

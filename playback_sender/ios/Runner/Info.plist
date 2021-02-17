@@ -24,6 +24,13 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSBonjourServices</key>
+		<array>
+  			<string>_googlecast._tcp</string>
+  			<string>_780E142E._googlecast._tcp</string>
+	</array>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>${PRODUCT_NAME} uses the local network to discover Cast-enabled devices on your WiFi network.</string>
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string>Chromecast detection</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
