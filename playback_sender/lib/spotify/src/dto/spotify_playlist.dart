@@ -31,8 +31,7 @@ class SpotifyPlaylist extends Dto implements SpotifyFeatured {
     if (images != null && images.isNotEmpty) {
       selected = images.first;
     }
-    return selected?.url ??
-        'https://www.interface-ag.com/wp-content/uploads/elementor/thumbs/Logo_Mockup_InterFace_AG-oon15ikn17jbmwg17r1mswv2u8z4wu2pi3d8xdzz0o.png';
+    return selected?.url ?? '';
   }
 
   @override
