@@ -114,7 +114,7 @@ class _SplashScreenState extends CachingState<SplashScreen>
                       color: theme.errorColor,
                     ),
                   ),
-                  OutlineButton(
+                  OutlinedButton(
                     child: Text(locale.translate('error')),
                     onPressed: _initToken,
                   ),
