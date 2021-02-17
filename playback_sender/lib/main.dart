@@ -1,11 +1,44 @@
+import 'dart:async';
+
 import 'package:chrome_tube/ui/pages.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:sentry/sentry.dart';
 
 import 'localization.dart';
 
-void main() => runApp(CarstenApplication());
+void main() {
+  // Sentry logs
+  final sentry = SentryClient(
+      dsn: 'https://f5d43c1a57ba425b8404cb51181deb7c@sentry.if-lab.de/13');
+
+  FlutterError.onError = (details, {bool forceReport = false}) {
+    if (kReleaseMode) {
+      sentry.captureException(
+        exception: details.exception,
+        stackTrace: details.stack,
+      );
+    } else {
+      print('SENDING ${details.exception}');
+    }
+  };
+
+  runZonedGuarded(
+    () => runApp(CarstenApplication()),
+    (error, stackTrace) async {
+      if (kReleaseMode) {
+        await sentry.captureException(
+          exception: error,
+          stackTrace: stackTrace,
+        );
+      } else {
+        print('SENDING $error');
+      }
+    },
+  );
+}
 
 class CarstenApplication extends StatelessWidget {
   @override
