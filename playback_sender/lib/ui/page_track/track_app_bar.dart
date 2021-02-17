@@ -46,7 +46,7 @@ class TrackPageAppBar extends SliverPersistentHeaderDelegate {
 
     return Stack(
       fit: StackFit.expand,
-      overflow: Overflow.visible,
+      clipBehavior: Clip.none,
       children: [
         Container(
           decoration: BoxDecoration(
@@ -65,14 +65,15 @@ class TrackPageAppBar extends SliverPersistentHeaderDelegate {
             child: Column(
               children: <Widget>[
                 Image(
-                    image: imageProvider,
-                    width: qWidth - qWidth / 4 - shrinkOffset,
-                    height: expandedHeight -
-                        kToolbarHeight -
-                        shrinkOffset -
-                        40.0 -
-                        SHUFFLE_SIZE,
-                    fit: BoxFit.fitHeight),
+                  image: imageProvider,
+                  fit: BoxFit.fitHeight,
+                  width: qWidth - qWidth / 4 - shrinkOffset,
+                  height: expandedHeight -
+                      kToolbarHeight -
+                      shrinkOffset -
+                      40.0 -
+                      SHUFFLE_SIZE,
+                ),
                 Container(
                   padding: const EdgeInsets.only(top: 12.0),
                   height:
@@ -114,22 +115,24 @@ class TrackPageAppBar extends SliverPersistentHeaderDelegate {
         Positioned(
           top: max(minExtent - 10.0 - SHUFFLE_SIZE,
               expandedHeight - 10.0 - SHUFFLE_SIZE - shrinkOffset),
-          left: qWidth / 6,
-          child: Hero(
-            tag: 'second',
-            child: RaisedButton(
-              onPressed: onShuffle,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-              elevation: 5,
-              color: theme.accentColor,
-              child: SizedBox(
-                height: 47.0,
-                width: qWidth / 1.5,
-                child: Center(
-                  child: Text(text),
+          left: qWidth / 8,
+          right: qWidth / 8,
+          child: ElevatedButton(
+            onPressed: onShuffle,
+            style: ButtonStyle(
+              shape: MaterialStateProperty.all(
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(25),
                 ),
+              ),
+              backgroundColor: MaterialStateProperty.all(theme.accentColor),
+              elevation: MaterialStateProperty.all(5.0),
+            ),
+            child: SizedBox(
+              height: 47.0,
+              width: qWidth / 1.5,
+              child: Center(
+                child: Text(text),
               ),
             ),
           ),

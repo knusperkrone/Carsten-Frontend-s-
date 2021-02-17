@@ -31,9 +31,9 @@ class TrackPage extends StatefulWidget {
 
   const TrackPage._(
       this.trackStream,
-      this.palette,
       this.collectionName,
       this.collectionOwner,
+      this.palette,
       this.appBarImageProvider,
       this.expandedHeight,
       this.featured,
@@ -61,14 +61,8 @@ class TrackPage extends StatefulWidget {
         await PaletteGenerator.fromImageProvider(appBarImageProvider);
 
     return Navigator.push<void>(context, new FadeInRoute(builder: (context) {
-      return new TrackPage._(
-          stream,
-          palette,
-          playlist.name,
-          playlist.owner.name,
-          appBarImageProvider,
-          appBarHeight,
-          Optional.of(playlist),
+      return new TrackPage._(stream, playlist.name, playlist.owner.name,
+          palette, appBarImageProvider, appBarHeight, Optional.of(playlist),
           key: key);
     }));
   }
@@ -82,9 +76,16 @@ class TrackPage extends StatefulWidget {
         await PaletteGenerator.fromImageProvider(appBarImageProvider);
 
     return Navigator.push<void>(context, new FadeInRoute(builder: (context) {
-      return new TrackPage._(stream, palette, album.name, album.artist,
-          appBarImageProvider, appBarHeight, Optional.of(album),
-          key: key);
+      return new TrackPage._(
+        stream,
+        album.name,
+        album.artist,
+        palette,
+        appBarImageProvider,
+        appBarHeight,
+        Optional.of(album),
+        key: key,
+      );
     }));
   }
 
@@ -98,9 +99,16 @@ class TrackPage extends StatefulWidget {
         [PaletteColor(Theme.of(context).primaryColor, 1)]);
     return Navigator.push<void>(context, new FadeInRoute(builder: (context) {
       final songs = AppLocalizations.of(context).translate('songs');
-      return new TrackPage._(trackStream, palette, songs, null,
-          appBarImageProvider, appBarHeight, const Optional.empty(),
-          key: key);
+      return new TrackPage._(
+        trackStream,
+        songs,
+        null,
+        palette,
+        appBarImageProvider,
+        appBarHeight,
+        const Optional.empty(),
+        key: key,
+      );
     }));
   }
 
