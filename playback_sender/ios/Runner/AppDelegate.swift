@@ -22,10 +22,7 @@ import GoogleCast
         options.suspendSessionsWhenBackgrounded = false
         GCKCastContext.setSharedInstanceWith(options)
         GCKLogger.sharedInstance().delegate = self // logger
-        GCKCastContext.sharedInstance().discoveryManager.startDiscovery()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-            GCKCastContext.sharedInstance().discoveryManager.stopDiscovery()
-        }
+        searchChromecastDevices()
         
         // Get foreground channel
         let controller = window?.rootViewController as! FlutterViewController
@@ -39,11 +36,26 @@ import GoogleCast
     }
     
     override func applicationDidBecomeActive(_ application: UIApplication) {
+        self.searchChromecastDevices()
         PlaybackPlugin.instance?.onForeground()
     }
     
     override func applicationWillResignActive(_ application: UIApplication) {
+        GCKCastContext.sharedInstance().discoveryManager.stopDiscovery()
         PlaybackPlugin.instance?.onBackground()
+    }
+    
+    func searchChromecastDevices() {
+        let discoveryManager = GCKCastContext.sharedInstance().discoveryManager
+        discoveryManager.startDiscovery()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+            GCKCastContext.sharedInstance().discoveryManager.passiveScan = true
+            if (discoveryManager.hasDiscoveredDevices) {
+                discoveryManager.stopDiscovery()
+            } else {
+                self.searchChromecastDevices()
+            }
+        }
     }
 }
 
