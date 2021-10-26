@@ -1,6 +1,6 @@
 import 'package:chrome_tube/ui/common/state.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_cast_button/flutter_google_cast_button.dart';
+import 'package:flutter_cast_button/flutter_cast_button.dart';
 
 class ConnectChromeCastDialog extends StatefulWidget {
   @override
@@ -17,7 +17,7 @@ class _ConnectChromeCastDialogState
       actions: [
         MaterialButton(
           onPressed: () {
-            FlutterGoogleCastButton.showCastDialog();
+            FlutterCastButton.showCastDialog();
             Navigator.of(context).pop();
           },
           color: theme.primaryColor,

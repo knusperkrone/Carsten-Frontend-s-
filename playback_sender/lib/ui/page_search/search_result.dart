@@ -2,7 +2,7 @@ part of 'search_page.dart';
 
 enum SearchType { TRACK, PLAYLIST, ALBUM }
 
-@JsonSerializable(nullable: false)
+@JsonSerializable()
 class SerializableSearchResult {
   // ignore: non_constant_identifier_names
   static final NormalizedStringDistance _CMP = new CombinedJaccard();

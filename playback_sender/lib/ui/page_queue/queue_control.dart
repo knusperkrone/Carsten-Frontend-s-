@@ -1,9 +1,8 @@
 import 'package:chrome_tube/playback/playback.dart';
-import 'package:chrome_tube/playback/src/playback_listeners.dart';
 import 'package:chrome_tube/ui/common/common.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_cast_button/bloc_media_route.dart';
-import 'package:flutter_google_cast_button/cast_button_widget.dart';
+import 'package:flutter_cast_button/bloc_media_route.dart';
+import 'package:flutter_cast_button/cast_button_widget.dart';
 
 class QueueControl extends StatefulWidget {
   const QueueControl({Key key}) : super(key: key);
@@ -90,7 +89,7 @@ class QueueControlState extends State<QueueControl> {
                       icon: const Icon(Icons.skip_previous),
                       iconSize: 35.0,
                       onPressed: _manager.isConnected ? _onPrev : null,
-                      splashColor: Theme.of(context).accentColor,
+                      splashColor: Theme.of(context).colorScheme.secondary,
                     ),
                     IconButton(
                       icon: Icon(_manager.currPlayerState ==
@@ -101,13 +100,13 @@ class QueueControlState extends State<QueueControl> {
                           : Icons.pause),
                       iconSize: 40.0,
                       onPressed: _manager.isConnected ? _onState : null,
-                      splashColor: Theme.of(context).accentColor,
+                      splashColor: Theme.of(context).colorScheme.secondary,
                     ),
                     IconButton(
                       icon: const Icon(Icons.skip_next),
                       iconSize: 35.0,
                       onPressed: _manager.isConnected ? _onNext : null,
-                      splashColor: Theme.of(context).accentColor,
+                      splashColor: Theme.of(context).colorScheme.secondary,
                     ),
                   ],
                 ),

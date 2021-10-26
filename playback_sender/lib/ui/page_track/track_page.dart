@@ -13,7 +13,6 @@ import 'package:chrome_tube/ui/common/transformer.dart';
 import 'package:chrome_tube/ui/common/transitions.dart';
 import 'package:chrome_tube/ui/tracking/feature_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:optional/optional.dart';
 import 'package:palette_generator/palette_generator.dart';
@@ -212,7 +211,7 @@ class TrackPageState extends CachingState<TrackPage> {
         actions: <Widget>[
           IconSlideAction(
             caption: locale.translate('queue_button'),
-            color: theme.accentColor,
+            color: theme.colorScheme.secondary,
             icon: Icons.queue_music,
             onTap: () => _onTrackSecondary(curr),
           ),

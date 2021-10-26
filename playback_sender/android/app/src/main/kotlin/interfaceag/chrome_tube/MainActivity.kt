@@ -3,7 +3,6 @@ package interfaceag.chrome_tube
 import android.view.KeyEvent
 import androidx.annotation.NonNull
 import com.tekartik.sqflite.SqflitePlugin
-import github.showang.flutter_google_cast_button.FlutterGoogleCastButtonPlugin
 import interfaceag.chrome_tube.playback_plugin.CastPlaybackContextPlugin
 import interfaceag.chrome_tube.playback_plugin.service.CastConnectionService
 import io.flutter.embedding.android.FlutterActivity
@@ -46,7 +45,6 @@ class MainActivity : FlutterActivity(), CastConnectionService.RegistryCallback {
     override fun onResume() {
         super.onResume()
         castPlugin.onResume()
-        FlutterGoogleCastButtonPlugin.instance?.onResume()
     }
 
     override fun onPause() {

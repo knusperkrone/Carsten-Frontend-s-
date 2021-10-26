@@ -11,7 +11,7 @@ class BackendAdapter {
       final uri = Uri.https(
         'integration.if-lab.de',
         '/arme-spotitube-backend/api/youtube/search',
-        {'q': key},
+        <String, String>{'q': key},
       );
 
       final resp = await http.get(uri);

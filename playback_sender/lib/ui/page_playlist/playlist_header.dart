@@ -4,7 +4,6 @@ import 'package:chrome_tube/ui/common/state.dart';
 import 'package:chrome_tube/ui/page_track/track_page.dart';
 import 'package:chrome_tube/ui/tracking/feature_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
 class PlaylistHeader extends StatefulWidget {
   const PlaylistHeader({Key key}) : super(key: key);

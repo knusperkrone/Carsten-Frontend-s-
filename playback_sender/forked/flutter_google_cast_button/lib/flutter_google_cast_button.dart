@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
-class FlutterGoogleCastButton {
+mixin FlutterGoogleCastButton {
   static const MethodChannel _channel = MethodChannel('flutter_google_cast_button');
 
   static Future<void> loadMedia(String url) async =>

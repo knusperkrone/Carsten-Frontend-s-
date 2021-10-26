@@ -5,7 +5,6 @@ import 'package:chrome_tube/spotify/spotify.dart';
 import 'package:chrome_tube/ui/common/state.dart';
 import 'package:chrome_tube/ui/page_playlist/playlist_page.dart';
 import 'package:chrome_tube/ui/tracking/feature_service.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -15,11 +14,11 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends CachingState<SplashScreen>
     with SingleTickerProviderStateMixin {
-  static const PACKAGE_NAME = 'flutter_google_cast_button';
+  static const PACKAGE_NAME = 'flutter_cast_button';
   static const CONNECTION_ASSETS = [
-    'images/ic_cast0_black_24dp.png',
-    'images/ic_cast1_black_24dp.png',
-    'images/ic_cast2_black_24dp.png',
+    'assets/ic_cast0_black_24dp.png',
+    'assets/ic_cast1_black_24dp.png',
+    'assets/ic_cast2_black_24dp.png',
   ];
 
   String _errorMsg;

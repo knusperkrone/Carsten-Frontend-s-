@@ -2,8 +2,8 @@ import 'package:chrome_tube/playback/playback.dart';
 import 'package:chrome_tube/ui/common/track_info.dart';
 import 'package:chrome_tube/ui/pages.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_cast_button/bloc_media_route.dart';
-import 'package:flutter_google_cast_button/cast_button_widget.dart';
+import 'package:flutter_cast_button/bloc_media_route.dart';
+import 'package:flutter_cast_button/cast_button_widget.dart';
 import 'package:playback_interop/playback_interop.dart';
 
 import '../state.dart';

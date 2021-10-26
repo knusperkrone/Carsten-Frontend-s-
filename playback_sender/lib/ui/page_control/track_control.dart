@@ -44,7 +44,7 @@ class TrackControlState extends State<TrackControl> {
           IconButton(
             icon: const Icon(Icons.shuffle),
             iconSize: ICON_SIZE - ICON_SIZE / 4,
-            color: _manager.isShuffled ? Theme.of(context).accentColor : null,
+            color: _manager.isShuffled ? Theme.of(context).colorScheme.secondary : null,
             onPressed: _manager.isConnected ? _onShuffle : null,
           ),
           IconButton(
@@ -68,7 +68,7 @@ class TrackControlState extends State<TrackControl> {
           IconButton(
             icon: const Icon(Icons.repeat),
             iconSize: ICON_SIZE - ICON_SIZE / 4,
-            color: _manager.isRepeating ? Theme.of(context).accentColor : null,
+            color: _manager.isRepeating ? Theme.of(context).colorScheme.secondary : null,
             onPressed: _manager.isConnected ? _onRepeat : null,
           ),
         ],

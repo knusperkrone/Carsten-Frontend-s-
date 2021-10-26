@@ -9,8 +9,8 @@ import 'package:chrome_tube/ui/page_control/track_app_bar.dart';
 import 'package:chrome_tube/ui/page_control/track_gradient.dart';
 import 'package:chrome_tube/ui/pages.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_cast_button/bloc_media_route.dart';
-import 'package:flutter_google_cast_button/cast_button_widget.dart';
+import 'package:flutter_cast_button/bloc_media_route.dart';
+import 'package:flutter_cast_button/cast_button_widget.dart';
 import 'package:optional/optional.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:playback_interop/playback_interop.dart';
@@ -82,7 +82,7 @@ class ControlPageState extends UIListenerState<ControlPage>
       paletteFuture = PaletteGenerator.fromImageProvider(provider);
     }
 
-    // Fade im images
+    // Fade im assets
     Future.delayed(const Duration(milliseconds: 500), () async {
       setState(() => _isTicking = true);
       if (paletteFuture != null) {

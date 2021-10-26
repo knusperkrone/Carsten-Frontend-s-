@@ -21,40 +21,41 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-
-  flutter_google_cast_button:
-    path: forked/flutter_google_cast_button
+  flutter_cast_button:
+    path: forked/flutter_cast_button
   playback_interop:
     path: ../playback_interop
 
-  async: ^2.5.0
-  cached_network_image: ^2.5.0
-  cupertino_icons: ^1.0.2
+  async: ^2.8.2
+  cached_network_image: ^3.1.0
+  cupertino_icons: ^1.0.3
+  dcache: ^0.4.0
   edit_distance: ^0.5.0-nullsafety.0
-  fading_edge_scrollview: ^1.1.4
-  flutter_cache_manager: ^2.1.1
-  flutter_slidable: ^0.5.7
-  json_annotation: ^3.1.1
-  optional: ^5.0.0+1
-  palette_generator: ^0.2.3
-  path_provider: ^1.6.27
-  http: ^0.12.2
-  sentry: ">=3.0.0 <4.0.0"
-  shared_preferences: ^0.5.12+4
-  tuple: ^1.0.3
-  webview_flutter: ^1.0.7
+  fading_edge_scrollview: ^2.0.1
+  flutter_cache_manager: ^3.1.2
+  flutter_slidable: ^0.6.0
+  http: ^0.13.4
+  json_annotation: ^4.3.0
+  optional: ^6.0.0+1
+  palette_generator: ^0.3.2
+  path_provider: ^2.0.5
+  reorderables: ^0.4.1
+  sentry_flutter: ^6.0.1
+  shared_preferences: ^2.0.8
+  tuple: ^2.0.0
+  webview_flutter: ^2.1.2
 
 dev_dependencies:
-  build_runner: ^1.10.3
-  json_serializable: ^3.5.1
-  flutter_launcher_icons: ^0.8.1
-  mockito: ^4.1.1
+  build_runner: ^2.0.0
+  flutter_launcher_icons: ^0.9.2
   flutter_test:
     sdk: flutter
+  json_serializable: ^6.0.1
+  mockito: ^5.0.16
 
 
 flutter_icons:
-  image_path: 'assets/images/icon.png'
+  image_path: 'assets/assets/icon.png'
   android: false
   ios: true
 
@@ -74,7 +75,6 @@ flutter:
     - assets/images/transparent.png
     - i18n/de.json
     - i18n/en.json
-  #  - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

@@ -1,18 +1,21 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_google_cast_button/bloc_media_route.dart';
 import 'package:flutter_google_cast_button/flutter_google_cast_button.dart';
 
 class CastButtonWidget extends StatefulWidget {
-  final MediaRouteBloc bloc;
-  final Color tintColor;
-  final Color backgroundColor;
+  final MediaRouteBloc? bloc;
+  final Color? tintColor;
+  final Color? backgroundColor;
 
-  const CastButtonWidget({Key key, this.bloc, this.tintColor, this.backgroundColor})
-      : super(key: key);
+  const CastButtonWidget({
+    Key? key,
+    this.bloc,
+    this.tintColor,
+    this.backgroundColor,
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => CastButtonWidgetState();
@@ -20,14 +23,17 @@ class CastButtonWidget extends StatefulWidget {
 
 class CastButtonWidgetState extends State<CastButtonWidget>
     with SingleTickerProviderStateMixin {
-  AnimationController _animationController;
-  Animation<String> connectingIconTween;
-  MediaRouteBloc _bloc;
+  late AnimationController _animationController;
+  late Animation<String> connectingIconTween;
+  late MediaRouteBloc _bloc;
+  late Future animationFuture;
+  MediaRouteState? currentState;
+
   static const packageName = 'flutter_google_cast_button';
   static const connectingAssets = [
-    'images/ic_cast0_black_24dp.png',
-    'images/ic_cast1_black_24dp.png',
-    'images/ic_cast2_black_24dp.png',
+    'assets/ic_cast0_black_24dp.png',
+    'assets/ic_cast1_black_24dp.png',
+    'assets/ic_cast2_black_24dp.png',
   ];
 
   void setBloc(MediaRouteBloc bloc) {
@@ -59,11 +65,11 @@ class CastButtonWidgetState extends State<CastButtonWidget>
 
     for (String path in connectingAssets) {
       Future(() async {
-        final globalCache = PaintingBinding.instance.imageCache;
+        final globalCache = PaintingBinding.instance!.imageCache!;
         final image = ExactAssetImage(path, package: packageName);
         final key = await image.obtainKey(
             createLocalImageConfiguration(context, size: const Size(24, 24)));
-        final codec = PaintingBinding.instance.instantiateImageCodec;
+        final codec = PaintingBinding.instance!.instantiateImageCodec;
         globalCache.putIfAbsent(key, () => image.load(key, codec),
             onError: (dynamic _, s) => print('preload casting asset error'));
       });
@@ -76,9 +82,6 @@ class CastButtonWidgetState extends State<CastButtonWidget>
     _animationController.dispose();
     super.dispose();
   }
-
-  Future animationFuture;
-  MediaRouteState currentState;
 
   @override
   Widget build(BuildContext context) {
@@ -116,5 +119,4 @@ class CastButtonWidgetState extends State<CastButtonWidget>
       },
     );
   }
-
 }

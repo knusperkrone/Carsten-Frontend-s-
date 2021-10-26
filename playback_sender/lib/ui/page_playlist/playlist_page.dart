@@ -85,7 +85,7 @@ class _PlaylistPageState extends RootState<PlaylistPage> {
             gradient: LinearGradient(
               begin: Alignment.centerLeft,
               end: Alignment.bottomRight,
-              colors: [theme.accentColor, theme.canvasColor],
+              colors: [theme.colorScheme.secondary, theme.canvasColor],
             ),
           ),
         ),
@@ -139,7 +139,7 @@ class _PlaylistPageState extends RootState<PlaylistPage> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: FloatingActionButton(
-        backgroundColor: theme.accentColor,
+        backgroundColor: theme.colorScheme.secondary,
         heroTag: 'second',
         child: const Icon(Icons.search),
         onPressed: _onSearch,

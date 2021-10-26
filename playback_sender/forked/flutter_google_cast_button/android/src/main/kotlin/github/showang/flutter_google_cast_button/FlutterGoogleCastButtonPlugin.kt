@@ -18,7 +18,7 @@ import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
 import java.lang.Exception
 
-class FlutterGoogleCastButtonPlugin(private val registrar: Registrar, private val castStreamHandler: CastStreamHandler) : MethodCallHandler {
+class FlutterGoogleCastButtonPlugin(private val castStreamHandler: CastStreamHandler) : MethodCallHandler, StreamHandler, FlutterPlugin {
     companion object {
         @StyleRes
         var customStyleResId: Int? = null

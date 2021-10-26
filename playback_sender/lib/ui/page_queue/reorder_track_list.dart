@@ -1,9 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chrome_tube/playback/playback.dart';
 import 'package:chrome_tube/ui/common/state.dart';
-import 'package:chrome_tube/utils/forked/reorderable_sliver/reorderable_sliver.dart';
 import 'package:flutter/material.dart';
 import 'package:playback_interop/playback_interop.dart';
+import 'package:reorderables/reorderables.dart';
 
 class ReorderTrackList extends StatefulWidget {
   const ReorderTrackList({Key key}) : super(key: key);
@@ -54,11 +54,8 @@ class ReorderTrackListState extends CachingState<ReorderTrackList>
    * Ordering
    */
 
+  // TODO(aron): Reimplement
   bool _canReorder(int i) => i != _shadowPrioTracks.length; // Is barrier
-
-  void _onStartReorder() {
-    if (_animController.value == 0.0) {}
-  }
 
   void _onReorder(int startIndex, int targetIndex) {
     setState(() {
@@ -236,8 +233,6 @@ class ReorderTrackListState extends CachingState<ReorderTrackList>
           ),
         ),
         ReorderableSliverList(
-          onStartReorder: _onStartReorder,
-          canReorder: _canReorder,
           onReorder: _onReorder,
           delegate: ReorderableSliverChildBuilderDelegate(
             _buildTile,

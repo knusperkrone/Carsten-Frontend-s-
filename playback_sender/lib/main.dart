@@ -5,39 +5,21 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:sentry/sentry.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 import 'localization.dart';
 
-void main() {
+Future<void> main() async {
   // Sentry logs
-  final sentry = SentryClient(
-      dsn: 'https://f5d43c1a57ba425b8404cb51181deb7c@sentry.if-lab.de/13');
-
-  FlutterError.onError = (details, {bool forceReport = false}) {
-    if (kReleaseMode) {
-      sentry.captureException(
-        exception: details.exception,
-        stackTrace: details.stack,
-      );
-    } else {
-      print('SENDING ${details.exception}');
-    }
-  };
-
-  runZonedGuarded(
-    () => runApp(CarstenApplication()),
-    (error, stackTrace) async {
-      if (kReleaseMode) {
-        await sentry.captureException(
-          exception: error,
-          stackTrace: stackTrace,
-        );
-      } else {
-        print('SENDING $error');
-      }
-    },
-  );
+  const dsn = 'https://f5d43c1a57ba425b8404cb51181deb7c@sentry.if-lab.de/13';
+  if (kReleaseMode) {
+    await SentryFlutter.init(
+      (options) => options.dsn = dsn,
+      appRunner: () => runApp(CarstenApplication()),
+    );
+  } else {
+    runApp(CarstenApplication());
+  }
 }
 
 class CarstenApplication extends StatelessWidget {
@@ -80,8 +62,9 @@ class CarstenApplication extends StatelessWidget {
     const backgroundColor = Color(0xffff90b5);
 
     return theme.copyWith(
+      androidOverscrollIndicator: AndroidOverscrollIndicator.stretch,
       primaryColor: primaryColor,
-      accentColor: accentColor,
+      colorScheme: theme.colorScheme.copyWith(secondary: accentColor),
       backgroundColor: backgroundColor,
       disabledColor: Colors.white60,
       sliderTheme: theme.sliderTheme.copyWith(

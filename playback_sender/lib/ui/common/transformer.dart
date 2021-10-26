@@ -1,9 +1,9 @@
 import 'package:chrome_tube/spotify/spotify.dart';
 import 'package:playback_interop/playback_interop.dart';
 
-class PlaybackTransformer {
+mixin PlaybackTransformer {
   static const _DEFAULT_IMG =
-      'https://assets.kununu.com/images/images_company/201704/crop_380_380/interface-ag_de4ce9868a840e63110dfb20f85e8d7c.jpg';
+      'https://assets.kununu.com/assets/images_company/201704/crop_380_380/interface-ag_de4ce9868a840e63110dfb20f85e8d7c.jpg';
 
   static PlaybackTrack fromSpotify(SpotifyTrack track, int index,
       {bool isPrio = false}) {

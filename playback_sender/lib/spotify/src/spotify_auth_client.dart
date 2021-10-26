@@ -8,7 +8,7 @@ part 'spotify_auth_client.g.dart';
 
 @JsonSerializable()
 class SerializableApiToken {
-  @JsonKey(name: 'access_token', nullable: false)
+  @JsonKey(name: 'access_token')
   String accessToken;
   @JsonKey(name: 'refresh_token')
   final String refreshToken;
@@ -16,7 +16,7 @@ class SerializableApiToken {
   final String tokenType;
   @JsonKey(name: 'expires_in')
   final int expiresIn;
-  @JsonKey(nullable: true)
+  @JsonKey()
   DateTime createdOn;
 
   SerializableApiToken(this.accessToken, this.refreshToken, this.tokenType,

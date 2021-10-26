@@ -13,7 +13,7 @@ class _BackgroundCacheManager extends CacheManager {
   _BackgroundCacheManager() : super(Config(key));
 }
 
-class TrackIndicatorNoti {
+mixin TrackIndicatorNoti {
   static Future<String> withTrack(PlaybackManager manager) async {
     if (!manager.track.isPresent) {
       return null;

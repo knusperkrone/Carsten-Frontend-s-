@@ -187,7 +187,7 @@ class SearchPageState extends CachingState<SearchPage> {
           : <Widget>[
               IconSlideAction(
                 caption: locale.translate('queue_button'),
-                color: theme.accentColor,
+                color: theme.colorScheme.secondary,
                 icon: Icons.queue_music,
                 onTap: () => _onTrackSecondary(result.serialized),
               ),
@@ -225,7 +225,7 @@ class SearchPageState extends CachingState<SearchPage> {
         actions: <Widget>[
           IconSlideAction(
             caption: locale.translate('queue_button'),
-            color: theme.accentColor,
+            color: theme.colorScheme.secondary,
             icon: Icons.queue_music,
             onTap: () => _onTrackSecondary(curr.serialized),
           ),

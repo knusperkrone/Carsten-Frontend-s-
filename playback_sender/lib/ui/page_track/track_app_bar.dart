@@ -125,7 +125,8 @@ class TrackPageAppBar extends SliverPersistentHeaderDelegate {
                   borderRadius: BorderRadius.circular(25),
                 ),
               ),
-              backgroundColor: MaterialStateProperty.all(theme.accentColor),
+              backgroundColor:
+                  MaterialStateProperty.all(theme.colorScheme.secondary),
               elevation: MaterialStateProperty.all(5.0),
             ),
             child: SizedBox(

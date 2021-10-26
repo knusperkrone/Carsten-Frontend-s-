@@ -8,24 +8,18 @@ const _STATE_CONNECTING = 3;
 const _STATE_CONNECTED = 4;
 
 class MediaRouteBloc extends Bloc<MediaRouteEvent, MediaRouteState> {
-  var debugMode = false;
-
-  MediaRouteBloc() {
+  MediaRouteBloc() : super(NoDeviceAvailable()) {
     FlutterGoogleCastButton.castEventStream().listen(
       (dynamic event) {
-        _printD('MediaRouteBloc listen state changed: $event');
         if (event is int) {
           add(UpdateRouteStateEvent(event));
         }
       },
       onError: (dynamic _) {
-        add(UpdateRouteStateEvent(1));
+        add(UpdateRouteStateEvent(_STATE_UNAVAILABLE));
       },
     );
   }
-
-  @override
-  MediaRouteState get initialState => NoDeviceAvailable();
 
   @override
   Stream<MediaRouteState> mapEventToState(MediaRouteEvent event) async* {
@@ -44,12 +38,6 @@ class MediaRouteBloc extends Bloc<MediaRouteEvent, MediaRouteState> {
         default:
           yield NoDeviceAvailable();
       }
-    }
-  }
-
-  void _printD(String message) {
-    if (debugMode) {
-      print(message);
     }
   }
 }
