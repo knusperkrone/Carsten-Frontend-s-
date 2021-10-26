@@ -1,21 +1,21 @@
-import 'package:test/test.dart';
 import 'package:playback_interop/playback_interop.dart';
 import 'package:playback_interop/playback_interop_test.dart';
+import 'package:test/test.dart';
 
 class TestQueue extends BasePlaybackQueue {
   TestQueue(
-      {PlaybackTrack currentTrack,
-      bool isShuffling,
-      bool isRepeating,
-      List<PlaybackTrack> prioTracks,
-      List<PlaybackTrack> mutableTrackList})
+      {required PlaybackTrack currentTrack,
+      required bool isShuffling,
+      required bool isRepeating,
+      required List<PlaybackTrack> prioTracks,
+      required List<PlaybackTrack> mutableTrackList})
       : super(currentTrack, isShuffling, isRepeating, prioTracks, mutableTrackList);
 }
 
 void main() {
   group('Queue delta tests', () {
-    List<PlaybackTrack> tracks;
-    BasePlaybackQueue queue;
+    late List<PlaybackTrack> tracks;
+    late BasePlaybackQueue queue;
 
     setUp(() {
       tracks = generateTracks().sublist(0, 6);
@@ -41,7 +41,7 @@ void main() {
       // Next song should be prio song
       queue.nextTrack();
       expect(moveTrack, queue.currentTrack);
-      expect(true, queue.currentTrack.isPrio);
+      expect(true, queue.currentTrack!.isPrio);
 
       // Check rest of the list
       expect(true, tracks.remove(moveTrack));

@@ -5,33 +5,25 @@ class PlaybackTrack implements Dto {
   // Set by CAF
   final int origQueueIndex;
   final bool isPrio;
-  @JsonKey(nullable: true)
-  int durationMs;
-  @JsonKey(nullable: true)
-  int queueIndex;
+  int? durationMs;
+  int? queueIndex;
 
   // CAF or locally constructed
   final String title;
   final String artist;
   final String album;
-  @JsonKey(nullable: true)
-  final String coverUrl;
+  final String? coverUrl;
 
   PlaybackTrack({
-    @required this.origQueueIndex,
-    @required this.durationMs,
-    @required this.isPrio,
-    @required this.queueIndex,
-    @required this.title,
-    @required this.artist,
-    @required this.album,
-    @required this.coverUrl,
-  }) : assert(origQueueIndex != null &&
-            isPrio != null &&
-            queueIndex != null &&
-            title != null &&
-            artist != null &&
-            album != null);
+    required this.origQueueIndex,
+    required this.isPrio,
+    required this.title,
+    required this.artist,
+    required this.album,
+    this.queueIndex,
+    this.durationMs,
+    this.coverUrl,
+  });
 
   PlaybackTrack.dummy(
       {this.album = 'album',
@@ -43,7 +35,7 @@ class PlaybackTrack implements Dto {
       this.queueIndex = 0,
       this.origQueueIndex = 0});
 
-  factory PlaybackTrack.fromJson(Map<String, dynamic> json) => json == null ? null : _$PlaybackTrackFromJson(json);
+  factory PlaybackTrack.fromJson(Map<String, dynamic> json) => _$PlaybackTrackFromJson(json);
 
   @override
   Map<String, dynamic> toJson() => _$PlaybackTrackToJson(this);

@@ -3,25 +3,25 @@
   "packages": [
     {
       "name": "_fe_analyzer_shared",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/_fe_analyzer_shared-14.0.0",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/_fe_analyzer_shared-30.0.0",
       "packageUri": "lib/",
-      "languageVersion": "2.2"
+      "languageVersion": "2.12"
     },
     {
       "name": "analyzer",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/analyzer-0.41.2",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/analyzer-2.7.0",
       "packageUri": "lib/",
-      "languageVersion": "2.7"
+      "languageVersion": "2.14"
     },
     {
       "name": "args",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/args-1.5.2",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/args-2.3.0",
       "packageUri": "lib/",
-      "languageVersion": "2.0"
+      "languageVersion": "2.12"
     },
     {
       "name": "async",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/async-2.5.0",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/async-2.8.2",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -33,75 +33,75 @@
     },
     {
       "name": "build",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/build-1.6.2",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/build-2.1.1",
       "packageUri": "lib/",
-      "languageVersion": "2.9"
+      "languageVersion": "2.14"
     },
     {
       "name": "build_config",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/build_config-0.4.5",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/build_config-1.0.0",
       "packageUri": "lib/",
-      "languageVersion": "2.9"
+      "languageVersion": "2.12"
     },
     {
       "name": "build_daemon",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/build_daemon-2.1.8",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/build_daemon-3.0.1",
       "packageUri": "lib/",
-      "languageVersion": "2.11"
+      "languageVersion": "2.14"
     },
     {
       "name": "build_resolvers",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/build_resolvers-1.5.3",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/build_resolvers-2.0.4",
       "packageUri": "lib/",
-      "languageVersion": "2.9"
+      "languageVersion": "2.12"
     },
     {
       "name": "build_runner",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/build_runner-1.11.5",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/build_runner-2.1.4",
       "packageUri": "lib/",
-      "languageVersion": "2.11"
+      "languageVersion": "2.14"
     },
     {
       "name": "build_runner_core",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/build_runner_core-6.1.10",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/build_runner_core-7.2.2",
       "packageUri": "lib/",
-      "languageVersion": "2.11"
+      "languageVersion": "2.14"
     },
     {
       "name": "built_collection",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/built_collection-5.0.0",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/built_collection-5.1.1",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
     {
       "name": "built_value",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/built_value-8.0.0",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/built_value-8.1.2",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
     {
       "name": "charcode",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/charcode-1.2.0",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/charcode-1.3.1",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
     {
       "name": "checked_yaml",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/checked_yaml-1.0.4",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/checked_yaml-2.0.1",
       "packageUri": "lib/",
-      "languageVersion": "2.7"
+      "languageVersion": "2.12"
     },
     {
       "name": "cli_util",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/cli_util-0.3.0",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/cli_util-0.3.5",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
     {
       "name": "code_builder",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/code_builder-3.6.0",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/code_builder-4.1.0",
       "packageUri": "lib/",
-      "languageVersion": "2.7"
+      "languageVersion": "2.12"
     },
     {
       "name": "collection",
@@ -111,31 +111,31 @@
     },
     {
       "name": "convert",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/convert-2.1.1",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/convert-3.0.1",
       "packageUri": "lib/",
-      "languageVersion": "1.17"
+      "languageVersion": "2.12"
     },
     {
       "name": "coverage",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/coverage-0.14.2",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/coverage-1.0.3",
       "packageUri": "lib/",
-      "languageVersion": "2.7"
+      "languageVersion": "2.12"
     },
     {
       "name": "crypto",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/crypto-2.1.4",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/crypto-3.0.1",
       "packageUri": "lib/",
-      "languageVersion": "2.1"
+      "languageVersion": "2.12"
     },
     {
       "name": "dart_style",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/dart_style-1.3.10",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/dart_style-2.2.0",
       "packageUri": "lib/",
-      "languageVersion": "2.9"
+      "languageVersion": "2.12"
     },
     {
       "name": "file",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/file-6.1.0",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/file-6.1.2",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -146,40 +146,40 @@
       "languageVersion": "2.12"
     },
     {
-      "name": "glob",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/glob-2.0.0",
+      "name": "frontend_server_client",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/frontend_server_client-2.1.2",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
     {
-      "name": "graphs",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/graphs-0.2.0",
+      "name": "glob",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/glob-2.0.2",
       "packageUri": "lib/",
-      "languageVersion": "2.0"
+      "languageVersion": "2.14"
     },
     {
-      "name": "http",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/http-0.12.0+3",
+      "name": "graphs",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/graphs-2.1.0",
       "packageUri": "lib/",
-      "languageVersion": "2.4"
+      "languageVersion": "2.12"
     },
     {
       "name": "http_multi_server",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/http_multi_server-2.1.0",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/http_multi_server-3.0.1",
       "packageUri": "lib/",
-      "languageVersion": "2.1"
+      "languageVersion": "2.12"
     },
     {
       "name": "http_parser",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/http_parser-3.1.3",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/http_parser-4.0.0",
       "packageUri": "lib/",
-      "languageVersion": "2.0"
+      "languageVersion": "2.12"
     },
     {
       "name": "io",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/io-0.3.3",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/io-1.0.3",
       "packageUri": "lib/",
-      "languageVersion": "2.0"
+      "languageVersion": "2.12"
     },
     {
       "name": "js",
@@ -189,67 +189,55 @@
     },
     {
       "name": "json_annotation",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/json_annotation-4.0.0",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/json_annotation-4.3.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.14"
+    },
+    {
+      "name": "json_serializable",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/json_serializable-6.0.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.14"
+    },
+    {
+      "name": "logging",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/logging-1.0.2",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
     {
-      "name": "json_serializable",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/json_serializable-4.0.1",
-      "packageUri": "lib/",
-      "languageVersion": "2.11"
-    },
-    {
-      "name": "logging",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/logging-0.11.3+2",
-      "packageUri": "lib/",
-      "languageVersion": "1.5"
-    },
-    {
       "name": "matcher",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/matcher-0.12.10",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/matcher-0.12.11",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
     {
       "name": "meta",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/meta-1.3.0",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/meta-1.7.0",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
     {
       "name": "mime",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/mime-0.9.6+3",
-      "packageUri": "lib/",
-      "languageVersion": "2.0"
-    },
-    {
-      "name": "node_preamble",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/node_preamble-1.4.8",
-      "packageUri": "lib/",
-      "languageVersion": "1.24"
-    },
-    {
-      "name": "package_config",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/package_config-1.9.3",
-      "packageUri": "lib/",
-      "languageVersion": "2.7"
-    },
-    {
-      "name": "package_resolver",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/package_resolver-1.0.10",
-      "packageUri": "lib/",
-      "languageVersion": "2.1"
-    },
-    {
-      "name": "path",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/path-1.8.0",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/mime-1.0.1",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
     {
-      "name": "pedantic",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/pedantic-1.10.0",
+      "name": "node_preamble",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/node_preamble-2.0.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "package_config",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/package_config-2.0.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "path",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/path-1.8.0",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -261,45 +249,51 @@
     },
     {
       "name": "pub_semver",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/pub_semver-1.4.2",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/pub_semver-2.1.0",
       "packageUri": "lib/",
-      "languageVersion": "1.0"
+      "languageVersion": "2.12"
     },
     {
       "name": "pubspec_parse",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/pubspec_parse-0.1.8",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/pubspec_parse-1.1.0",
       "packageUri": "lib/",
-      "languageVersion": "2.7"
+      "languageVersion": "2.12"
     },
     {
       "name": "shelf",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/shelf-0.7.5",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/shelf-1.2.0",
       "packageUri": "lib/",
-      "languageVersion": "2.0"
+      "languageVersion": "2.12"
     },
     {
       "name": "shelf_packages_handler",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/shelf_packages_handler-1.0.4",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/shelf_packages_handler-3.0.0",
       "packageUri": "lib/",
-      "languageVersion": "1.22"
+      "languageVersion": "2.12"
     },
     {
       "name": "shelf_static",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/shelf_static-0.2.8",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/shelf_static-1.1.0",
       "packageUri": "lib/",
-      "languageVersion": "2.0"
+      "languageVersion": "2.12"
     },
     {
       "name": "shelf_web_socket",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/shelf_web_socket-0.2.3",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/shelf_web_socket-1.0.1",
       "packageUri": "lib/",
-      "languageVersion": "2.0"
+      "languageVersion": "2.12"
     },
     {
       "name": "source_gen",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/source_gen-0.9.10+3",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/source_gen-1.1.1",
       "packageUri": "lib/",
-      "languageVersion": "2.10"
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "source_helper",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/source_helper-1.3.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
     },
     {
       "name": "source_map_stack_trace",
@@ -333,9 +327,9 @@
     },
     {
       "name": "stream_transform",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/stream_transform-0.0.20",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/stream_transform-2.0.0",
       "packageUri": "lib/",
-      "languageVersion": "2.6"
+      "languageVersion": "2.12"
     },
     {
       "name": "string_scanner",
@@ -351,27 +345,27 @@
     },
     {
       "name": "test",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/test-1.16.3",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/test-1.19.2",
       "packageUri": "lib/",
-      "languageVersion": "2.12"
+      "languageVersion": "2.14"
     },
     {
       "name": "test_api",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/test_api-0.2.19",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/test_api-0.4.6",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
     {
       "name": "test_core",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/test_core-0.3.13",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/test_core-0.4.7",
       "packageUri": "lib/",
-      "languageVersion": "2.12"
+      "languageVersion": "2.14"
     },
     {
       "name": "timing",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/timing-0.1.1+3",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/timing-1.0.0",
       "packageUri": "lib/",
-      "languageVersion": "2.2"
+      "languageVersion": "2.12"
     },
     {
       "name": "typed_data",
@@ -381,42 +375,42 @@
     },
     {
       "name": "vm_service",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/vm_service-2.1.4",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/vm_service-7.3.0",
       "packageUri": "lib/",
-      "languageVersion": "2.0"
+      "languageVersion": "2.12"
     },
     {
       "name": "watcher",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/watcher-0.9.7+13",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/watcher-1.0.1",
       "packageUri": "lib/",
-      "languageVersion": "2.0"
+      "languageVersion": "2.14"
     },
     {
       "name": "web_socket_channel",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/web_socket_channel-1.1.0",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/web_socket_channel-2.1.0",
       "packageUri": "lib/",
-      "languageVersion": "2.0"
+      "languageVersion": "2.12"
     },
     {
       "name": "webkit_inspection_protocol",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/webkit_inspection_protocol-0.7.5",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/webkit_inspection_protocol-1.0.0",
       "packageUri": "lib/",
-      "languageVersion": "2.0"
+      "languageVersion": "2.12"
     },
     {
       "name": "yaml",
-      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/yaml-2.2.0",
+      "rootUri": "file:///home/knukro/.pub-cache/hosted/pub.dartlang.org/yaml-3.1.0",
       "packageUri": "lib/",
-      "languageVersion": "2.0"
+      "languageVersion": "2.12"
     },
     {
       "name": "playback_interop",
       "rootUri": "../",
       "packageUri": "lib/",
-      "languageVersion": "2.5"
+      "languageVersion": "2.13"
     }
   ],
-  "generated": "2021-02-21T10:31:57.514180Z",
+  "generated": "2021-10-26T14:39:13.860528Z",
   "generator": "pub",
-  "generatorVersion": "2.12.0-259.9.beta"
+  "generatorVersion": "2.15.0-178.1.beta"
 }

@@ -1,21 +1,21 @@
-import 'package:test/test.dart';
 import 'package:playback_interop/playback_interop.dart';
 import 'package:playback_interop/playback_interop_test.dart';
+import 'package:test/test.dart';
 
 class TestQueue extends BasePlaybackQueue {
   TestQueue(
-      {PlaybackTrack currentTrack,
-      bool isShuffling,
-      bool isRepeating,
-      List<PlaybackTrack> prioTracks,
-      List<PlaybackTrack> mutableTrackList})
+      {required PlaybackTrack currentTrack,
+      required bool isShuffling,
+      required bool isRepeating,
+      required List<PlaybackTrack> prioTracks,
+      required List<PlaybackTrack> mutableTrackList})
       : super(currentTrack, isShuffling, isRepeating, prioTracks, mutableTrackList);
 }
 
 void main() {
   group('Queue tests', () {
-    List<PlaybackTrack> tracks;
-    BasePlaybackQueue queue;
+    late List<PlaybackTrack> tracks;
+    late BasePlaybackQueue queue;
 
     setUp(() {
       tracks = generateTracks();
@@ -35,7 +35,7 @@ void main() {
     test('All tracks forward', () {
       for (int i = 0; i < tracks.length; i++) {
         expect(tracks[i], queue.currentTrack);
-        expect(queue.currentTrack.queueIndex, i);
+        expect(queue.currentTrack!.queueIndex, i);
         queue.nextTrack();
       }
       expect(null, queue.currentTrack);
@@ -57,12 +57,12 @@ void main() {
       queue.setRepeating(true);
       for (int i = 0; i < tracks.length; i++) {
         expect(tracks[i], queue.currentTrack);
-        expect(queue.currentTrack.queueIndex, i);
+        expect(queue.currentTrack!.queueIndex, i);
         queue.nextTrack();
       }
       for (int i = 0; i < tracks.length; i++) {
         expect(tracks[i], queue.currentTrack);
-        expect(queue.currentTrack.queueIndex, i);
+        expect(queue.currentTrack!.queueIndex, i);
         queue.nextTrack();
       }
     });

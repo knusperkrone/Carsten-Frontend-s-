@@ -5,30 +5,24 @@ class PlaybackQueueDto implements Dto {
   @JsonKey(ignore: true)
   static const _LIST_EQUALITY = ListEquality<PlaybackTrack>();
 
-  @JsonKey(nullable: true)
-  final PlaybackTrack currentTrack;
-  @JsonKey(nullable: true)
-  final PlaybackTrack trackHolder;
-  @JsonKey(nullable: true)
-  final List<PlaybackTrack> prioTracks;
+  final PlaybackTrack? currentTrack;
+  final PlaybackTrack? trackHolder;
+  final List<PlaybackTrack>? prioTracks;
   final List<PlaybackTrack> immutableTracks;
-  @JsonKey(nullable: true)
-  final String name;
-  @JsonKey(nullable: true)
-  final String hash;
+  final String? name;
+  final String? hash;
 
   PlaybackQueueDto({
-    @required this.currentTrack,
-    @required this.trackHolder,
-    @required this.prioTracks,
-    @required this.immutableTracks,
-    @required this.name,
-    @required this.hash,
-  }) : assert(immutableTracks != null);
+    required this.currentTrack,
+    required this.trackHolder,
+    required this.prioTracks,
+    required this.immutableTracks,
+    required this.name,
+    required this.hash,
+  });
 
   @override
-  factory PlaybackQueueDto.fromJson(Map<String, dynamic> json) =>
-      json == null ? null : _$PlaybackQueueDtoFromJson(json);
+  factory PlaybackQueueDto.fromJson(Map<String, dynamic> json) => _$PlaybackQueueDtoFromJson(json);
 
   @override
   Map<String, dynamic> toJson() => _$PlaybackQueueDtoToJson(this);

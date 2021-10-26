@@ -70,7 +70,7 @@ void main() {
       expect(shuffleState.initSeed, expShuffleStateSeed);
 
       final startTrack = shuffleState.startTrack;
-      _assertValidTrack(startTrack);
+      _assertValidTrack(startTrack!);
     });
 
     test('AddPrioDeltaDto', () {
@@ -100,7 +100,7 @@ void main() {
   test('PlaybackQueueDto', () {
     final queue = new PlaybackQueueDto.fromJson(jsonDecode(queueJson) as Map<String, dynamic>);
     expect(queue.hash, expQueueHash);
-    _assertValidTrack(queue.currentTrack);
+    _assertValidTrack(queue.currentTrack!);
     expect(queue.immutableTracks.length, expQueueListLength);
     for (int i = 0; i < expQueueListLength; i++) {
       _assertValidTrack(queue.immutableTracks[i]);
@@ -109,7 +109,7 @@ void main() {
     final copySource = jsonEncode(queue.toJson());
     final copyQueue = new PlaybackQueueDto.fromJson(jsonDecode(copySource) as Map<String, dynamic>);
     expect(copyQueue.hash, expQueueHash);
-    _assertValidTrack(copyQueue.currentTrack);
+    _assertValidTrack(copyQueue.currentTrack!);
     expect(copyQueue.immutableTracks.length, expQueueListLength);
     for (int i = 0; i < expQueueListLength; i++) {
       _assertValidTrack(copyQueue.immutableTracks[i]);

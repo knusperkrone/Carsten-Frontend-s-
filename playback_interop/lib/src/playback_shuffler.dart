@@ -12,7 +12,8 @@ class JavaRandom {
   // ignore: non_constant_identifier_names
   static final MASK = new Int64.fromInts((1 << 16) - 1, (1 << 32) - 1);
 
-  Int64 _seed;
+  late Int64 _seed;
+
   JavaRandom(int initSeed) {
     if (initSeed > Int32.MAX_VALUE.toInt()) {
       throw ArgumentError('seeds needs to be smaller than ${Int32.MAX_VALUE.toInt()}, was: $initSeed');
@@ -45,7 +46,7 @@ class PlaybackShuffler {
   // ignore: non_constant_identifier_names
   static final PlaybackTrack DUMMY_TRACK = new PlaybackTrack.dummy(); // NULL values are not allowed
 
-  JavaRandom _mRand;
+  late JavaRandom _mRand;
 
   /// A cross platform shuffle algorithm, to avoid unnecessary syncing
   ///
@@ -80,13 +81,13 @@ class PlaybackShuffler {
       if (!grouped.containsKey(key)) {
         grouped[key] = [];
       }
-      grouped[key].add(currTrack);
+      grouped[key]!.add(currTrack);
     }
 
     // Sort keys for cross-platform interop
     // SELECT key FROM grouped ORDER BY length, criteria
     int i = 0;
-    final sortedTuples = new List<_Tuple<List<PlaybackTrack>, String>>(grouped.keys.length);
+    final sortedTuples = new List<_Tuple<List<PlaybackTrack>, String>>.filled(grouped.keys.length, _Tuple([], ''));
     for (final entry in grouped.entries) {
       sortedTuples[i++] = new _Tuple(entry.value, entry.key);
     }

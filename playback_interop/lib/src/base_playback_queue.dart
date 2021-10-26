@@ -6,11 +6,11 @@ import 'playback_shuffler.dart';
 abstract class BasePlaybackQueue {
   final _shuffler = new PlaybackShuffler();
   bool _isDirty = false;
-  bool _isRepeating;
 
-  ShuffleStateDto _shuffleState;
-  PlaybackTrack _currTrackOpt;
-  PlaybackTrack _trackHolderOpt;
+  late bool _isRepeating;
+  late ShuffleStateDto _shuffleState;
+  PlaybackTrack? _currTrackOpt;
+  PlaybackTrack? _trackHolderOpt;
 
   final String _hash;
   final List<PlaybackTrack> _prioTracks;
@@ -19,10 +19,9 @@ abstract class BasePlaybackQueue {
 
   BasePlaybackQueue(
       PlaybackTrack currentTrack, bool isShuffling, this._isRepeating, this._prioTracks, this._mutableTrackList,
-      {PlaybackTrack trackHolder, int seed = 0})
+      {PlaybackTrack? trackHolder, int seed = 0})
       : _immutableTrackList = new List.unmodifiable(_mutableTrackList),
-        _hash = const ListEquality<dynamic>().hash(_mutableTrackList).toString(),
-        assert(isShuffling != null && _isRepeating != null && _prioTracks != null && _mutableTrackList != null) {
+        _hash = const ListEquality<dynamic>().hash(_mutableTrackList).toString() {
     _currTrackOpt = currentTrack;
     if (trackHolder != null) {
       _trackHolderOpt = trackHolder;
@@ -49,8 +48,8 @@ abstract class BasePlaybackQueue {
    * Cross platform code
    */
 
-  PlaybackTrack nextTrack() {
-    PlaybackTrack nextTrack;
+  PlaybackTrack? nextTrack() {
+    PlaybackTrack? nextTrack;
     if (_prioTracks.isNotEmpty) {
       nextTrack = _prioTracks.removeAt(0);
       _currTrackOpt = nextTrack;
@@ -67,16 +66,18 @@ abstract class BasePlaybackQueue {
     }
 
     assert(_trackHolderOpt != null);
-    if (_currTrackOpt.isPrio && _trackHolderOpt.queueIndex + 1 < _mutableTrackList.length) {
-      nextTrack = _mutableTrackList[_trackHolderOpt.queueIndex + 1];
-    } else if (_currTrackOpt.queueIndex + 1 >= _mutableTrackList.length) {
+    final currQueueIndex = _currTrackOpt!.queueIndex!;
+    final queueIndex = _trackHolderOpt!.queueIndex!;
+    if (_currTrackOpt!.isPrio && queueIndex + 1 < _mutableTrackList.length) {
+      nextTrack = _mutableTrackList[queueIndex + 1];
+    } else if (currQueueIndex + 1 >= _mutableTrackList.length) {
       if (_isRepeating) {
         nextTrack = _mutableTrackList.first;
       } else {
         nextTrack = null;
       }
     } else {
-      nextTrack = _mutableTrackList[_currTrackOpt.queueIndex + 1];
+      nextTrack = _mutableTrackList[currQueueIndex + 1];
     }
 
     assert(!(nextTrack?.isPrio ?? false));
@@ -85,8 +86,8 @@ abstract class BasePlaybackQueue {
     return nextTrack;
   }
 
-  PlaybackTrack peekNext() {
-    PlaybackTrack peekTrack;
+  PlaybackTrack? peekNext() {
+    PlaybackTrack? peekTrack;
     if (_prioTracks.isNotEmpty) {
       peekTrack = _prioTracks.first;
       return peekTrack;
@@ -95,33 +96,35 @@ abstract class BasePlaybackQueue {
     }
 
     assert(_trackHolderOpt != null);
-    if (_currTrackOpt.isPrio && _trackHolderOpt.queueIndex + 1 < _mutableTrackList.length) {
-      peekTrack = _mutableTrackList[_trackHolderOpt.queueIndex + 1];
-    } else if (_currTrackOpt.queueIndex + 1 >= _mutableTrackList.length) {
+    final currQueueIndex = _currTrackOpt!.queueIndex!;
+    final queueIndex = _trackHolderOpt!.queueIndex!;
+    if (_currTrackOpt!.isPrio && queueIndex < _mutableTrackList.length) {
+      peekTrack = _mutableTrackList[queueIndex];
+    } else if (currQueueIndex + 1 >= _mutableTrackList.length) {
       if (_isRepeating) {
         peekTrack = _mutableTrackList.first;
       } else {
         peekTrack = null; // implicit
       }
     } else {
-      peekTrack = _mutableTrackList[_currTrackOpt.queueIndex + 1];
+      peekTrack = _mutableTrackList[currQueueIndex + 1];
     }
 
     return peekTrack;
   }
 
-  PlaybackTrack previousTrack() {
-    PlaybackTrack prevTrack;
+  PlaybackTrack? previousTrack() {
+    PlaybackTrack? prevTrack;
     if (_currTrackOpt == null || _trackHolderOpt == null) {
       return null;
     }
 
-    if (_currTrackOpt.isPrio) {
+    if (_currTrackOpt!.isPrio) {
       prevTrack = _trackHolderOpt;
-    } else if (_currTrackOpt.queueIndex == 0) {
+    } else if (_currTrackOpt!.queueIndex == 0) {
       prevTrack = _currTrackOpt;
     } else {
-      prevTrack = _mutableTrackList[_currTrackOpt.queueIndex - 1];
+      prevTrack = _mutableTrackList[_currTrackOpt!.queueIndex! - 1];
     }
 
     assert(!(prevTrack?.isPrio ?? false));
@@ -148,7 +151,7 @@ abstract class BasePlaybackQueue {
     if (_currTrackOpt == null) {
       throw new StateError('Nothing to shuffle!');
     }
-    final shuffleState = new ShuffleStateDto(_currTrackOpt, isShuffled, seed);
+    final shuffleState = new ShuffleStateDto(_currTrackOpt!, isShuffled, seed);
     setShuffleState(shuffleState);
   }
 
@@ -167,17 +170,17 @@ abstract class BasePlaybackQueue {
       final List<PlaybackTrack> toShuffle = allTracks;
 
       // Shuffle whole playlist, without current (non-prio) song
-      PlaybackTrack startTrack;
-      if (!shuffleState.startTrack.isPrio) {
+      PlaybackTrack? startTrack;
+      if (!shuffleState.startTrack!.isPrio) {
         // Remove the real list element, so references are still valid
-        final removeIndex = toShuffle.indexOf(shuffleState.startTrack);
+        final removeIndex = toShuffle.indexOf(shuffleState.startTrack!);
         if (removeIndex == -1) {
           throw new StateError('Coulnd\nt find track ${shuffleState.startTrack}');
         }
         startTrack = toShuffle.removeAt(removeIndex);
       }
 
-      changedActiveTracks = _shuffler.shuffle(shuffleState.initSeed, toShuffle);
+      changedActiveTracks = _shuffler.shuffle(shuffleState.initSeed!, toShuffle);
 
       // (Re-)Enumerate tracks
       if (startTrack != null) {
@@ -226,15 +229,15 @@ abstract class BasePlaybackQueue {
       _isDirty = true;
 
       // Reiterate current list
-      final normIndex = _trackHolderOpt.queueIndex;
+      final normIndex = _trackHolderOpt!.queueIndex!;
       for (int i = 0; i < _mutableTrackList.length; i++) {
         _mutableTrackList[i].queueIndex = normIndex + i;
       }
     }
 
     if (startPrio || targetPrio) {
-      if (_currTrackOpt != null && _currTrackOpt.isPrio) {
-        _currTrackOpt.queueIndex = 0;
+      if (_currTrackOpt != null && _currTrackOpt!.isPrio) {
+        _currTrackOpt!.queueIndex = 0;
       }
       // Reinumerate prioList
       for (int i = 0; i < _prioTracks.length; i++) {
@@ -247,13 +250,13 @@ abstract class BasePlaybackQueue {
    * Getters
    */
 
-  PlaybackTrack get currentTrack => _currTrackOpt;
+  PlaybackTrack? get currentTrack => _currTrackOpt;
 
-  PlaybackTrack get trackHolder => _trackHolderOpt;
+  PlaybackTrack? get trackHolder => _trackHolderOpt;
 
-  String get hash => _isDirty ? null : _hash;
+  String? get hash => _isDirty ? null : _hash;
 
-  int get seed => _shuffleState.initSeed;
+  int? get seed => _shuffleState.initSeed;
 
   bool get isDirty => _isDirty;
 

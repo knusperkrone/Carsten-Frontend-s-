@@ -4,10 +4,9 @@ part of 'dto.dart';
 class TrackStateDto implements Dto {
   final TrackState trackState;
   final int trackIndex;
-  final int durationMs;
+  final int? durationMs;
 
-  TrackStateDto({@required this.trackState, @required this.trackIndex, this.durationMs})
-      : assert(trackState != null && trackIndex != null);
+  TrackStateDto({required this.trackState, required this.trackIndex, this.durationMs});
 
   factory TrackStateDto.fromJson(Map<String, dynamic> json) => _$TrackStateDtoFromJson(json);
 

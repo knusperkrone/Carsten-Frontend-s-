@@ -1,7 +1,6 @@
-import 'package:meta/meta.dart';
-
 import 'package:collection/collection.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:meta/meta.dart';
 
 part 'cast_message.dart';
 part 'dto.g.dart';

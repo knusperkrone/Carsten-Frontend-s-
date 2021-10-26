@@ -5,9 +5,9 @@ class AddPrioDeltaDto implements Dto {
   final PlaybackTrack track;
   final bool append;
 
-  AddPrioDeltaDto(this.track, this.append) : assert(track != null && append != null);
+  AddPrioDeltaDto(this.track, this.append);
 
-  factory AddPrioDeltaDto.fromJson(Map<String, dynamic> json) => json == null ? null : _$AddPrioDeltaDtoFromJson(json);
+  factory AddPrioDeltaDto.fromJson(Map<String, dynamic> json) => _$AddPrioDeltaDtoFromJson(json);
 
   @override
   Map<String, dynamic> toJson() => _$AddPrioDeltaDtoToJson(this);
@@ -30,11 +30,9 @@ class MovePrioDeltaDto implements Dto {
   final int startIndex;
   final int targetIndex;
 
-  MovePrioDeltaDto(this.startPrio, this.startIndex, this.targetPrio, this.targetIndex)
-      : assert(startPrio != null && targetPrio != null && startIndex != null && targetIndex != null);
+  MovePrioDeltaDto(this.startPrio, this.startIndex, this.targetPrio, this.targetIndex);
 
-  factory MovePrioDeltaDto.fromJson(Map<String, dynamic> json) =>
-      json == null ? null : _$MovePrioDeltaDtoFromJson(json);
+  factory MovePrioDeltaDto.fromJson(Map<String, dynamic> json) => _$MovePrioDeltaDtoFromJson(json);
 
   @override
   Map<String, dynamic> toJson() => _$MovePrioDeltaDtoToJson(this);

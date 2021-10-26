@@ -2,17 +2,17 @@ part of 'dto.dart';
 
 @JsonSerializable()
 class ShuffleStateDto implements Dto {
-  final PlaybackTrack startTrack;
+  final PlaybackTrack? startTrack;
   final bool isShuffled;
-  final int initSeed;
+  final int? initSeed;
 
-  ShuffleStateDto(this.startTrack, this.isShuffled, this.initSeed) : assert(isShuffled != null) {
+  ShuffleStateDto(this.startTrack, this.isShuffled, this.initSeed) {
     if (isShuffled) {
       assert(startTrack != null && initSeed != null);
     }
   }
 
-  factory ShuffleStateDto.fromJson(Map<String, dynamic> json) => json == null ? null : _$ShuffleStateDtoFromJson(json);
+  factory ShuffleStateDto.fromJson(Map<String, dynamic> json) => _$ShuffleStateDtoFromJson(json);
 
   @override
   Map<String, dynamic> toJson() => _$ShuffleStateDtoToJson(this);
@@ -25,5 +25,5 @@ class ShuffleStateDto implements Dto {
   bool operator ==(dynamic other) => (other is ShuffleStateDto) ? other.hashCode == hashCode : false;
 
   @override
-  int get hashCode => startTrack.hashCode + isShuffled.hashCode + initSeed;
+  int get hashCode => startTrack.hashCode + isShuffled.hashCode + (initSeed ?? 0);
 }
