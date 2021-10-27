@@ -12,11 +12,11 @@ class PlaybackManager extends PlaybackReceiver {
    * Singleton
    */
 
-  static PlaybackManager _instance;
+  static PlaybackManager? _instance;
 
   factory PlaybackManager() {
     _instance ??= PlaybackManager._internal(new CastPlaybackContext());
-    return _instance;
+    return _instance!;
   }
 
   factory PlaybackManager.test(CastPlaybackContext mockedContext) {
@@ -25,7 +25,7 @@ class PlaybackManager extends PlaybackReceiver {
 
   PlaybackManager._internal(CastPlaybackContext cxt) : super.internal(cxt);
 
-  Stream<VolumeEvent> _volumeEvents;
+  Stream<VolumeEvent>? _volumeEvents;
 
   /*
    * Wrap native calls
@@ -47,7 +47,6 @@ class PlaybackManager extends PlaybackReceiver {
     return CastPlaybackContext.setVolume(volume);
   }
 
-
   /*
    * Non Playback-events
    */
@@ -57,7 +56,7 @@ class PlaybackManager extends PlaybackReceiver {
         .receiveBroadcastStream()
         .map((dynamic event) =>
             event == 'UP' ? VolumeEvent.UP : VolumeEvent.DOWN);
-    return _volumeEvents;
+    return _volumeEvents!;
   }
 
   /*
@@ -70,7 +69,7 @@ class PlaybackManager extends PlaybackReceiver {
         'isRepeating': isRepeating,
         'currShuffleState': currShuffleState?.toJson(),
         'currPlayerState': currPlayerState.index,
-        'seekTimestamp': seekTimestamp?.toIso8601String(),
+        'seekTimestamp': seekTimestamp.toIso8601String(),
         'queue': queue?.toJson(),
       });
 

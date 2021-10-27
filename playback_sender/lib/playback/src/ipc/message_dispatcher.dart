@@ -21,7 +21,7 @@ abstract class MessageDispatcher {
    */
 
   @protected
-  Future<CastMessage<String>> dispatchIPCMessage(CastMessage msg);
+  Future<CastMessage<String>?> dispatchIPCMessage(CastMessage msg);
 
   @protected
   String get tag;
@@ -30,7 +30,7 @@ abstract class MessageDispatcher {
    * Business methods
    */
 
-  Future<Map<String, dynamic>> dispatchMessage(dynamic sourceMsg) async {
+  Future<Map<String, dynamic>?> dispatchMessage(dynamic sourceMsg) async {
     final msg = new CastMessage<String>.fromJson(sourceMsg as Map<String, dynamic>);
 
     final ipcResponse = await dispatchIPCMessage(msg);
@@ -40,17 +40,18 @@ abstract class MessageDispatcher {
       }
       return ipcResponse.toJson();
     }
-    return dispatchPlaybackMessage(msg);
+    dispatchPlaybackMessage(msg);
+    return null;
   }
 
   @protected
-  Future<Map<String, dynamic>> dispatchPlaybackMessage(CastMessage<String> msg) {
+  void dispatchPlaybackMessage(CastMessage<String> msg) {
     Map<String, dynamic> json;
     try {
       json = jsonDecode(msg.data) as Map<String, dynamic>;
     } catch (e) {
       print("Coulnd't parse ${msg.type} - ${msg.data}");
-      return null;
+      return;
     }
 
     switch (msg.type) {
@@ -88,6 +89,5 @@ abstract class MessageDispatcher {
       default:
         print('[ERROR][$tag] Invalid message:\n${msg.toJson()}');
     }
-    return null;
   }
 }

@@ -8,8 +8,7 @@ class SpotifyAlbum extends Dto implements SpotifyFeatured {
   final List<SpotifyImage> images;
   final List<SpotifyArtist> artists;
 
-  SpotifyAlbum(this.id, this.name, this.images, this.artists)
-      : assert(id != null && name != null && images != null && artists != null);
+  SpotifyAlbum(this.id, this.name, this.images, this.artists);
 
   String get artist => artists.map((a) => a.name).join(', ');
 

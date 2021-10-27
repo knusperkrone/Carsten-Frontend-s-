@@ -5,7 +5,7 @@ typedef OnTrackChanged = void Function(PlaybackTrack nextTrack);
 class TrackPages extends StatefulWidget {
   final OnTrackChanged onTrackChanged;
 
-  const TrackPages({Key key, this.onTrackChanged}) : super(key: key);
+  const TrackPages({Key? key, required this.onTrackChanged}) : super(key: key);
 
   @override
   State createState() => new TrackPagesState();
@@ -13,7 +13,7 @@ class TrackPages extends StatefulWidget {
 
 class TrackPagesState extends TrackPageControllerState<TrackPages>
     with WidgetsBindingObserver {
-  Timer _resumeTimeout;
+  late Timer _resumeTimeout;
 
   @override
   void initState() {
@@ -21,8 +21,10 @@ class TrackPagesState extends TrackPageControllerState<TrackPages>
     _resumeTimeout = new Timer(const Duration(milliseconds: 125), () {});
   }
 
-  void setTrack(Optional<PlaybackTrack> track) {
-    track.ifPresent((track) => animateToTrack(track));
+  void setTrack(PlaybackTrack? track) {
+    if (track != null) {
+      animateToTrack(track);
+    }
   }
 
   @override
@@ -34,7 +36,7 @@ class TrackPagesState extends TrackPageControllerState<TrackPages>
       child: Padding(
         padding: EdgeInsets.all(width),
         child: CachedNetworkImage(
-          imageUrl: track.coverUrl,
+          imageUrl: track.coverUrl!,
           width: 10,
           height: 10,
           fit: BoxFit.fitWidth,

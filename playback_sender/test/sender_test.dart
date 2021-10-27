@@ -1,27 +1,31 @@
 import 'dart:convert';
 
 import 'package:chrome_tube/playback/playback.dart';
+import 'package:chrome_tube/playback/src/ipc/cast_playback_context.dart';
 import 'package:chrome_tube/playback/src/playback_sender.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:playback_interop/playback_interop.dart';
 import 'package:playback_interop/playback_interop_test.dart';
 
-import 'mocks.dart';
+import 'sender_test.mocks.dart';
 
+@GenerateMocks([CastPlaybackContext])
 void main() {
-  MockedContext context;
-  PlaybackSender sender;
+  late MockCastPlaybackContext context;
+  late PlaybackSender sender;
 
   setUp(() {
-    context = new MockedContext();
+    context = new MockCastPlaybackContext();
     sender = new PlaybackManager.test(context);
   });
 
   test('Play', () {
     // Prepare
-    final expectedMessage = new CastMessage<String>(SenderToCafConstants.PB_PLAY, '');
+    final expectedMessage =
+        new CastMessage<String>(SenderToCafConstants.PB_PLAY, '');
 
     // Execute
     sender.sendPlay();
@@ -32,7 +36,8 @@ void main() {
 
   test('Pause', () {
     // Prepare
-    final expectedMessage = new CastMessage<String>(SenderToCafConstants.PB_PAUSE, '');
+    final expectedMessage =
+        new CastMessage<String>(SenderToCafConstants.PB_PAUSE, '');
 
     // Execute
     sender.sendPause();
@@ -41,13 +46,13 @@ void main() {
     verify(context.send(argThat(equals(expectedMessage)))).called(1);
   });
 
-  test('Send tracks with pagination', () {
+  test('Send tracks with pagination', () async {
     // Prepare
     final expectedTracks =
         new List.generate(8192, (_) => new PlaybackTrack.fromJson(jsonDecode(trackJson) as Map<String, dynamic>));
 
     // Execute
-    sender.sendTracks(expectedTracks, 0, '');
+    await sender.sendTracks(expectedTracks, 0, '');
 
     // Validate
     int trackIndex = 0;
@@ -80,7 +85,8 @@ void main() {
 
   test('Stop', () {
     // Prepare
-    final expectedMessage = new CastMessage<String>(SenderToCafConstants.PB_STOP, '');
+    final expectedMessage =
+        new CastMessage<String>(SenderToCafConstants.PB_STOP, '');
 
     // Execute
     sender.sendStop();
@@ -91,7 +97,8 @@ void main() {
 
   test('Next song', () async {
     // Prepare
-    final expectedMessage = new CastMessage<String>(SenderToCafConstants.PB_NEXT_TRACK, '');
+    final expectedMessage =
+        new CastMessage<String>(SenderToCafConstants.PB_NEXT_TRACK, '');
 
     // Execute
     await Future<void>.delayed(const Duration(milliseconds: 5));
@@ -103,7 +110,8 @@ void main() {
 
   test('Previous song', () async {
     // Prepare
-    final expectedMessage = new CastMessage<String>(SenderToCafConstants.PB_PREV_TRACK, '');
+    final expectedMessage =
+        new CastMessage<String>(SenderToCafConstants.PB_PREV_TRACK, '');
 
     // Execute
     await Future<void>.delayed(const Duration(milliseconds: 5));
@@ -115,8 +123,10 @@ void main() {
 
   test('Set shuffling', () {
     // Prepare
-    final expectedShuffleMessage = new CastMessage<bool>(SenderToCafConstants.PB_SHUFFLING, true);
-    final expectedNoShuffleMessage = new CastMessage<bool>(SenderToCafConstants.PB_SHUFFLING, false);
+    final expectedShuffleMessage =
+        new CastMessage<bool>(SenderToCafConstants.PB_SHUFFLING, true);
+    final expectedNoShuffleMessage =
+        new CastMessage<bool>(SenderToCafConstants.PB_SHUFFLING, false);
 
     // Execute
     sender.sendShuffling(true);
@@ -131,22 +141,27 @@ void main() {
 
   test('Set repeating', () {
     // Prepare
-    final expectedRepeatMessage = new CastMessage<bool>(SenderToCafConstants.PB_REPEATING, true);
-    final expectedNoRepeatMessage = new CastMessage<bool>(SenderToCafConstants.PB_REPEATING, false);
+    final expectedRepeatMessage =
+        new CastMessage<bool>(SenderToCafConstants.PB_REPEATING, true);
+    final expectedNoRepeatMessage =
+        new CastMessage<bool>(SenderToCafConstants.PB_REPEATING, false);
 
     // Execute
     sender.sendRepeating(true);
     sender.sendRepeating(false);
 
     // Verify
-    verifyInOrder(
-        [context.send(argThat(equals(expectedRepeatMessage))), context.send(argThat(equals(expectedNoRepeatMessage)))]);
+    verifyInOrder([
+      context.send(argThat(equals(expectedRepeatMessage))),
+      context.send(argThat(equals(expectedNoRepeatMessage)))
+    ]);
   });
 
   test('Set seek', () {
     // Prepare
     const seekMs = 0x42;
-    final expectedMessage = new CastMessage<int>(SenderToCafConstants.PB_SEEK_TO, seekMs);
+    final expectedMessage =
+        new CastMessage<int>(SenderToCafConstants.PB_SEEK_TO, seekMs);
 
     // Execute
     sender.sendSeek(seekMs);
@@ -157,8 +172,10 @@ void main() {
 
   test('Add to prio', () {
     // Prepare
-    final track = new PlaybackTrack.fromJson(jsonDecode(trackJson) as Map<String, dynamic>);
-    final expectedMessage = new CastMessage<PlaybackTrack>(SenderToCafConstants.PB_APPEND_TO_PRIO, track);
+    final track = new PlaybackTrack.fromJson(
+        jsonDecode(trackJson) as Map<String, dynamic>);
+    final expectedMessage = new CastMessage<PlaybackTrack>(
+        SenderToCafConstants.PB_APPEND_TO_PRIO, track);
 
     // Execute
     sender.sendAddToPrio(track);
@@ -174,14 +191,16 @@ void main() {
     const targetPrio = true;
     const targetIndex = 0;
     final expectedMessage = new CastMessage<List<dynamic>>(
-        SenderToCafConstants.PB_MOVE, <dynamic>[startPrio, startIndex, targetPrio, targetIndex]);
+        SenderToCafConstants.PB_MOVE,
+        <dynamic>[startPrio, startIndex, targetPrio, targetIndex]);
 
     // Execute
     sender.sendMove(startPrio, startIndex, targetPrio, targetIndex);
 
     // Verify
 
-    verify(context.send(argThat(_MessageListMatcher(expectedMessage)))).called(1);
+    verify(context.send(argThat(_MessageListMatcher(expectedMessage))))
+        .called(1);
   });
 }
 
@@ -201,7 +220,8 @@ class _MessageListMatcher extends Matcher {
   bool matches(dynamic item, Map matchState) {
     if (item is CastMessage<dynamic>) {
       final CastMessage<dynamic> typedItem = item;
-      return typedItem.type == _expected.type && listTester.equals(_expected.data, typedItem.data as List<dynamic>);
+      return typedItem.type == _expected.type &&
+          listTester.equals(_expected.data, typedItem.data as List<dynamic>);
     }
     return false;
   }

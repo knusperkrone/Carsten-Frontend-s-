@@ -4,8 +4,8 @@ class TrackControl extends StatefulWidget {
   final double height;
 
   const TrackControl({
-    @required Key key,
-    @required this.height,
+    required Key key,
+    required this.height,
   }) : super(key: key);
 
   @override

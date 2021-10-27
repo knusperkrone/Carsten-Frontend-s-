@@ -7,9 +7,9 @@ class LinearTrackSlider extends StatefulWidget {
   final Duration delay;
 
   const LinearTrackSlider({
-    Key key,
+    Key? key,
     this.delay = const Duration(milliseconds: 0),
-    @required this.padding,
+    required this.padding,
   }) : super(key: key);
 
   @override
@@ -18,9 +18,9 @@ class LinearTrackSlider extends StatefulWidget {
 
 class TrackSlider extends LinearTrackSlider {
   const TrackSlider({
-    Key key,
-    Duration delay,
-    @required double padding,
+    Key? key,
+    Duration delay = const Duration(milliseconds: 0),
+    required double padding,
   }) : super(key: key, padding: padding, delay: delay);
 
   @override
@@ -32,10 +32,9 @@ class LinearTrackSliderState extends UIListenerState<LinearTrackSlider>
   final PlaybackManager _manager = new PlaybackManager();
 
   final _animTween = new Tween<double>(begin: 0.0, end: 0.0);
-  AnimationController _animController;
+  late AnimationController _animController;
   SimplePlaybackState lastState = SimplePlaybackState.ENDED;
-
-  double _trackDuration;
+  double? _trackDuration;
 
   @override
   void initState() {
@@ -71,7 +70,8 @@ class LinearTrackSliderState extends UIListenerState<LinearTrackSlider>
    */
 
   void _doSeekInterpolation() {
-    _manager.track.ifPresent((track) {
+    final track = _manager.track;
+    if (track != null) {
       if (track.durationMs == null) {
         setState(() {
           _trackDuration = 0.1;
@@ -81,16 +81,16 @@ class LinearTrackSliderState extends UIListenerState<LinearTrackSlider>
         return;
       }
 
-      _trackDuration = track.durationMs.toDouble();
+      _trackDuration = track.durationMs!.toDouble();
       _animTween.end = _trackDuration;
-      _animController.duration = Duration(milliseconds: _trackDuration.toInt());
+      _animController.duration = Duration(milliseconds: _trackDuration!.toInt());
 
-      double timeDelta = _trackDuration - _manager.trackSeek;
+      double timeDelta = _trackDuration! - _manager.trackSeek;
       if (_manager.currPlayerState == SimplePlaybackState.PLAYING) {
         timeDelta -=
             _manager.seekTimestamp.difference(DateTime.now()).inMilliseconds;
       }
-      _animController.value = 1 - timeDelta / _trackDuration;
+      _animController.value = 1 - timeDelta / _trackDuration!;
 
       if (_manager.currPlayerState == SimplePlaybackState.PLAYING) {
         _animController.forward();
@@ -100,11 +100,11 @@ class LinearTrackSliderState extends UIListenerState<LinearTrackSlider>
       if (mounted) {
         setState(() {});
       }
-    }, orElse: () {
+    } else {
       _trackDuration = 0.0;
       _animController.value = 0.0;
       _animController.stop(canceled: true);
-    });
+    }
   }
 
   @override
@@ -133,9 +133,9 @@ class TrackSliderState extends LinearTrackSliderState {
   void _onChanged(double value) => setState(() => _userVal = value);
 
   void _onChangeEnd(double endValue) {
-    _manager.track.ifPresent((track) {
+    if (_manager.track != null) {
       _manager.sendSeek(endValue.round());
-    });
+    }
   }
 
   /*
@@ -154,7 +154,7 @@ class TrackSliderState extends LinearTrackSliderState {
    * Build
    */
 
-  String _formatTime(double timeMs) {
+  String _formatTime(double? timeMs) {
     if (timeMs == null) {
       return '00:00';
     }

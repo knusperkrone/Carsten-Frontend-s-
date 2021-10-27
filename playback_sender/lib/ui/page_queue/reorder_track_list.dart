@@ -6,7 +6,7 @@ import 'package:playback_interop/playback_interop.dart';
 import 'package:reorderables/reorderables.dart';
 
 class ReorderTrackList extends StatefulWidget {
-  const ReorderTrackList({Key key}) : super(key: key);
+  const ReorderTrackList({Key? key}) : super(key: key);
 
   @override
   State createState() => ReorderTrackListState();
@@ -14,14 +14,10 @@ class ReorderTrackList extends StatefulWidget {
 
 class ReorderTrackListState extends CachingState<ReorderTrackList>
     with SingleTickerProviderStateMixin {
-  // ignore: non_constant_identifier_names
-  static final _PLACEHOLDER_TRACK =
-      new PlaybackTrack.dummy(artist: '', coverUrl: '', title: '');
-
   final _manager = new PlaybackManager();
-  List<PlaybackTrack> _shadowPrioTracks;
-  List<PlaybackTrack> _shadowQueueTracks;
-  AnimationController _animController;
+  late List<PlaybackTrack> _shadowPrioTracks;
+  late List<PlaybackTrack> _shadowQueueTracks;
+  late AnimationController _animController;
 
   @override
   void initState() {
@@ -159,16 +155,16 @@ class ReorderTrackListState extends CachingState<ReorderTrackList>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    curr?.title ?? '',
+                    curr.title,
                     overflow: TextOverflow.clip,
                     maxLines: 1,
-                    style: theme.textTheme.subtitle1.copyWith(fontSize: 16.0),
+                    style: theme.textTheme.subtitle1!.copyWith(fontSize: 16.0),
                   ),
                   Text(
-                    curr?.artist ?? '',
+                    curr.artist,
                     maxLines: 1,
                     style: TextStyle(
-                      color: theme.textTheme.caption.color,
+                      color: theme.textTheme.caption!.color,
                       fontSize: 13.0,
                     ),
                   ),
@@ -201,11 +197,11 @@ class ReorderTrackListState extends CachingState<ReorderTrackList>
         SliverToBoxAdapter(
           child: ListTile(
             leading: CachedNetworkImage(
-              imageUrl: _manager.track.orElse(_PLACEHOLDER_TRACK).coverUrl,
+              imageUrl: _manager.track?.coverUrl ?? '',
               placeholder: (_, __) => Container(width: 56.0),
             ),
-            title: Text(_manager.track.orElse(_PLACEHOLDER_TRACK).title),
-            subtitle: Text(_manager.track.orElse(_PLACEHOLDER_TRACK).artist),
+            title: Text(_manager.track?.title ?? ''),
+            subtitle: Text(_manager.track?.artist ?? ''),
           ),
         ),
         SliverToBoxAdapter(

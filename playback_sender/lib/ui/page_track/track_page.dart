@@ -14,19 +14,18 @@ import 'package:chrome_tube/ui/common/transitions.dart';
 import 'package:chrome_tube/ui/tracking/feature_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:optional/optional.dart';
 import 'package:palette_generator/palette_generator.dart';
 
 import 'track_app_bar.dart';
 
 class TrackPage extends StatefulWidget {
-  final Stream<List<SpotifyTrack>> trackStream;
+  final Stream<List<SpotifyTrack>?> trackStream;
   final String collectionName;
-  final String collectionOwner;
+  final String? collectionOwner;
   final PaletteGenerator palette;
   final ImageProvider appBarImageProvider;
   final double expandedHeight;
-  final Optional<SpotifyFeatured> featured;
+  final SpotifyFeatured? featured;
 
   const TrackPage._(
       this.trackStream,
@@ -36,7 +35,7 @@ class TrackPage extends StatefulWidget {
       this.appBarImageProvider,
       this.expandedHeight,
       this.featured,
-      {Key key})
+      {Key? key})
       : super(key: key);
 
   static void navigateFeatured(BuildContext context, SpotifyFeatured feature) {
@@ -51,7 +50,7 @@ class TrackPage extends StatefulWidget {
 
   static Future<void> navigatePlaylist(
       BuildContext context, SpotifyPlaylist playlist,
-      {Key key}) async {
+      {Key? key}) async {
     final appBarHeight = MediaQuery.of(context).size.height / 10 * 5;
     final appBarImageProvider =
         new CachedNetworkImageProvider(playlist.imageUrl);
@@ -61,13 +60,13 @@ class TrackPage extends StatefulWidget {
 
     return Navigator.push<void>(context, new FadeInRoute(builder: (context) {
       return new TrackPage._(stream, playlist.name, playlist.owner.name,
-          palette, appBarImageProvider, appBarHeight, Optional.of(playlist),
+          palette, appBarImageProvider, appBarHeight, playlist,
           key: key);
     }));
   }
 
   static Future<void> navigateAlbum(BuildContext context, SpotifyAlbum album,
-      {Key key}) async {
+      {Key? key}) async {
     final appBarHeight = MediaQuery.of(context).size.height / 10 * 5;
     final appBarImageProvider = new CachedNetworkImageProvider(album.imageUrl);
     final stream = SpotifyApi().getAlbumTracks(album);
@@ -82,13 +81,13 @@ class TrackPage extends StatefulWidget {
         palette,
         appBarImageProvider,
         appBarHeight,
-        Optional.of(album),
+        album,
         key: key,
       );
     }));
   }
 
-  static Future<void> navigateTracks(BuildContext context, {Key key}) async {
+  static Future<void> navigateTracks(BuildContext context, {Key? key}) async {
     final appBarHeight = MediaQuery.of(context).size.height / 10 * 2.5;
     const appBarImageProvider =
         ExactAssetImage('assets/images/transparent.png');
@@ -105,7 +104,7 @@ class TrackPage extends StatefulWidget {
         palette,
         appBarImageProvider,
         appBarHeight,
-        const Optional.empty(),
+        null,
         key: key,
       );
     }));
@@ -118,16 +117,16 @@ class TrackPage extends StatefulWidget {
 class TrackPageState extends CachingState<TrackPage> {
   static const TEXT_SIZE = 40.0;
   List<SpotifyTrack> _tracks = [];
-  StreamSubscription _streamSub;
   String _text = '';
+  Color? _gradientColor;
 
-  Color _gradientColor;
+  StreamSubscription<List<SpotifyTrack>?>? _streamSub;
 
   @override
   void initState() {
     super.initState();
     // Stream sub
-    _streamSub = widget.trackStream?.listen((fetched) async {
+    _streamSub = widget.trackStream.listen((fetched) async {
       if (fetched == null) {
         _tracks.clear();
       } else {
@@ -145,15 +144,15 @@ class TrackPageState extends CachingState<TrackPage> {
     // Get color
     _gradientColor = widget.palette.vibrantColor?.color;
     if (_gradientColor == null) {
-      _gradientColor = widget.palette.dominantColor.color;
+      _gradientColor = widget.palette.dominantColor!.color;
     } else {
-      final dominantColor = widget.palette.dominantColor.color;
+      final dominantColor = widget.palette.dominantColor!.color;
       int colorDelta = 0;
-      colorDelta += (_gradientColor.red - dominantColor.red).abs();
-      colorDelta += (_gradientColor.green - dominantColor.green).abs();
-      colorDelta += (_gradientColor.blue - dominantColor.blue).abs();
+      colorDelta += (_gradientColor!.red - dominantColor.red).abs();
+      colorDelta += (_gradientColor!.green - dominantColor.green).abs();
+      colorDelta += (_gradientColor!.blue - dominantColor.blue).abs();
       if (colorDelta > 255 && colorDelta < 300) {
-        _gradientColor = widget.palette.dominantColor.color;
+        _gradientColor = widget.palette.dominantColor!.color;
       }
     }
   }
@@ -177,7 +176,9 @@ class TrackPageState extends CachingState<TrackPage> {
     final sendList = new List.generate(_tracks.length, (i) {
       return PlaybackTransformer.fromSpotify(_tracks[i], i);
     });
-    widget.featured.ifPresent((curr) => FeatureService().addFeature(curr));
+    if (widget.featured != null) {
+      FeatureService().addFeature(widget.featured!);
+    }
 
     try {
       await PlaybackManager()
@@ -218,8 +219,8 @@ class TrackPageState extends CachingState<TrackPage> {
         ],
         child: ListTile(
           contentPadding: const EdgeInsets.all(8.0),
-          title: Text(curr.name ?? ''),
-          subtitle: Text(curr.artist ?? ''),
+          title: Text(curr.name),
+          subtitle: Text(curr.artist),
           trailing: IconButton(
             icon: const Icon(Icons.more_vert),
             onPressed: () =>
@@ -241,11 +242,12 @@ class TrackPageState extends CachingState<TrackPage> {
               35.0 -
               80 * (_tracks.length + 1)),
     );
+    final gradientColor = _gradientColor!;
     final statusBarColor = new Color.fromARGB(
       255,
-      max(0, _gradientColor.red - (_gradientColor.red * 0.3).toInt()),
-      max(0, _gradientColor.green - (_gradientColor.green * 0.3).toInt()),
-      max(0, _gradientColor.blue - (_gradientColor.blue * 0.3).toInt()),
+      max(0, gradientColor.red - (gradientColor.red * 0.3).toInt()),
+      max(0, gradientColor.green - (gradientColor.green * 0.3).toInt()),
+      max(0, gradientColor.blue - (gradientColor.blue * 0.3).toInt()),
     );
 
     return Container(
@@ -262,7 +264,7 @@ class TrackPageState extends CachingState<TrackPage> {
                       pinned: true,
                       delegate: TrackPageAppBar(
                         imageProvider: widget.appBarImageProvider,
-                        gradientColor: _gradientColor,
+                        gradientColor: gradientColor,
                         text: _text,
                         name: widget.collectionName,
                         owner: widget.collectionOwner,

@@ -7,22 +7,22 @@ class TrackPageAppBar extends SliverPersistentHeaderDelegate {
 
   final double expandedHeight;
   final String name;
-  final String owner;
+  final String? owner;
   final ImageProvider imageProvider;
-  final Color gradientColor;
+  final Color? gradientColor;
   final double textSize;
   final VoidCallback onShuffle;
   final String text;
 
   const TrackPageAppBar({
-    @required this.expandedHeight,
-    @required this.textSize,
-    @required this.text,
-    @required this.name,
-    @required this.owner,
-    @required this.imageProvider,
-    @required this.gradientColor,
-    @required this.onShuffle,
+    required this.expandedHeight,
+    required this.textSize,
+    required this.text,
+    required this.name,
+    required this.owner,
+    required this.imageProvider,
+    required this.gradientColor,
+    required this.onShuffle,
   });
 
   /*
@@ -88,8 +88,8 @@ class TrackPageAppBar extends SliverPersistentHeaderDelegate {
                           ),
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
-                            owner,
-                            style: theme.textTheme.subtitle1
+                            owner!,
+                            style: theme.textTheme.subtitle1!
                                 .copyWith(color: Colors.white),
                           ),
                         ),
@@ -107,7 +107,7 @@ class TrackPageAppBar extends SliverPersistentHeaderDelegate {
               child: Text(
                 name,
                 textAlign: TextAlign.center,
-                style: theme.textTheme.headline6.copyWith(color: Colors.white),
+                style: theme.textTheme.headline6!.copyWith(color: Colors.white),
               ),
             ),
           ),

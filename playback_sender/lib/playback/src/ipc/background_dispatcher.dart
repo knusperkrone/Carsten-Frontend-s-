@@ -40,7 +40,7 @@ class BackgroundDispatcher extends MessageDispatcher {
   BackgroundDispatcher._internal(PlaybackManager manager) : super(manager);
 
   @override
-  Future<CastMessage<String>> dispatchIPCMessage(CastMessage msg) async {
+  Future<CastMessage<String>?> dispatchIPCMessage(CastMessage msg) async {
     switch (msg.type) {
       case NativeConstants.N_CONNECTING:
         return MessageDispatcher.IPC_MESSAGE_HANDLED;
@@ -78,7 +78,7 @@ class BackgroundDispatcher extends MessageDispatcher {
   }
 
   @override
-  Future<Map<String, dynamic>> dispatchPlaybackMessage(CastMessage<String> msg) async {
+  Future<Map<String, dynamic>?> dispatchPlaybackMessage(CastMessage<String> msg) async {
     super.dispatchPlaybackMessage(msg);
 
     switch (msg.type) {

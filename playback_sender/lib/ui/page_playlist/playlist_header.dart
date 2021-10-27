@@ -6,14 +6,14 @@ import 'package:chrome_tube/ui/tracking/feature_service.dart';
 import 'package:flutter/material.dart';
 
 class PlaylistHeader extends StatefulWidget {
-  const PlaylistHeader({Key key}) : super(key: key);
+  const PlaylistHeader({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => new PlaylistHeaderState();
 }
 
 class PlaylistHeaderState extends CachingState<PlaylistHeader> {
-  List<SpotifyFeatured> _featured;
+  late List<SpotifyFeatured> _featured;
 
   @override
   void initState() {

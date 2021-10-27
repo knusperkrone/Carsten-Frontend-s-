@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class SpotifyLoginPageResult {
-  final String code;
-  final String error;
+  final String? code;
+  final String? error;
 
   SpotifyLoginPageResult(this.code, this.error);
 }
@@ -45,8 +45,8 @@ class SpotifyLoginPage extends StatelessWidget {
     if (loadedUri.startsWith(_REDIRECT_URL)) {
       // Parse return code url
       final uri = Uri.parse(loadedUri);
-      final token = uri.queryParameters['code'];
-      final error = uri.queryParameters['error'];
+      final token = uri.queryParameters['code']!;
+      final error = uri.queryParameters['error']!;
       Navigator.pop<SpotifyLoginPageResult>(
           context, new SpotifyLoginPageResult(token, error));
     }

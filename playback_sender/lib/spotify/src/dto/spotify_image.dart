@@ -2,11 +2,11 @@ part of 'dto.dart';
 
 @JsonSerializable(createToJson: true)
 class SpotifyImage extends Dto {
-  final int height;
-  final int width;
+  final int? height;
+  final int? width;
   final String url;
 
-  SpotifyImage(this.height, this.width, this.url) : assert(url != null);
+  SpotifyImage(this.height, this.width, this.url);
 
   factory SpotifyImage.fromJson(Map<String, dynamic> json) =>
       _$SpotifyImageFromJson(json);

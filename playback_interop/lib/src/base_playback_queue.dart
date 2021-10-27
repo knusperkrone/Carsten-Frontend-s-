@@ -18,8 +18,8 @@ abstract class BasePlaybackQueue {
   final List<PlaybackTrack> _immutableTrackList;
 
   BasePlaybackQueue(
-      PlaybackTrack currentTrack, bool isShuffling, this._isRepeating, this._prioTracks, this._mutableTrackList,
-      {PlaybackTrack? trackHolder, int seed = 0})
+      PlaybackTrack? currentTrack, bool isShuffling, this._isRepeating, this._prioTracks, this._mutableTrackList,
+      {PlaybackTrack? trackHolder, int? seed})
       : _immutableTrackList = new List.unmodifiable(_mutableTrackList),
         _hash = const ListEquality<dynamic>().hash(_mutableTrackList).toString() {
     _currTrackOpt = currentTrack;
@@ -147,7 +147,7 @@ abstract class BasePlaybackQueue {
     }
   }
 
-  void setShuffling(bool isShuffled, int seed) {
+  void setShuffling(bool isShuffled, int? seed) {
     if (_currTrackOpt == null) {
       throw new StateError('Nothing to shuffle!');
     }
@@ -180,7 +180,7 @@ abstract class BasePlaybackQueue {
         startTrack = toShuffle.removeAt(removeIndex);
       }
 
-      changedActiveTracks = _shuffler.shuffle(shuffleState.initSeed!, toShuffle);
+      changedActiveTracks = _shuffler.shuffle(shuffleState.initSeed ?? 0, toShuffle);
 
       // (Re-)Enumerate tracks
       if (startTrack != null) {

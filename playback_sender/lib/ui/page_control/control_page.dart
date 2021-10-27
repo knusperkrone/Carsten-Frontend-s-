@@ -11,7 +11,6 @@ import 'package:chrome_tube/ui/pages.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cast_button/bloc_media_route.dart';
 import 'package:flutter_cast_button/cast_button_widget.dart';
-import 'package:optional/optional.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:playback_interop/playback_interop.dart';
 
@@ -33,7 +32,7 @@ class ControlPage extends StatefulWidget {
 
   static Future<void> navigate(BuildContext context) async {
     final theme = Theme.of(context);
-    final baseColor = PlaybackManager().track.isPresent
+    final baseColor = PlaybackManager().track != null
         ? theme.canvasColor
         : theme.primaryColor;
     return Navigator.push<void>(context,
@@ -55,10 +54,10 @@ class ControlPageState extends UIListenerState<ControlPage>
   final GlobalKey<TrackProgressState> _progressKey = new GlobalKey();
   final GlobalKey<TrackControlState> _controlKey = new GlobalKey();
 
-  Color _gradientStart;
-  AnimationController _animController;
-  MediaRouteBloc _mediaRouteBloc;
-  ImageProvider _imageProvider;
+  late Color _gradientStart;
+  late AnimationController _animController;
+  late MediaRouteBloc _mediaRouteBloc;
+  ImageProvider? _imageProvider;
   bool _animForward = true;
   bool _isTicking = false;
 
@@ -75,8 +74,8 @@ class ControlPageState extends UIListenerState<ControlPage>
       _colorTween.end = _gradientStart;
     }
 
-    Future<PaletteGenerator> paletteFuture;
-    final coverUrl = _manager.track.orElse(null)?.coverUrl;
+    Future<PaletteGenerator>? paletteFuture;
+    final coverUrl = _manager.track?.coverUrl;
     if (coverUrl != null) {
       final provider = CachedNetworkImageProvider(coverUrl);
       paletteFuture = PaletteGenerator.fromImageProvider(provider);
@@ -88,7 +87,7 @@ class ControlPageState extends UIListenerState<ControlPage>
       if (paletteFuture != null) {
         final palette = await paletteFuture;
         final paletteColor =
-            (palette.vibrantColor ?? palette.dominantColor).color;
+            (palette.vibrantColor ?? palette.dominantColor)!.color;
         _animateColor(paletteColor);
       }
     });
@@ -110,10 +109,10 @@ class ControlPageState extends UIListenerState<ControlPage>
     _controlKey.currentState?.rebuild();
     if (_manager.currPlayerState != SimplePlaybackState.BUFFERING) {
       Color color;
-      if (_manager.track.isPresent && _imageProvider != null) {
+      if (_manager.track != null && _imageProvider != null) {
         final palette =
-            await PaletteGenerator.fromImageProvider(_imageProvider);
-        color = (palette.vibrantColor ?? palette.dominantColor).color;
+            await PaletteGenerator.fromImageProvider(_imageProvider!);
+        color = (palette.vibrantColor ?? palette.dominantColor)!.color;
       } else {
         color = theme.primaryColor;
       }
@@ -135,10 +134,11 @@ class ControlPageState extends UIListenerState<ControlPage>
         break;
       case PlaybackUIEvent.TRACK:
         _detailKey.currentState?.setTrack(_manager.track);
-        _manager.track.ifPresent((track) async {
+        if (_manager.track != null) {
           _pageKey.currentState?.setTrack(_manager.track);
-          _imageProvider = new CachedNetworkImageProvider(track.coverUrl);
-        });
+          _imageProvider =
+              new CachedNetworkImageProvider(_manager.track!.coverUrl!);
+        }
         break;
       case PlaybackUIEvent.PLAYER_STATE:
         _notifyPlayingState();
@@ -165,7 +165,7 @@ class ControlPageState extends UIListenerState<ControlPage>
   }
 
   void _onTrackChanged(PlaybackTrack nextTrack) {
-    _detailKey.currentState?.setTrack(new Optional.of(nextTrack));
+    _detailKey.currentState?.setTrack(nextTrack);
   }
 
   /*

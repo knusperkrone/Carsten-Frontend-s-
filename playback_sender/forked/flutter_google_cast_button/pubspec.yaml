@@ -31,9 +31,9 @@ flutter:
     pluginClass: FlutterGoogleCastButtonPlugin
 
   assets:
-    - assets/ic_cast0_black_24dp.png
-    - assets/ic_cast1_black_24dp.png
-    - assets/ic_cast2_black_24dp.png
+    - images/ic_cast0_black_24dp.png
+    - images/ic_cast1_black_24dp.png
+    - images/ic_cast2_black_24dp.png
   # To add assets to your plugin package, add an assets section, like this:
   # assets:
   #  - assets/a_dot_burr.jpeg

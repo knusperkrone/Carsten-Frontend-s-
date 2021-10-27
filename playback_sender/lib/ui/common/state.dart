@@ -5,19 +5,19 @@ import 'package:chrome_tube/playback/playback.dart';
 import 'package:flutter/material.dart';
 
 abstract class CachingState<T extends StatefulWidget> extends State<T> {
-  AppLocalizations _localizationCache;
-  ThemeData _themeCache;
+  AppLocalizations? _localizationCache;
+  ThemeData? _themeCache;
 
   @protected
   AppLocalizations get locale {
     _localizationCache ??= AppLocalizations.of(context);
-    return _localizationCache;
+    return _localizationCache!;
   }
 
   @protected
   ThemeData get theme {
     _themeCache ??= Theme.of(context);
-    return _themeCache;
+    return _themeCache!;
   }
 }
 
@@ -28,7 +28,7 @@ abstract class UIListener {
 abstract class UIListenerState<T extends StatefulWidget> extends CachingState<T>
     implements UIListener {
   @protected
-  StreamSubscription uiSub;
+  late StreamSubscription uiSub;
 
   @override
   void initState() {
@@ -47,15 +47,15 @@ abstract class UIListenerState<T extends StatefulWidget> extends CachingState<T>
 abstract class RootState<T extends StatefulWidget> extends UIListenerState<T> {
   final _dialogKey = new GlobalKey<_VolumeDialogState>();
   final PlaybackManager _manager = new PlaybackManager();
-  StreamSubscription _volumeButtonSubscription;
+  late StreamSubscription _volumeButtonSubscription;
 
   @override
   void initState() {
     super.initState();
     _volumeButtonSubscription =
         _manager.volumeEvents.listen((VolumeEvent event) async {
-      if (_dialogKey?.currentState?.mounted ?? false) {
-        _dialogKey?.currentState?.volumeEvent(event);
+      if (_dialogKey.currentState?.mounted ?? false) {
+        _dialogKey.currentState?.volumeEvent(event);
       } else {
         await showDialog<void>(
           context: context,
@@ -80,7 +80,7 @@ class _VolumeDialog extends StatefulWidget {
   final VolumeEvent event;
   final PlaybackManager manager;
 
-  const _VolumeDialog({Key key, @required this.event, @required this.manager})
+  const _VolumeDialog({Key? key, required this.event, required this.manager})
       : super(key: key);
 
   @override
@@ -89,7 +89,7 @@ class _VolumeDialog extends StatefulWidget {
 
 class _VolumeDialogState extends CachingState<_VolumeDialog> {
   double _volume = 0.0;
-  Timer _dismissTimer;
+  Timer? _dismissTimer;
 
   @override
   void initState() {

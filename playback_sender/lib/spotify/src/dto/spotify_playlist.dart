@@ -9,15 +9,10 @@ class SpotifyPlaylist extends Dto implements SpotifyFeatured {
   final String name;
   @JsonKey(name: 'snapshot_id')
   final String snapshotId;
-  final List<SpotifyImage> images;
+  final List<SpotifyImage>? images;
   final SpotifyUser owner;
 
-  SpotifyPlaylist(this.id, this.name, this.snapshotId, this.images, this.owner)
-      : assert(id != null &&
-            name != null &&
-            snapshotId != null &&
-            images != null &&
-            owner != null);
+  SpotifyPlaylist(this.id, this.name, this.snapshotId, this.images, this.owner);
 
   factory SpotifyPlaylist.fromJson(Map<String, dynamic> json) =>
       _$SpotifyPlaylistFromJson(json);
@@ -27,9 +22,9 @@ class SpotifyPlaylist extends Dto implements SpotifyFeatured {
 
   @override
   String get imageUrl {
-    SpotifyImage selected;
-    if (images != null && images.isNotEmpty) {
-      selected = images.first;
+    SpotifyImage? selected;
+    if (images?.isNotEmpty ?? false) {
+      selected = images!.first;
     }
     return selected?.url ?? '';
   }

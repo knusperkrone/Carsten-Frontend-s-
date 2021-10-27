@@ -5,7 +5,7 @@ import 'package:flutter_cast_button/bloc_media_route.dart';
 import 'package:flutter_cast_button/cast_button_widget.dart';
 
 class QueueControl extends StatefulWidget {
-  const QueueControl({Key key}) : super(key: key);
+  const QueueControl({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => QueueControlState();
@@ -14,7 +14,7 @@ class QueueControl extends StatefulWidget {
 class QueueControlState extends State<QueueControl> {
   final _manager = new PlaybackManager();
 
-  MediaRouteBloc _mediaRouteBloc;
+  late MediaRouteBloc _mediaRouteBloc;
 
   @override
   void initState() {

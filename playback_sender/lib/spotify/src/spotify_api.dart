@@ -4,7 +4,6 @@ import 'dart:io';
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:optional/optional.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,11 +20,11 @@ class SpotifyApi {
    * Singleton logic
    */
 
-  static SpotifyApi _instance;
+  static SpotifyApi? _instance;
 
   factory SpotifyApi() {
     _instance ??= new SpotifyApi._internal();
-    return _instance;
+    return _instance!;
   }
 
   SpotifyApi._internal();
@@ -36,39 +35,43 @@ class SpotifyApi {
 
   static const String _AUTH_CODE_KEY = 'SPOTIFY_AUTH_CODE_KEY_V1';
 
-  String _path;
-  SharedPreferences _prefs;
-  AuthorizedSpotifyClient _client;
+  bool _init = false;
+  late String _path;
+  late SharedPreferences _prefs;
+  late AuthorizedSpotifyClient _client;
 
   /*
    * Business methods
    */
 
-  Future<String> init(BuildContext context) async {
-    if (_prefs == null) {
-      _prefs = await SharedPreferences.getInstance();
-      _path = p.join((await getTemporaryDirectory()).path, 'spotify_cache');
-      final dir = new Directory(_path);
-      if (!dir.existsSync()) {
-        dir.createSync();
-      }
+  Future<String?> init(BuildContext context) async {
+    if (_init) {
+      return null;
     }
 
-    String authCode = _prefs.getString(_AUTH_CODE_KEY);
+    _init = true;
+    _prefs = await SharedPreferences.getInstance();
+    _path = p.join((await getTemporaryDirectory()).path, 'spotify_cache');
+    final dir = new Directory(_path);
+    if (!dir.existsSync()) {
+      dir.createSync();
+    }
+
+    String? authCode = _prefs.getString(_AUTH_CODE_KEY);
     if (authCode == null) {
       // Await user authorization
-      final SpotifyLoginPageResult credentials = await Navigator.push(
+      final credentials = (await Navigator.push<SpotifyLoginPageResult>(
         context,
         MaterialPageRoute(builder: (context) => new SpotifyLoginPage()),
-      );
+      ))!;
 
       // Save token and return possible error
       if (credentials.code != null) {
-        authCode = credentials.code;
+        authCode = credentials.code!;
         _prefs.setString(
             _AUTH_CODE_KEY, authCode); // No leak, as it expires after 3600secs
       } else {
-        return credentials.error;
+        return credentials.error!;
       }
     }
 
@@ -78,22 +81,21 @@ class SpotifyApi {
 
   Future<void> resetAuth(BuildContext context) async {
     // Await user authorization
-    _prefs.setString(_AUTH_CODE_KEY, null);
-    final SpotifyLoginPageResult credentials = await Navigator.push(
+    _prefs.remove(_AUTH_CODE_KEY);
+    final credentials = (await Navigator.push<SpotifyLoginPageResult>(
       context,
       MaterialPageRoute(builder: (context) => new SpotifyLoginPage()),
-    );
+    ))!;
 
     // Save token and return possible error
     if (credentials.code != null) {
-      final authCode = credentials.code;
+      final authCode = credentials.code!;
       _prefs.setString(
           _AUTH_CODE_KEY, authCode); // No leak, as it expires after 3600secs
     }
   }
 
   Future<List<SpotifyPlaylist>> getUserPlaylists() {
-    assert(_client != null);
     const endpoint = '/v1/me/playlists';
     SpotifyPlaylist transform(Map<String, dynamic> json) =>
         SpotifyPlaylist.fromJson(json);
@@ -101,8 +103,7 @@ class SpotifyApi {
     return _paginateEager(endpoint, transform);
   }
 
-  Stream<List<SpotifyTrack>> getUserTracks() async* {
-    assert(_client != null);
+  Stream<List<SpotifyTrack>?> getUserTracks() async* {
     const endpoint = '/v1/me/tracks';
     SpotifyTrack transform(Map<String, dynamic> json) {
       if (json.containsKey('track')) {
@@ -124,13 +125,13 @@ class SpotifyApi {
     } else {
       final cached =
           await _transformFromPersisted(cacheFile, endpoint, transform);
-      final controller = new StreamController<List<SpotifyTrack>>();
+      final controller = new StreamController<List<SpotifyTrack>?>();
       controller.add(cached);
 
       // Fetch all and update on delta
       _paginateEager(endpoint, transform).then((fetched) {
         if (!const ListEquality<SpotifyTrack>().equals(fetched, cached)) {
-          controller.add(null);
+          controller.add(null); // Clear sentinel
           controller.add(fetched);
           _persist(cacheFile, fetched);
         }
@@ -141,7 +142,6 @@ class SpotifyApi {
   }
 
   Stream<List<SpotifyTrack>> getPlaylistTracks(SpotifyPlaylist playlist) {
-    assert(_client != null);
     final endpoint = '/v1/playlists/${playlist.id}/tracks';
     final path = p.join(_path, 'playlist_${playlist.snapshotId}.json');
     SpotifyTrack transform(Map<String, dynamic> json) {
@@ -156,7 +156,6 @@ class SpotifyApi {
   }
 
   Stream<List<SpotifyTrack>> getAlbumTracks(SpotifyAlbum album) {
-    assert(_client != null);
     final endpoint = '/v1/albums/${album.id}/tracks';
     final path = p.join(_path, 'album_${album.id}.json');
     SpotifyTrack transform(Map<String, dynamic> json) =>
@@ -219,7 +218,6 @@ class SpotifyApi {
 
   Stream<List<T>> _getCached<T extends Dto>(
       String endpoint, String fileName, _TransformFunc<T> transformFun) async* {
-    assert(_client != null);
     final cacheFile = new File(p.join(_path, fileName));
     if (cacheFile.existsSync()) {
       yield await _transformFromPersisted(cacheFile, endpoint, transformFun);
@@ -228,12 +226,12 @@ class SpotifyApi {
     }
   }
 
-  Optional<T> _tryTransform<T>(dynamic map, _TransformFunc<T> transformFun) {
+  T? _tryTransform<T>(dynamic map, _TransformFunc<T> transformFun) {
     try {
-      return Optional.of(transformFun(map as Map<String, dynamic>));
+      return transformFun(map as Map<String, dynamic>);
     } catch (e) {
       print("Couldn't transform json: $map");
-      return const Optional.empty();
+      return null;
     }
   }
 
@@ -248,18 +246,18 @@ class SpotifyApi {
         SpotifyPager.fromJson(jsonDecode(source) as Map<String, dynamic>);
     fetchedResult.addAll(pager.items
         .map((dynamic item) => _tryTransform(item, transformFun))
-        .where((opt) => opt.isPresent)
-        .map((e) => e.value));
+        .where((opt) => opt != null)
+        .map((e) => e!));
 
     // Repeat
     while (pager.next != null && fetchedResult.length <= max) {
-      source = await _tryGet(pager.next, '');
+      source = await _tryGet(pager.next!, '');
       pager = SpotifyPager.fromJson(jsonDecode(source) as Map<String, dynamic>);
 
       fetchedResult.addAll(pager.items
           .map((dynamic item) => _tryTransform(item, transformFun))
-          .where((opt) => opt.isPresent)
-          .map((e) => e.value));
+          .where((opt) => opt != null)
+          .map((e) => e!));
     }
 
     return fetchedResult;
@@ -279,30 +277,30 @@ class SpotifyApi {
     items = pager.items
         .map((dynamic item) =>
             _tryTransform(item as Map<String, dynamic>, transformFun))
-        .where((opt) => opt.isPresent)
-        .map((e) => e.value)
+        .where((opt) => opt != null)
+        .map((e) => e!)
         .toList();
     count += items.length;
     yield items;
 
     // Repeat
     while (pager.next != null && count <= max) {
-      source = await _tryGet(pager.next, '');
+      source = await _tryGet(pager.next!, '');
       pager = SpotifyPager.fromJson(jsonDecode(source) as Map<String, dynamic>);
 
       items = pager.items
           .map((dynamic item) =>
               _tryTransform(item as Map<String, dynamic>, transformFun))
-          .where((opt) => opt.isPresent)
-          .map((e) => e.value)
+          .where((opt) => opt != null)
+          .map((e) => e!)
           .toList();
       count += items.length;
       yield items;
     }
   }
 
-  Future<String> _tryGet(String endpoint, [String baseUrl]) async {
-    String source;
+  Future<String> _tryGet(String endpoint, [String? baseUrl]) async {
+    String? source;
     int tries = 5;
     do {
       try {

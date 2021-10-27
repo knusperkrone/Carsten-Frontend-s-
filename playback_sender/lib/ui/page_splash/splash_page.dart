@@ -21,9 +21,9 @@ class _SplashScreenState extends CachingState<SplashScreen>
     'assets/ic_cast2_black_24dp.png',
   ];
 
-  String _errorMsg;
-  AnimationController _animationController;
-  Animation<String> connectingIconTween;
+  String? _errorMsg;
+  late AnimationController _animationController;
+  late Animation<String> connectingIconTween;
 
   @override
   void initState() {
@@ -107,9 +107,9 @@ class _SplashScreenState extends CachingState<SplashScreen>
                     style: theme.textTheme.headline6,
                   ),
                   Text(
-                    _errorMsg,
+                    _errorMsg!,
                     textAlign: TextAlign.center,
-                    style: theme.textTheme.headline6.copyWith(
+                    style: theme.textTheme.headline6!.copyWith(
                       color: theme.errorColor,
                     ),
                   ),

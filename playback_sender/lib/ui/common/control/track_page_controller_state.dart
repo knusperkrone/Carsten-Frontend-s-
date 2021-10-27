@@ -9,13 +9,13 @@ abstract class TrackPageControllerState<T extends StatefulWidget>
   static const _LIST_EQUALITY = ListEquality<PlaybackTrack>();
 
   @protected
-  PageController pageController;
+  late PageController pageController;
   @protected
   final PlaybackManager manager = new PlaybackManager();
 
-  int _currIndex;
   bool _isAnimating = false;
-  List<PlaybackTrack> _shadowTracks;
+  late int _currIndex;
+  late List<PlaybackTrack> _shadowTracks;
 
   void onUserScroll(PlaybackTrack track, bool next);
 
@@ -24,13 +24,13 @@ abstract class TrackPageControllerState<T extends StatefulWidget>
   @override
   void initState() {
     super.initState();
-    if (!manager.track.isPresent) {
+    if (manager.track == null) {
       _shadowTracks = [];
       _currIndex = 0;
     } else {
       _shadowTracks = _stackAllTracks();
       _currIndex =
-          _shadowTracks.indexWhere((t) => t.title == manager.track.value.title);
+          _shadowTracks.indexWhere((t) => t.title == manager.track!.title);
     }
     pageController = PageController(initialPage: _currIndex);
   }
@@ -43,8 +43,8 @@ abstract class TrackPageControllerState<T extends StatefulWidget>
 
   void rebuild() {
     setState(() {
-      if (manager.track.isPresent) {
-        animateToTrack(manager.track.value);
+      if (manager.track != null) {
+        animateToTrack(manager.track!);
       }
     });
   }
@@ -60,18 +60,18 @@ abstract class TrackPageControllerState<T extends StatefulWidget>
 
   @protected
   void onScroll(int newIndex) {
-    manager.track.ifPresent((track) {
+    if (manager.track != null) {
       final oldIndex = _currIndex;
       if (mounted &&
           oldIndex != newIndex &&
-          pageController.page != track.queueIndex) {
+          pageController.page != manager.track!.queueIndex) {
         _currIndex = newIndex;
 
         if (!_isAnimating) {
           onUserScroll(_shadowTracks[newIndex], oldIndex < newIndex);
         }
       }
-    });
+    }
   }
 
   Future<void> animateToTrack(PlaybackTrack track) async {
@@ -91,26 +91,22 @@ abstract class TrackPageControllerState<T extends StatefulWidget>
     _isAnimating = false;
   }
 
-  PlaybackTrack get showTrack {
-    assert(manager.track.isPresent);
-    if (manager.track == null) {
-      return null;
-    } else if (manager.track.value.queueIndex == _currIndex) {
-      return manager.track.value;
+  PlaybackTrack? get showTrack {
+    if (manager.track!.queueIndex == _currIndex) {
+      return manager.track!;
     }
     return _shadowTracks[_currIndex];
   }
 
   List<PlaybackTrack> _stackAllTracks() {
-    assert(manager.track.isPresent);
     final allTracks = <PlaybackTrack>[];
-    final currentIndex = manager.trackIndex ?? 0;
+    final currentIndex = manager.trackIndex;
     final before = manager.queueTracks.sublist(0, currentIndex + 1);
     final after = manager.queueTracks.sublist(currentIndex + 1);
 
     allTracks.addAll(before);
-    if (manager.track.value.isPrio) {
-      allTracks.add(manager.track.value);
+    if (manager.track!.isPrio) {
+      allTracks.add(manager.track!);
     }
     allTracks.addAll(manager.prioTracks);
     allTracks.addAll(after);
@@ -121,10 +117,10 @@ abstract class TrackPageControllerState<T extends StatefulWidget>
     if (hasNoTracks) {
       return 1;
     }
-    final currentIndex = manager.trackIndex ?? 0;
+    final currentIndex = manager.trackIndex;
     int count = currentIndex;
     count += manager.queueTracks.length - currentIndex;
-    if (manager.track.value.isPrio) {
+    if (manager.track!.isPrio) {
       count += 1;
     }
     count += manager.prioTracks.length;

@@ -7,9 +7,9 @@ class TrackGradient extends AnimatedWidget {
   AnimationController get _progress => listenable as AnimationController;
 
   const TrackGradient({
-    @required this.colorTween,
-    @required this.canvasColor,
-    @required AnimationController controller,
+    required this.colorTween,
+    required this.canvasColor,
+    required AnimationController controller,
   }) : super(listenable: controller);
 
   @override
@@ -19,7 +19,7 @@ class TrackGradient extends AnimatedWidget {
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [colorTween.animate(_progress).value, canvasColor],
+          colors: [colorTween.animate(_progress).value!, canvasColor],
         ),
       ),
     );

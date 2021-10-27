@@ -39,7 +39,7 @@ class CarstenApplication extends StatelessWidget {
         Locale('de', 'LI'),
       ],
       localeResolutionCallback:
-          (Locale locale, Iterable<Locale> supportedLocales) {
+          (Locale? locale, Iterable<Locale> supportedLocales) {
         if (supportedLocales.contains(locale)) {
           return locale;
         }

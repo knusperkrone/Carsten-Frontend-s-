@@ -7,8 +7,7 @@ class SpotifyTrack extends Dto {
   final SpotifyAlbum album;
   final List<SpotifyArtist> artists;
 
-  SpotifyTrack(this.href, this.name, this.album, this.artists)
-      : assert(name != null && album != null && artists != null);
+  SpotifyTrack(this.href, this.name, this.album, this.artists);
 
   factory SpotifyTrack.fromJson(Map<String, dynamic> json) =>
       _$SpotifyTrackFromJson(json);

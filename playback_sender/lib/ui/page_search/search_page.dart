@@ -37,9 +37,10 @@ class SearchPageState extends CachingState<SearchPage> {
   final PlaybackManager _manager = new PlaybackManager();
   final SpotifyApi _spotify = new SpotifyApi();
   final List<SerializableSearchResult> _results = [];
-  LinkedHashSet<SerializableSearchResult> _prevSearches;
-  TextEditingController _textController;
-  CancelableOperation _currSearch;
+
+  CancelableOperation? _currSearch;
+  late LinkedHashSet<SerializableSearchResult> _prevSearches;
+  late TextEditingController _textController;
 
   bool _isNavigating = false;
 
@@ -213,9 +214,9 @@ class SearchPageState extends CachingState<SearchPage> {
           ? IconButton(
               icon: const Icon(Icons.more_vert),
               onPressed: () =>
-                  key.currentState.open(actionType: SlideActionType.primary),
+                  key.currentState?.open(actionType: SlideActionType.primary),
             )
-          : null,
+          : Container(),
     );
 
     if (curr.type == SearchType.TRACK) {

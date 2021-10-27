@@ -31,7 +31,7 @@ class ForegroundDispatcher extends MessageDispatcher {
   ForegroundDispatcher._internal(PlaybackManager manager) : super(manager);
 
   @override
-  Future<CastMessage<String>> dispatchIPCMessage(CastMessage msg) async {
+  Future<CastMessage<String>?> dispatchIPCMessage(CastMessage msg) async {
     switch (msg.type) {
       case NativeConstants.N_CONNECTED:
         // Nop

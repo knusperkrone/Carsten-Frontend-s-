@@ -13,12 +13,12 @@ class SerializableSearchResult {
   final String serialized;
   final SearchType type;
   @JsonKey(ignore: true)
-  int bias;
+  late int bias;
 
   SerializableSearchResult(
       this.url, this.name, this.parent, this.serialized, this.type);
 
-  SerializableSearchResult.fromTrack(SpotifyTrack track, [String q])
+  SerializableSearchResult.fromTrack(SpotifyTrack track, [String? q])
       : url = track.album.images.last.url,
         name = track.name,
         parent = track.artist,
@@ -27,16 +27,16 @@ class SerializableSearchResult {
     _setBias(q);
   }
 
-  SerializableSearchResult.fromPlaylist(SpotifyPlaylist playlist, [String q])
-      : url = playlist.images?.last?.url,
+  SerializableSearchResult.fromPlaylist(SpotifyPlaylist playlist, [String? q])
+      : url = playlist.images?.last.url ?? '',
         name = playlist.name,
-        parent = playlist.owner?.name ?? '',
+        parent = playlist.owner.name,
         serialized = jsonEncode(playlist.toJson()),
         type = SearchType.PLAYLIST {
     _setBias(q);
   }
 
-  SerializableSearchResult.fromAlbum(SpotifyAlbum album, [String q])
+  SerializableSearchResult.fromAlbum(SpotifyAlbum album, [String? q])
       : url = album.images.last.url,
         name = album.name,
         parent = album.artist,
@@ -45,7 +45,7 @@ class SerializableSearchResult {
     _setBias(q);
   }
 
-  void _setBias(String q) {
+  void _setBias(String? q) {
     if (q == null) {
       bias = 0;
     } else {
@@ -92,10 +92,10 @@ class SearchResult extends StatelessWidget {
   final Widget trailing;
 
   const SearchResult(
-      {Key key,
-      @required this.searchResult,
-      @required this.parent,
-      @required this.trailing})
+      {Key? key,
+      required this.searchResult,
+      required this.parent,
+      required this.trailing})
       : super(key: key);
 
   void _onTab() {

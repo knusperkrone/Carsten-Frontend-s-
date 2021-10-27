@@ -9,14 +9,14 @@ mixin PlaybackTransformer {
       {bool isPrio = false}) {
     final album = track.album;
     String imgUrl = _DEFAULT_IMG;
-    if (album?.images?.isNotEmpty ?? false) {
+    if (album.images.isNotEmpty) {
       final offset = album.images.length > 1 ? 0 : 1;
       imgUrl = album.images[offset].url;
     }
     return new PlaybackTrack(
       title: track.name,
       artist: track.artist,
-      album: track.album?.name ?? '',
+      album: track.album.name,
       origQueueIndex: index,
       queueIndex: index,
       coverUrl: imgUrl,

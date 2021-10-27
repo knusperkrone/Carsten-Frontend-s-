@@ -4,7 +4,7 @@ part of 'dto.dart';
 class SpotifyArtist extends Dto {
   final String name;
 
-  SpotifyArtist(this.name) : assert(name != null);
+  SpotifyArtist(this.name);
 
   factory SpotifyArtist.fromJson(Map<String, dynamic> json) =>
       _$SpotifyArtistFromJson(json);

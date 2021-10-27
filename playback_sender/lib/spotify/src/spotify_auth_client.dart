@@ -17,22 +17,21 @@ class SerializableApiToken {
   @JsonKey(name: 'expires_in')
   final int expiresIn;
   @JsonKey()
-  DateTime createdOn;
+  DateTime? createdOn;
 
   SerializableApiToken(this.accessToken, this.refreshToken, this.tokenType,
       this.expiresIn, this.createdOn) {
     createdOn ??= DateTime.now();
   }
 
-  factory SerializableApiToken.fromJsonSource(String source) => (source == null)
-      ? null
-      : _$SerializableApiTokenFromJson(
+  factory SerializableApiToken.fromJsonSource(String source) =>
+      _$SerializableApiTokenFromJson(
           jsonDecode(source) as Map<String, dynamic>);
 
   String toJsonSource() => jsonEncode(_$SerializableApiTokenToJson(this));
 
   bool get isExpired =>
-      createdOn.difference(new DateTime.now()).inSeconds.abs() > expiresIn;
+      createdOn!.difference(new DateTime.now()).inSeconds.abs() > expiresIn;
 }
 
 class AuthorizedSpotifyClient with DartHttpClientMixin {
@@ -51,38 +50,40 @@ class AuthorizedSpotifyClient with DartHttpClientMixin {
 
   final SharedPreferences _prefs;
   final String _authCode;
-  SerializableApiToken _apiToken;
+  SerializableApiToken? _apiToken;
 
   AuthorizedSpotifyClient(this._prefs, this._authCode) {
-    _apiToken =
-        new SerializableApiToken.fromJsonSource(_prefs.getString(_TOKEN_KEY));
+    final tokenJson = _prefs.getString(_TOKEN_KEY);
+    if (tokenJson != null) {
+      _apiToken = new SerializableApiToken.fromJsonSource(tokenJson);
+    }
   }
 
   /*
    * Business methods
    */
 
-  Future<String> authorizedGet(String path, {String baseUrl}) async {
+  Future<String> authorizedGet(String path, {String? baseUrl}) async {
     await _refreshToken();
     baseUrl ??= _BASE_URL;
     return doGet(
-        baseUrl, path, {'Authorization': 'Bearer ${_apiToken.accessToken}'});
+        baseUrl, path, {'Authorization': 'Bearer ${_apiToken!.accessToken}'});
   }
 
   Future<String> authorizedPost(String path, String body,
-      {String baseUrl = _BASE_URL}) async {
+      {String? baseUrl = _BASE_URL}) async {
     await _refreshToken();
     baseUrl ??= _BASE_URL;
     return doPost(baseUrl, path,
-        {'Authorization': 'Bearer ${_apiToken.accessToken}'}, body);
+        {'Authorization': 'Bearer ${_apiToken!.accessToken}'}, body);
   }
 
   Future<String> authorizedPut(String path, String body,
-      {String baseUrl = _BASE_URL}) async {
+      {String? baseUrl = _BASE_URL}) async {
     await _refreshToken();
     baseUrl ??= _BASE_URL;
     return doPut<String>(baseUrl, path,
-        {'Authorization': 'Bearer ${_apiToken.accessToken}'}, body);
+        {'Authorization': 'Bearer ${_apiToken!.accessToken}'}, body);
   }
 
   /*
@@ -103,19 +104,19 @@ class AuthorizedSpotifyClient with DartHttpClientMixin {
         final respBody = await doPost(_BACKEND_BASE_URL, path, headers, body);
         _apiToken = new SerializableApiToken.fromJsonSource(respBody);
 
-        _prefs.setString(_TOKEN_KEY, _apiToken.toJsonSource());
-      } else if (_apiToken.isExpired) {
+        _prefs.setString(_TOKEN_KEY, _apiToken!.toJsonSource());
+      } else if (_apiToken!.isExpired) {
         const path = '/refresh';
-        final body = 'refresh_token=${_apiToken.refreshToken}';
+        final body = 'refresh_token=${_apiToken!.refreshToken}';
         SerializableApiToken refreshToken;
 
         // XXX: closed source call
         final respBody = await doPost(_BACKEND_BASE_URL, path, headers, body);
         refreshToken = new SerializableApiToken.fromJsonSource(respBody);
 
-        _apiToken.accessToken = refreshToken.accessToken;
-        _apiToken.createdOn = DateTime.now();
-        _prefs.setString(_TOKEN_KEY, _apiToken.toJsonSource());
+        _apiToken!.accessToken = refreshToken.accessToken;
+        _apiToken!.createdOn = DateTime.now();
+        _prefs.setString(_TOKEN_KEY, _apiToken!.toJsonSource());
       }
     } catch (e) {
       if (tryCount-- <= 0) {

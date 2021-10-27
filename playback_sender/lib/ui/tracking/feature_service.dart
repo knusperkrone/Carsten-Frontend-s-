@@ -9,11 +9,11 @@ class FeatureService {
    * Singleton logic
    */
 
-  static FeatureService _instance;
+  static FeatureService? _instance;
 
   factory FeatureService() {
     _instance ??= FeatureService._internal();
-    return _instance;
+    return _instance!;
   }
 
   FeatureService._internal();
@@ -24,7 +24,7 @@ class FeatureService {
 
   static const String _FEATURE_KEY = 'featured_v1';
 
-  SharedPreferences _prefs;
+  late SharedPreferences _prefs;
 
   Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();

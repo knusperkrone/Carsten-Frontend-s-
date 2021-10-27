@@ -9,19 +9,19 @@ import 'package:playback_interop/playback_interop.dart';
 import '../state.dart';
 
 class ControlBar extends StatefulWidget {
-  const ControlBar({Key key}) : super(key: key);
+  const ControlBar({Key? key}) : super(key: key);
 
   @override
   State createState() => ControlBarState();
 }
 
 class ControlBarState extends UIListenerState<ControlBar> {
-  PlaybackTrack _trackSentinel;
+  PlaybackTrack? _trackSentinel;
 
   final _mediaKey = new GlobalKey<CastButtonWidgetState>();
   final _infoKey = new GlobalKey<TrackInfoState>();
   final _manager = new PlaybackManager();
-  MediaRouteBloc _mediaRouteBloc;
+  late MediaRouteBloc _mediaRouteBloc;
 
   @override
   void initState() {
@@ -42,7 +42,7 @@ class ControlBarState extends UIListenerState<ControlBar> {
   void refreshMediaState() {
     _mediaRouteBloc.close();
     _mediaRouteBloc = new MediaRouteBloc();
-    _mediaKey.currentState.setBloc(_mediaRouteBloc);
+    _mediaKey.currentState?.setBloc(_mediaRouteBloc);
   }
 
   /*
@@ -56,7 +56,7 @@ class ControlBarState extends UIListenerState<ControlBar> {
       case PlaybackUIEvent.PLAYER_STATE:
       case PlaybackUIEvent.QUEUE:
       case PlaybackUIEvent.TRACK:
-        final track = _manager.track.orElse(_trackSentinel);
+        final track = _manager.track ?? _trackSentinel!;
         _infoKey.currentState?.setTrack(track);
         break;
       default:
@@ -78,7 +78,7 @@ class ControlBarState extends UIListenerState<ControlBar> {
   @override
   Widget build(BuildContext context) {
     _trackSentinel ??= new PlaybackTrack.dummy(
-      title: locale.translate('no_song_title'),
+      title: locale.translate('no_song_title'), // requires context
       artist: '',
     );
 
@@ -104,7 +104,7 @@ class ControlBarState extends UIListenerState<ControlBar> {
                   Expanded(
                     child: TrackInfo(
                       key: _infoKey,
-                      track: _manager.track.orElse(_trackSentinel),
+                      track: _manager.track ?? _trackSentinel!,
                       titleHeight: kToolbarHeight / 2.0,
                       artistHeight: kToolbarHeight / 2.0,
                       blank: 30,

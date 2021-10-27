@@ -2,8 +2,6 @@ import 'dart:async';
 
 import 'package:chrome_tube/playback/src/sender_playback_queue.dart';
 import 'package:flutter/material.dart';
-import 'package:optional/optional.dart';
-import 'package:optional/optional_internal.dart';
 import 'package:playback_interop/playback_interop.dart';
 
 import 'ipc/cast_playback_context.dart';
@@ -15,11 +13,11 @@ class PlaybackReceiver extends PlaybackSender {
    * Singleton
    */
 
-  static PlaybackReceiver _instance;
+  static PlaybackReceiver? _instance;
 
   factory PlaybackReceiver() {
     _instance ??= PlaybackReceiver.internal(new CastPlaybackContext());
-    return _instance;
+    return _instance!;
   }
 
   @protected
@@ -37,11 +35,11 @@ class PlaybackReceiver extends PlaybackSender {
 
   int _currSeek = 0;
   bool _isRepeating = false;
-  ShuffleStateDto _currShuffleState;
   SimplePlaybackState _currPlayerState = SimplePlaybackState.ENDED;
   DateTime _seekTimestamp = new DateTime.now();
-  SenderPlaybackQueue _queue;
-  List<PlaybackTrack> _trackBuffer;
+  ShuffleStateDto? _currShuffleState;
+  SenderPlaybackQueue? _queue;
+  List<PlaybackTrack>? _trackBuffer;
 
   /*
    * public getter
@@ -55,14 +53,13 @@ class PlaybackReceiver extends PlaybackSender {
 
   DateTime get seekTimestamp => _seekTimestamp;
 
-  ShuffleStateDto get currShuffleState => _currShuffleState;
+  ShuffleStateDto? get currShuffleState => _currShuffleState;
 
   bool get isShuffled => _currShuffleState?.isShuffled ?? false;
 
   SimplePlaybackState get currPlayerState => _currPlayerState;
 
-  Optional<PlaybackTrack> get track =>
-      new Optional.ofNullable(_queue?.currentTrack);
+  PlaybackTrack? get track => _queue?.currentTrack;
 
   int get trackIndex => _queue?.trackHolder?.queueIndex ?? 0;
 
@@ -77,10 +74,10 @@ class PlaybackReceiver extends PlaybackSender {
    */
 
   @protected
-  SenderPlaybackQueue get queue => _queue;
+  SenderPlaybackQueue? get queue => _queue;
 
   @protected
-  set track(Optional<PlaybackTrack> val) => val;
+  set track(PlaybackTrack? val) => val;
 
   @protected
   set currPlayerState(SimplePlaybackState val) => _currPlayerState = val;
@@ -95,7 +92,7 @@ class PlaybackReceiver extends PlaybackSender {
   set shuffleState(ShuffleStateDto val) => _currShuffleState = val;
 
   @protected
-  set queue(SenderPlaybackQueue val) => _queue = val;
+  set queue(SenderPlaybackQueue? val) => _queue = val;
 
   @protected
   set trackSeek(double seek) => _currSeek = seek.toInt();
@@ -139,9 +136,9 @@ class PlaybackReceiver extends PlaybackSender {
   void onQueue(PlaybackQueueDto queueDto) {
     _trackBuffer ??= [];
     if (queueDto.immutableTracks.isNotEmpty) {
-      _trackBuffer.addAll(queueDto.immutableTracks);
+      _trackBuffer!.addAll(queueDto.immutableTracks);
     } else {
-      _queue = new SenderPlaybackQueue.fromQueue(queueDto, _trackBuffer,
+      _queue = new SenderPlaybackQueue.fromQueue(queueDto, _trackBuffer!,
           isRepeating, isShuffled, _currShuffleState?.initSeed);
       _trackBuffer = null;
       _completer.add(PlaybackUIEvent.QUEUE);
@@ -157,21 +154,21 @@ class PlaybackReceiver extends PlaybackSender {
       case TrackState.KICKOFF:
         break;
       case TrackState.NEXT:
-        _queue.nextTrack();
+        _queue!.nextTrack();
         _seekTimestamp = DateTime.now();
         _currSeek = 0;
         _completer.add(PlaybackUIEvent.SEEK);
         break;
       case TrackState.PREVIOUS:
-        _queue.previousTrack();
+        _queue!.previousTrack();
         _seekTimestamp = DateTime.now();
         _currSeek = 0;
         _completer.add(PlaybackUIEvent.SEEK);
         break;
       case TrackState.SYNC:
         if (trackStateDto.durationMs != null) {
-          if (_queue.currentTrack != null) {
-            _queue.currentTrack.durationMs = trackStateDto.durationMs;
+          if (_queue!.currentTrack != null) {
+            _queue!.currentTrack!.durationMs = trackStateDto.durationMs;
           }
         }
         break;
@@ -180,10 +177,10 @@ class PlaybackReceiver extends PlaybackSender {
         return;
     }
 
-    if (_queue.currentTrack != null &&
-        _queue.currentTrack.origQueueIndex != trackStateDto.trackIndex) {
+    if (_queue!.currentTrack != null &&
+        _queue!.currentTrack!.origQueueIndex != trackStateDto.trackIndex) {
       _reSync(
-          'Invalid: ${_queue.currentTrack.origQueueIndex} != ${trackStateDto.trackIndex}');
+          'Invalid: ${_queue!.currentTrack?.origQueueIndex} != ${trackStateDto.trackIndex}');
     }
 
     _completer.add(PlaybackUIEvent.TRACK);
@@ -196,8 +193,12 @@ class PlaybackReceiver extends PlaybackSender {
   }
 
   void onShuffling(ShuffleStateDto shuffleDto) {
+    if (queue == null) {
+      return;
+    }
+
     try {
-      _queue.setShuffleState(shuffleDto);
+      _queue!.setShuffleState(shuffleDto);
       _currShuffleState = shuffleDto;
       _completer.add(PlaybackUIEvent.QUEUE);
     } catch (e) {
@@ -211,8 +212,12 @@ class PlaybackReceiver extends PlaybackSender {
   }
 
   void onAddPrioDelta(AddPrioDeltaDto addDeltaDto) {
+    if (queue == null) {
+      return;
+    }
+
     try {
-      queue.addPrioTrack(addDeltaDto.track, addDeltaDto.append);
+      queue!.addPrioTrack(addDeltaDto.track, addDeltaDto.append);
       _completer.add(PlaybackUIEvent.QUEUE);
     } catch (e) {
       _reSync("Couldn't add $e");
@@ -220,8 +225,12 @@ class PlaybackReceiver extends PlaybackSender {
   }
 
   void onMovePrioDelta(MovePrioDeltaDto moveDeltaDto) {
+    if (queue == null) {
+      return;
+    }
+
     try {
-      queue.move(moveDeltaDto.startPrio, moveDeltaDto.startIndex,
+      queue!.move(moveDeltaDto.startPrio, moveDeltaDto.startIndex,
           moveDeltaDto.targetPrio, moveDeltaDto.targetIndex);
       _completer.add(PlaybackUIEvent.QUEUE);
     } catch (e) {

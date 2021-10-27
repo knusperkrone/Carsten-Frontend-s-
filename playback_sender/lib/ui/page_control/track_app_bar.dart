@@ -5,7 +5,8 @@ class TrackAppBar extends StatefulWidget {
   final ColorTween colorTween;
   final AnimationController animController;
 
-  const TrackAppBar({Key key, this.colorTween, this.animController})
+  const TrackAppBar(
+      {Key? key, required this.colorTween, required this.animController})
       : super(key: key);
 
   @override

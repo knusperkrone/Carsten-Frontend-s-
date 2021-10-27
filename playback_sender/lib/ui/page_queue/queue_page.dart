@@ -43,7 +43,7 @@ class _QueuePageState extends UIListenerState<QueuePage> {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: AppBar(),
-      body: !_manager.track.isPresent
+      body: _manager.track == null
           ? Container()
           : ReorderTrackList(key: _reorderKey),
       bottomNavigationBar: BottomAppBar(

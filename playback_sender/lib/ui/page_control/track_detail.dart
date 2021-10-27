@@ -3,7 +3,7 @@ part of 'control_page.dart';
 class TrackDetails extends StatefulWidget {
   final double padding;
 
-  const TrackDetails({Key key, @required this.padding}) : super(key: key);
+  const TrackDetails({Key? key, required this.padding}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => new TrackDetailsState();
@@ -11,9 +11,8 @@ class TrackDetails extends StatefulWidget {
 
 class TrackDetailsState extends CachingState<TrackDetails> {
   final _infoKey = new GlobalKey<TrackInfoState>();
-  PlaybackTrack _trackSentinel;
-
-  Optional<PlaybackTrack> _track;
+  PlaybackTrack? _trackSentinel;
+  PlaybackTrack? _track;
 
   @override
   void initState() {
@@ -21,8 +20,8 @@ class TrackDetailsState extends CachingState<TrackDetails> {
     _track = new PlaybackManager().track;
   }
 
-  void setTrack(Optional<PlaybackTrack> track) {
-    _infoKey.currentState?.setTrack(track.orElse(_trackSentinel));
+  void setTrack(PlaybackTrack? track) {
+    _infoKey.currentState?.setTrack(track ?? _trackSentinel!);
   }
 
   @override
@@ -37,7 +36,7 @@ class TrackDetailsState extends CachingState<TrackDetails> {
       width: double.infinity,
       child: TrackInfo(
         key: _infoKey,
-        track: _track.orElse(_trackSentinel),
+        track: _track ?? _trackSentinel!,
         titleHeight: 35,
         artistHeight: 25,
         crossAxisAlignment: CrossAxisAlignment.start,

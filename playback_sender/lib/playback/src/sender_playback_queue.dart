@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:playback_interop/playback_interop.dart';
 
 class SenderPlaybackQueue extends BasePlaybackQueue {
@@ -10,15 +9,16 @@ class SenderPlaybackQueue extends BasePlaybackQueue {
   }
 
   factory SenderPlaybackQueue.fromQueue(
-      PlaybackQueueDto queueDto,
-      List<PlaybackTrack> buffer,
-      bool isRepeating,
-      bool isShuffling,
-      int seed) {
-    final name = queueDto.name;
-    final currentTrack = queueDto.currentTrack;
-    final trackHolder = queueDto.trackHolder;
-    final prioTracks = queueDto.prioTracks;
+    PlaybackQueueDto queueDto,
+    List<PlaybackTrack> buffer,
+    bool isRepeating,
+    bool isShuffling,
+    int? seed,
+  ) {
+    final name = queueDto.name!;
+    final currentTrack = queueDto.currentTrack!;
+    final trackHolder = queueDto.trackHolder!;
+    final prioTracks = queueDto.prioTracks!;
     final trackList = buffer;
 
     return new SenderPlaybackQueue._internal(name, seed, currentTrack,
@@ -27,9 +27,9 @@ class SenderPlaybackQueue extends BasePlaybackQueue {
 
   SenderPlaybackQueue._internal(
       this.name,
-      int seed,
-      PlaybackTrack currentTrack,
-      PlaybackTrack trackHolder,
+      int? seed,
+      PlaybackTrack? currentTrack,
+      PlaybackTrack? trackHolder,
       bool isShuffling,
       bool isRepeating,
       List<PlaybackTrack> prioTracks,
@@ -39,16 +39,16 @@ class SenderPlaybackQueue extends BasePlaybackQueue {
             trackHolder: trackHolder, seed: seed);
 
   SenderPlaybackQueue._state({
-    @required this.name,
-    @required bool isDirty,
-    @required bool isRepeating,
-    @required ShuffleStateDto shuffleState,
-    @required PlaybackTrack currTrackOpt,
-    @required PlaybackTrack trackHolderOpt,
-    @required String hash,
-    @required List<PlaybackTrack> prioTracks,
-    @required List<PlaybackTrack> mutableTrackList,
-    @required List<PlaybackTrack> immutableTrackList,
+    required this.name,
+    required bool isDirty,
+    required bool isRepeating,
+    required ShuffleStateDto shuffleState,
+    required PlaybackTrack currTrackOpt,
+    required PlaybackTrack trackHolderOpt,
+    required String hash,
+    required List<PlaybackTrack> prioTracks,
+    required List<PlaybackTrack> mutableTrackList,
+    required List<PlaybackTrack> immutableTrackList,
   }) : super.withState(
           isDirty,
           isRepeating,
@@ -62,10 +62,6 @@ class SenderPlaybackQueue extends BasePlaybackQueue {
         );
 
   factory SenderPlaybackQueue.fromJson(Map<String, dynamic> json) {
-    if (json == null) {
-      return null;
-    }
-
     final name = json['name'] as String;
     final hash = json['hash'] as String;
     final isDirty = json['isDirty'] as bool;

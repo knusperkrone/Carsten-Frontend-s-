@@ -11,7 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class PlaylistPage extends StatefulWidget {
   final List<SpotifyPlaylist> playlists;
 
-  const PlaylistPage(this.playlists, {Key key}) : super(key: key);
+  const PlaylistPage(this.playlists, {Key? key}) : super(key: key);
 
   @override
   State createState() => _PlaylistPageState();
@@ -92,7 +92,7 @@ class _PlaylistPageState extends RootState<PlaylistPage> {
         title: Text(
           locale.translate('songs'),
           style:
-              theme.textTheme.subtitle1.copyWith(fontWeight: FontWeight.bold),
+              theme.textTheme.subtitle1!.copyWith(fontWeight: FontWeight.bold),
         ),
         onTap: () => _navigateToSongPage(context),
       ),
@@ -116,7 +116,7 @@ class _PlaylistPageState extends RootState<PlaylistPage> {
         title: Text(
           playlist.name,
           style:
-              theme.textTheme.subtitle1.copyWith(fontWeight: FontWeight.bold),
+              theme.textTheme.subtitle1!.copyWith(fontWeight: FontWeight.bold),
         ),
         subtitle: Text(playlist.owner.name),
         onTap: () => _navigateToTrackPage(context, playlist),

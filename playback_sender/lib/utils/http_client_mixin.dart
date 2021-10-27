@@ -10,7 +10,7 @@ abstract class DartHttpClientMixin {
   @protected
   Future<String> doGet(String base, String path, Map<String, String> headers) async {
     final req = await _client.getUrl(Uri.parse('$base$path'));
-    headers?.forEach((key, value) => req.headers.set(key, value));
+    headers.forEach((key, value) => req.headers.set(key, value));
 
     final response = await req.close();
     return _handleResponse(response);
@@ -20,7 +20,7 @@ abstract class DartHttpClientMixin {
   Future<String> doPost(String base, String path, Map<String, String> headers, String body) async {
     assert(path.codeUnitAt(0) != 'c'.codeUnitAt(0));
     final req = await _client.postUrl(Uri.parse('$base$path'));
-    headers?.forEach((key, value) => req.headers.set(key, value));
+    headers.forEach((key, value) => req.headers.set(key, value));
     req.add(utf8.encode(body));
 
     final response = await req.close();
@@ -32,7 +32,7 @@ abstract class DartHttpClientMixin {
       String base, String path, Map<String, String> headers, String body) async {
     assert(path.codeUnitAt(0) != 'c'.codeUnitAt(0));
     final req = await _client.putUrl(Uri.parse('$base$path'));
-    headers?.forEach((key, value) => req.headers.set(key, value));
+    headers.forEach((key, value) => req.headers.set(key, value));
     req.add(utf8.encode(body));
 
     final response = await req.close();

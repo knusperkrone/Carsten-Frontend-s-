@@ -1,7 +1,7 @@
 part of 'control_page.dart';
 
 class TrackProgress extends StatefulWidget {
-  const TrackProgress({@required Key key}) : super(key: key);
+  const TrackProgress({required Key key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => new TrackProgressState();
@@ -10,7 +10,7 @@ class TrackProgress extends StatefulWidget {
 class TrackProgressState extends State<TrackProgress>
     with SingleTickerProviderStateMixin {
   final PlaybackManager _manager = new PlaybackManager();
-  double _val = 0.0;
+  double? _val = 0.0;
 
   void onState() {
     if (_manager.currPlayerState == SimplePlaybackState.BUFFERING) {

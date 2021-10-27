@@ -2,12 +2,12 @@ part of 'dto.dart';
 
 @JsonSerializable(createToJson: false)
 class SpotifyPager extends Dto {
-  final String next;
-  final String previous;
+  final String? next;
+  final String? previous;
   @JsonKey(fromJson: genericListFromJson, toJson: genericListToJson)
   final Iterable<dynamic> items;
 
-  SpotifyPager(this.next, this.previous, this.items) : assert(items != null);
+  SpotifyPager(this.next, this.previous, this.items);
 
   factory SpotifyPager.fromJson(Map<String, dynamic> json) =>
       _$SpotifyPagerFromJson(json);
@@ -20,11 +20,11 @@ class SpotifyPager extends Dto {
   @override
   bool operator ==(dynamic other) {
     if (other is SpotifyPager) {
-      return other.next == next;
+      return other.hashCode == hashCode;
     }
     return false;
   }
 
   @override
-  int get hashCode => next.hashCode;
+  int get hashCode => next.hashCode * previous.hashCode;
 }

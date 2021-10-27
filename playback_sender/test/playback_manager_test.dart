@@ -1,20 +1,23 @@
 import 'package:chrome_tube/playback/playback.dart';
+import 'package:chrome_tube/playback/src/ipc/cast_playback_context.dart';
 import 'package:chrome_tube/ui/common/state.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:playback_interop/playback_interop.dart';
 import 'package:playback_interop/playback_interop_test.dart';
 
-import 'mocks.dart';
+import 'playback_manager_test.mocks.dart';
 
+@GenerateMocks([UIListener, CastPlaybackContext])
 void main() {
-  UIListener listener;
-  PlaybackManager manager;
+  late UIListener listener;
+  late PlaybackManager manager;
 
   setUp(() {
-    listener = new MockedUiListener();
-    manager = new PlaybackManager.test(new MockedContext());
+    listener = new MockUIListener();
+    manager = new PlaybackManager.test(new MockCastPlaybackContext());
     manager.stream.listen(listener.onEvent);
   });
 
@@ -24,7 +27,7 @@ void main() {
     return new PlaybackQueueDto(
         currentTrack: first,
         trackHolder: first,
-        prioTracks: [],
+        prioTracks: <PlaybackTrack>[],
         immutableTracks: mockedDtoTracks,
         name: 'name',
         hash: 'hash');
@@ -33,7 +36,12 @@ void main() {
   PlaybackQueueDto _generateEndingQueueDto() {
     final PlaybackTrack first = generateTracks()[0];
     return new PlaybackQueueDto(
-        currentTrack: first, trackHolder: first, prioTracks: [], immutableTracks: [], name: 'name', hash: 'hash');
+        currentTrack: first,
+        trackHolder: first,
+        prioTracks: <PlaybackTrack>[],
+        immutableTracks: <PlaybackTrack>[],
+        name: 'name',
+        hash: 'hash');
   }
 
   test('Interop manager not shuffling', () async {
@@ -57,7 +65,7 @@ void main() {
     verify(listener.onEvent(PlaybackUIEvent.QUEUE));
 
     // ignore: invalid_use_of_protected_member
-    expect(expectedFirst, manager.track.value);
+    expect(expectedFirst, manager.track);
     expect(matcher.hash(expectedTail), matcher.hash(manager.queueTracks));
   });
 
@@ -80,7 +88,7 @@ void main() {
     verify(listener.onEvent(PlaybackUIEvent.QUEUE)).called(2);
 
     // ignore: invalid_use_of_protected_member
-    expect(expectedFirst, manager.track.value);
+    expect(expectedFirst, manager.track);
     expect(EXPECTED_SHUFFLED_MANAGER, tracksToString(manager.queueTracks));
   });
 
@@ -105,7 +113,7 @@ void main() {
     verify(listener.onEvent(PlaybackUIEvent.QUEUE)).called(3);
 
     // ignore: invalid_use_of_protected_member
-    expect(expectedFirst, manager.track.value);
+    expect(expectedFirst, manager.track);
     expect(EXPECTED_SHUFFLED_MANAGER, tracksToString(manager.queueTracks));
   });
 }

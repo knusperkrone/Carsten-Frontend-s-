@@ -7,17 +7,16 @@ const _SUPPORTED_LANGS = ['de', 'en'];
 
 class AppLocalizations {
   final Locale locale;
+  late Map<String, String> _localizedStrings;
 
   AppLocalizations(this.locale);
 
   static AppLocalizations of(BuildContext context) {
-    return Localizations.of<AppLocalizations>(context, AppLocalizations);
+    return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
   }
 
   static const LocalizationsDelegate<AppLocalizations> delegate =
       _AppLocalizationsDelegate();
-
-  Map<String, String> _localizedStrings;
 
   Future<bool> load() async {
     final jsonString =
@@ -31,7 +30,7 @@ class AppLocalizations {
   }
 
   String translate(String key) {
-    return _localizedStrings[key];
+    return _localizedStrings[key]!;
   }
 }
 

@@ -7,9 +7,9 @@ import 'package:playback_interop/playback_interop.dart';
 class TrackInfo extends StatefulWidget {
   final PlaybackTrack track;
   final double titleHeight;
-  final TextStyle titleStyle;
+  final TextStyle? titleStyle;
   final double artistHeight;
-  final TextStyle artistStyle;
+  final TextStyle? artistStyle;
 
   final double blank;
   final double velocity;
@@ -17,10 +17,10 @@ class TrackInfo extends StatefulWidget {
   final CrossAxisAlignment crossAxisAlignment;
 
   const TrackInfo({
-    Key key,
-    @required this.track,
-    @required this.titleHeight,
-    @required this.artistHeight,
+    Key? key,
+    required this.track,
+    required this.titleHeight,
+    required this.artistHeight,
     this.titleStyle,
     this.artistStyle,
     this.blank = 50,
@@ -34,10 +34,40 @@ class TrackInfo extends StatefulWidget {
 }
 
 class TrackInfoState extends State<TrackInfo> {
-  PlaybackTrack _track;
-  ScrollController _controller;
+  late PlaybackTrack _track;
+  late ScrollController _controller;
   final _trackKey = new GlobalKey<_TrackMarqueeState>();
   final _artistKey = new GlobalKey<_TrackMarqueeState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _track = widget.track;
+    _controller = new ScrollController();
+
+    Future.delayed(const Duration(milliseconds: 500), () {
+      Future.doWhile(() async {
+        // ignore: invalid_use_of_protected_member
+        if (_controller.positions.isEmpty) {
+          await Future<void>.delayed(const Duration(milliseconds: 500));
+        } else {
+          // Tripped around
+          _controller.jumpTo(0.0);
+
+          final trackWidth = _trackKey.currentState!._intrinsicTextWidth();
+          final artistWidth = _artistKey.currentState!._intrinsicTextWidth();
+
+          final totalWidth = max(trackWidth, artistWidth) + widget.blank;
+          final durationMs = (totalWidth / widget.velocity * 1000).toInt();
+          final totalDuration = new Duration(milliseconds: durationMs);
+
+          await _controller.animateTo(totalWidth,
+              duration: totalDuration, curve: Curves.linear);
+        }
+        return mounted;
+      });
+    });
+  }
 
   void setTrack(PlaybackTrack track) {
     _track = track;
@@ -51,35 +81,6 @@ class TrackInfoState extends State<TrackInfo> {
     ));
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _track = widget.track;
-    _controller = new ScrollController();
-
-    Future.delayed(const Duration(milliseconds: 500), () {
-      Future.doWhile(() async {
-        // ignore: invalid_use_of_protected_member
-        if (_controller == null || _controller.positions.isEmpty) {
-          await Future<void>.delayed(const Duration(milliseconds: 500));
-        } else {
-          // Tripped around
-          _controller.jumpTo(0.0);
-
-          final trackWidth = _trackKey.currentState._intrinsicTextWidth();
-          final artistWidth = _artistKey.currentState._intrinsicTextWidth();
-
-          final totalWidth = max(trackWidth, artistWidth) + widget.blank;
-          final durationMs = (totalWidth / widget.velocity * 1000).toInt();
-          final totalDuration = new Duration(milliseconds: durationMs);
-
-          await _controller.animateTo(totalWidth,
-              duration: totalDuration, curve: Curves.linear);
-        }
-        return mounted;
-      });
-    });
-  }
 
   @override
   void dispose() {
@@ -129,9 +130,9 @@ class _TrackMarquee extends StatefulWidget {
   final ScrollController controller;
 
   const _TrackMarquee({
-    Key key,
-    @required this.span,
-    @required this.controller,
+    Key? key,
+    required this.span,
+    required this.controller,
     this.blank = 50,
   }) : super(key: key);
 
@@ -140,8 +141,8 @@ class _TrackMarquee extends StatefulWidget {
 }
 
 class _TrackMarqueeState extends State<_TrackMarquee> {
-  TextSpan _span;
-  double _textWidth;
+  late TextSpan _span;
+  double? _textWidth;
 
   @override
   void initState() {
@@ -177,7 +178,7 @@ class _TrackMarqueeState extends State<_TrackMarquee> {
         _textWidth = boxes.last.right;
       }
     }
-    return _textWidth;
+    return _textWidth!;
   }
 
   @override

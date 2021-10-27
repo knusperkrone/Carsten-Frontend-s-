@@ -20,35 +20,40 @@ class CastPlaybackContext {
     }
 
     // Start background service
-    final handle = PluginUtilities.getCallbackHandle(backgroundDispatchEntry);
+    final handle = PluginUtilities.getCallbackHandle(backgroundDispatchEntry)!;
     while (true) {
-      _isInited = await _METHOD_CHANNEL
-          .invokeMethod('init', <dynamic>[handle.toRawHandle()]);
+      _isInited = (await _METHOD_CHANNEL
+              .invokeMethod<bool>('init', <dynamic>[handle.toRawHandle()])) ??
+          false;
       if (_isInited) {
         break;
       }
+      print('Init failed, reattempting in 250ms');
       await new Future.delayed(const Duration(milliseconds: 250), () {});
     }
     foregroundDispatch();
   }
 
   static Future<double> setVolume(double volume) async {
-    return _METHOD_CHANNEL.invokeMethod('set_volume', <dynamic>[volume]);
+    return _METHOD_CHANNEL.invokeMethod<double>('set_volume', <dynamic>[volume])
+        as Future<double>;
   }
 
   static Future<double> volumeUp() async {
-    return _METHOD_CHANNEL.invokeMethod('volume_up', <dynamic>[]);
+    return _METHOD_CHANNEL.invokeMethod<double>('volume_up', <dynamic>[])
+        as Future<double>;
   }
 
   static Future<double> volumeDown() async {
-    return _METHOD_CHANNEL.invokeMethod('volume_down', <dynamic>[]);
+    return _METHOD_CHANNEL.invokeMethod<double>('volume_down', <dynamic>[])
+        as Future<double>;
   }
 
   Future<void> send(CastMessage message) async {
     final String msg = jsonEncode(message.toJson());
     final wasSend =
         await _METHOD_CHANNEL.invokeMethod<bool>('send_msg', <dynamic>[msg]);
-    if (!wasSend) {
+    if (!(wasSend ?? false)) {
       print('[ERROR] Couldn\'t dispatch: send($msg)');
     }
   }
@@ -56,7 +61,7 @@ class CastPlaybackContext {
   Future<void> end() async {
     final wasSend =
         await _METHOD_CHANNEL.invokeMethod<bool>('end', <dynamic>[]);
-    if (!wasSend) {
+    if (!(wasSend ?? false)) {
       print('[ERROR] Couldn\'t dispatch: end()');
     }
   }

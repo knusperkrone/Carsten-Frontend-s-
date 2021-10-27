@@ -14,19 +14,19 @@ class _BackgroundCacheManager extends CacheManager {
 }
 
 mixin TrackIndicatorNoti {
-  static Future<String> withTrack(PlaybackManager manager) async {
-    if (!manager.track.isPresent) {
+  static Future<String?> withTrack(PlaybackManager manager) async {
+    if (manager.track == null) {
       return null;
     }
     // Load and convert file async
-    final track = manager.track.value;
+    final track = manager.track!;
     final url = track.coverUrl;
 
-    String imgB64;
+    String? imgB64;
     try {
       if (url != null) {
         final imgFile = await _BackgroundCacheManager().getSingleFile(url);
-        if (imgFile != null) {
+        if (imgFile.existsSync()) {
           final imgBytes = await imgFile.readAsBytes();
           imgB64 = base64.encode(imgBytes);
         }
@@ -36,7 +36,7 @@ mixin TrackIndicatorNoti {
     }
 
     return jsonEncode({
-      'seekMs': manager.trackSeek ?? 0.0,
+      'seekMs': manager.trackSeek,
       'durationMs': track.durationMs?.toDouble() ?? 0.0,
       'title': track.title,
       'artist': track.artist,

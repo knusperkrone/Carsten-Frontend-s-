@@ -6,21 +6,16 @@ part of 'dto.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-SpotifyAlbum _$SpotifyAlbumFromJson(Map<String, dynamic> json) {
-  return SpotifyAlbum(
-    json['id'] as String,
-    json['name'] as String,
-    (json['images'] as List)
-        ?.map((dynamic e) =>
-            e == null ? null : SpotifyImage.fromJson(e as Map<String, dynamic>))
-        ?.toList(),
-    (json['artists'] as List)
-        ?.map((dynamic e) => e == null
-            ? null
-            : SpotifyArtist.fromJson(e as Map<String, dynamic>))
-        ?.toList(),
-  );
-}
+SpotifyAlbum _$SpotifyAlbumFromJson(Map<String, dynamic> json) => SpotifyAlbum(
+      json['id'] as String,
+      json['name'] as String,
+      (json['images'] as List<dynamic>)
+          .map((dynamic e) => SpotifyImage.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      (json['artists'] as List<dynamic>)
+          .map((dynamic e) => SpotifyArtist.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
 
 Map<String, dynamic> _$SpotifyAlbumToJson(SpotifyAlbum instance) =>
     <String, dynamic>{
@@ -30,24 +25,21 @@ Map<String, dynamic> _$SpotifyAlbumToJson(SpotifyAlbum instance) =>
       'artists': instance.artists,
     };
 
-SpotifyArtist _$SpotifyArtistFromJson(Map<String, dynamic> json) {
-  return SpotifyArtist(
-    json['name'] as String,
-  );
-}
+SpotifyArtist _$SpotifyArtistFromJson(Map<String, dynamic> json) =>
+    SpotifyArtist(
+      json['name'] as String,
+    );
 
 Map<String, dynamic> _$SpotifyArtistToJson(SpotifyArtist instance) =>
     <String, dynamic>{
       'name': instance.name,
     };
 
-SpotifyImage _$SpotifyImageFromJson(Map<String, dynamic> json) {
-  return SpotifyImage(
-    json['height'] as int,
-    json['width'] as int,
-    json['url'] as String,
-  );
-}
+SpotifyImage _$SpotifyImageFromJson(Map<String, dynamic> json) => SpotifyImage(
+      json['height'] as int?,
+      json['width'] as int?,
+      json['url'] as String,
+    );
 
 Map<String, dynamic> _$SpotifyImageToJson(SpotifyImage instance) =>
     <String, dynamic>{
@@ -56,28 +48,22 @@ Map<String, dynamic> _$SpotifyImageToJson(SpotifyImage instance) =>
       'url': instance.url,
     };
 
-SpotifyPager _$SpotifyPagerFromJson(Map<String, dynamic> json) {
-  return SpotifyPager(
-    json['next'] as String,
-    json['previous'] as String,
-    genericListFromJson(json['items'] as List),
-  );
-}
+SpotifyPager _$SpotifyPagerFromJson(Map<String, dynamic> json) => SpotifyPager(
+      json['next'] as String?,
+      json['previous'] as String?,
+      genericListFromJson(json['items'] as List),
+    );
 
-SpotifyPlaylist _$SpotifyPlaylistFromJson(Map<String, dynamic> json) {
-  return SpotifyPlaylist(
-    json['id'] as String,
-    json['name'] as String,
-    json['snapshot_id'] as String,
-    (json['images'] as List)
-        ?.map((dynamic e) =>
-            e == null ? null : SpotifyImage.fromJson(e as Map<String, dynamic>))
-        ?.toList(),
-    json['owner'] == null
-        ? null
-        : SpotifyUser.fromJson(json['owner'] as Map<String, dynamic>),
-  );
-}
+SpotifyPlaylist _$SpotifyPlaylistFromJson(Map<String, dynamic> json) =>
+    SpotifyPlaylist(
+      json['id'] as String,
+      json['name'] as String,
+      json['snapshot_id'] as String,
+      (json['images'] as List<dynamic>?)
+          ?.map((dynamic e) => SpotifyImage.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      SpotifyUser.fromJson(json['owner'] as Map<String, dynamic>),
+    );
 
 Map<String, dynamic> _$SpotifyPlaylistToJson(SpotifyPlaylist instance) =>
     <String, dynamic>{
@@ -88,20 +74,14 @@ Map<String, dynamic> _$SpotifyPlaylistToJson(SpotifyPlaylist instance) =>
       'owner': instance.owner,
     };
 
-SpotifyTrack _$SpotifyTrackFromJson(Map<String, dynamic> json) {
-  return SpotifyTrack(
-    json['href'] as String,
-    json['name'] as String,
-    json['album'] == null
-        ? null
-        : SpotifyAlbum.fromJson(json['album'] as Map<String, dynamic>),
-    (json['artists'] as List)
-        ?.map((dynamic e) => e == null
-            ? null
-            : SpotifyArtist.fromJson(e as Map<String, dynamic>))
-        ?.toList(),
-  );
-}
+SpotifyTrack _$SpotifyTrackFromJson(Map<String, dynamic> json) => SpotifyTrack(
+      json['href'] as String,
+      json['name'] as String,
+      SpotifyAlbum.fromJson(json['album'] as Map<String, dynamic>),
+      (json['artists'] as List<dynamic>)
+          .map((dynamic e) => SpotifyArtist.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
 
 Map<String, dynamic> _$SpotifyTrackToJson(SpotifyTrack instance) =>
     <String, dynamic>{
@@ -111,12 +91,11 @@ Map<String, dynamic> _$SpotifyTrackToJson(SpotifyTrack instance) =>
       'artists': instance.artists,
     };
 
-SpotifyTracksLink _$SpotifyTracksLinkFromJson(Map<String, dynamic> json) {
-  return SpotifyTracksLink(
-    json['href'] as String,
-    json['total'] as int,
-  );
-}
+SpotifyTracksLink _$SpotifyTracksLinkFromJson(Map<String, dynamic> json) =>
+    SpotifyTracksLink(
+      json['href'] as String,
+      json['total'] as int,
+    );
 
 Map<String, dynamic> _$SpotifyTracksLinkToJson(SpotifyTracksLink instance) =>
     <String, dynamic>{
@@ -124,11 +103,9 @@ Map<String, dynamic> _$SpotifyTracksLinkToJson(SpotifyTracksLink instance) =>
       'total': instance.total,
     };
 
-SpotifyUser _$SpotifyUserFromJson(Map<String, dynamic> json) {
-  return SpotifyUser(
-    json['display_name'] as String,
-  );
-}
+SpotifyUser _$SpotifyUserFromJson(Map<String, dynamic> json) => SpotifyUser(
+      json['display_name'] as String,
+    );
 
 Map<String, dynamic> _$SpotifyUserToJson(SpotifyUser instance) =>
     <String, dynamic>{
