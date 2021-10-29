@@ -16,16 +16,16 @@ class _ConnectChromeCastDialogState
       content: Text(locale.translate('diag_co_cast_text')),
       actions: [
         MaterialButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(locale.translate('cancel')),
+        ),
+        MaterialButton(
           onPressed: () {
             FlutterCastButton.showCastDialog();
             Navigator.of(context).pop();
           },
           color: theme.primaryColor,
           child: Text(locale.translate('ok')),
-        ),
-        MaterialButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(locale.translate('cancel')),
         ),
       ],
     );

@@ -6,6 +6,8 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:sentry/sentry.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tuple/tuple.dart';
 
@@ -68,8 +70,7 @@ class SpotifyApi {
       // Save token and return possible error
       if (credentials.code != null) {
         authCode = credentials.code!;
-        _prefs.setString(
-            _AUTH_CODE_KEY, authCode); // No leak, as it expires after 3600secs
+        _prefs.setString(_AUTH_CODE_KEY, authCode);
       } else {
         return credentials.error!;
       }
@@ -90,8 +91,7 @@ class SpotifyApi {
     // Save token and return possible error
     if (credentials.code != null) {
       final authCode = credentials.code!;
-      _prefs.setString(
-          _AUTH_CODE_KEY, authCode); // No leak, as it expires after 3600secs
+      _prefs.setString(_AUTH_CODE_KEY, authCode);
     }
   }
 
@@ -165,7 +165,7 @@ class SpotifyApi {
   }
 
   Future<Tuple3<List<SpotifyPlaylist>, List<SpotifyAlbum>, List<SpotifyTrack>>>
-      search(String q) async {
+      searchAll(String q) async {
     final encodedQ = Uri.encodeComponent(q);
     final endpoint =
         '/v1/search?q=$encodedQ&type=track,playlist,album&limit=10';
@@ -191,6 +191,48 @@ class SpotifyApi {
     return new Tuple3(playlists, albums, tracks);
   }
 
+  Future<List<SpotifyTrack>> searchTracks(String q) async {
+    final encodedQ = Uri.encodeComponent(q);
+    final endpoint = '/v1/search?q=$encodedQ&type=track&limit=10';
+    final source = await _client.authorizedGet(endpoint);
+
+    final json = jsonDecode(source) as Map<String, dynamic>;
+    final tracksJson = json['tracks']['items'] as Iterable<dynamic>;
+
+    return tracksJson
+        .map((dynamic json) =>
+            SpotifyTrack.fromJson(json as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<List<SpotifyPlaylist>> searchPlaylists(String q) async {
+    final encodedQ = Uri.encodeComponent(q);
+    final endpoint = '/v1/search?q=$encodedQ&type=playlist&limit=10';
+    final source = await _client.authorizedGet(endpoint);
+
+    final json = jsonDecode(source) as Map<String, dynamic>;
+    final playlistsJson = json['playlists']['items'] as Iterable<dynamic>;
+
+    return playlistsJson
+        .map((dynamic json) =>
+            SpotifyPlaylist.fromJson(json as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<List<SpotifyAlbum>> searchAlbums(String q) async {
+    final encodedQ = Uri.encodeComponent(q);
+    final endpoint = '/v1/search?q=$encodedQ&type=album&limit=10';
+    final source = await _client.authorizedGet(endpoint);
+
+    final json = jsonDecode(source) as Map<String, dynamic>;
+    final albumJson = json['albums']['items'] as Iterable<dynamic>;
+
+    return albumJson
+        .map((dynamic json) =>
+            SpotifyAlbum.fromJson(json as Map<String, dynamic>))
+        .toList();
+  }
+
   void _persist<T extends Dto>(File cacheFile, List<T> toPersist) {
     final fetchedJson = toPersist.map((t) => t.toJson()).toList();
     cacheFile.writeAsString(jsonEncode(fetchedJson));
@@ -202,9 +244,17 @@ class SpotifyApi {
     final fetched = <T>[];
     final stream = _paginateLazy(endpoint, transformFun).asBroadcastStream();
     // Persist
-    stream.listen((part) => fetched.addAll(part)).onDone(() {
-      _persist(cacheFile, fetched);
-    });
+    bool hasError = false;
+    stream.listen((part) => fetched.addAll(part),
+        onError: (dynamic _) => hasError = true,
+        onDone: () {
+          if (!hasError) {
+            _persist(cacheFile, fetched);
+          } else {
+            Sentry.captureMessage('Failed to fetch and persist $endpoint',
+                level: SentryLevel.error);
+          }
+        });
     return stream;
   }
 
@@ -229,8 +279,9 @@ class SpotifyApi {
   T? _tryTransform<T>(dynamic map, _TransformFunc<T> transformFun) {
     try {
       return transformFun(map as Map<String, dynamic>);
-    } catch (e) {
+    } catch (e, trace) {
       print("Couldn't transform json: $map");
+      Sentry.captureException(e, stackTrace: trace);
       return null;
     }
   }

@@ -77,7 +77,9 @@ Map<String, dynamic> _$SpotifyPlaylistToJson(SpotifyPlaylist instance) =>
 SpotifyTrack _$SpotifyTrackFromJson(Map<String, dynamic> json) => SpotifyTrack(
       json['href'] as String,
       json['name'] as String,
-      SpotifyAlbum.fromJson(json['album'] as Map<String, dynamic>),
+      json['album'] == null
+          ? null
+          : SpotifyAlbum.fromJson(json['album'] as Map<String, dynamic>),
       (json['artists'] as List<dynamic>)
           .map((dynamic e) => SpotifyArtist.fromJson(e as Map<String, dynamic>))
           .toList(),

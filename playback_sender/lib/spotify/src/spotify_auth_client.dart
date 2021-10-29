@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:chrome_tube/utils/http_client_mixin.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 part 'spotify_auth_client.g.dart';
@@ -11,7 +12,7 @@ class SerializableApiToken {
   @JsonKey(name: 'access_token')
   String accessToken;
   @JsonKey(name: 'refresh_token')
-  final String refreshToken;
+  final String? refreshToken;
   @JsonKey(name: 'token_type')
   final String tokenType;
   @JsonKey(name: 'expires_in')
@@ -31,7 +32,7 @@ class SerializableApiToken {
   String toJsonSource() => jsonEncode(_$SerializableApiTokenToJson(this));
 
   bool get isExpired =>
-      createdOn!.difference(new DateTime.now()).inSeconds.abs() > expiresIn;
+      createdOn!.difference(DateTime.now()).inSeconds.abs() > expiresIn;
 }
 
 class AuthorizedSpotifyClient with DartHttpClientMixin {
@@ -118,8 +119,9 @@ class AuthorizedSpotifyClient with DartHttpClientMixin {
         _apiToken!.createdOn = DateTime.now();
         _prefs.setString(_TOKEN_KEY, _apiToken!.toJsonSource());
       }
-    } catch (e) {
+    } catch (e, trace) {
       if (tryCount-- <= 0) {
+        Sentry.captureException(e, stackTrace: trace);
         rethrow;
       }
 

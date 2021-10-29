@@ -19,7 +19,7 @@ class SerializableSearchResult {
       this.url, this.name, this.parent, this.serialized, this.type);
 
   SerializableSearchResult.fromTrack(SpotifyTrack track, [String? q])
-      : url = track.album.images.last.url,
+      : url = track.album?.images.last.url ?? '',
         name = track.name,
         parent = track.artist,
         serialized = jsonEncode(track.toJson()),
@@ -89,7 +89,7 @@ class SerializableSearchResult {
 class SearchResult extends StatelessWidget {
   final SerializableSearchResult searchResult;
   final SearchPageState parent;
-  final Widget trailing;
+  final Widget? trailing;
 
   const SearchResult(
       {Key? key,

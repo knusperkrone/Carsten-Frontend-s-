@@ -10,6 +10,7 @@ import 'package:chrome_tube/ui/common/connect_dialog.dart';
 import 'package:chrome_tube/ui/common/control/control_bar.dart';
 import 'package:chrome_tube/ui/common/state.dart';
 import 'package:chrome_tube/ui/common/transformer.dart';
+import 'package:chrome_tube/ui/page_search/search_adapters.dart';
 import 'package:chrome_tube/ui/page_track/track_page.dart';
 import 'package:edit_distance/edit_distance.dart';
 import 'package:flutter/material.dart';
@@ -35,14 +36,16 @@ class SearchPageState extends CachingState<SearchPage> {
   static const _SEARCH_PREFS_KEY = 'SEARCH_PREF_KEY';
 
   final PlaybackManager _manager = new PlaybackManager();
-  final SpotifyApi _spotify = new SpotifyApi();
   final List<SerializableSearchResult> _results = [];
+
+  SearchAdapter _searchAdapter = BestFitSearchAdapter();
 
   CancelableOperation? _currSearch;
   late LinkedHashSet<SerializableSearchResult> _prevSearches;
   late TextEditingController _textController;
 
   bool _isNavigating = false;
+  int _searchModeIndex = 0;
 
   @override
   void initState() {
@@ -76,26 +79,15 @@ class SearchPageState extends CachingState<SearchPage> {
       setState(() => _results.clear());
     } else {
       final q = _textController.text.toLowerCase();
-      final searchFuture = _spotify.search(q);
+      final searchFuture = _searchAdapter.search(q);
       _currSearch =
-          CancelableOperation.fromFuture(searchFuture).then<void>((triple) {
+          CancelableOperation.fromFuture(searchFuture).then<void>((result) {
         if (!mounted) {
           return;
         }
         setState(() {
-          final playlists =
-              triple.item1.sublist(0, min(triple.item1.length, 5));
-          final albums = triple.item2.sublist(0, min(triple.item2.length, 5));
-          final tracks = triple.item3;
-
           _results.clear();
-          _results.addAll(playlists
-              .map((p) => SerializableSearchResult.fromPlaylist(p, q)));
-          _results.addAll(
-              albums.map((a) => SerializableSearchResult.fromAlbum(a, q)));
-          _results.addAll(
-              tracks.map((t) => SerializableSearchResult.fromTrack(t, q)));
-          _results.sort((e1, e2) => e1.bias - e2.bias);
+          _results.addAll(result);
         });
       });
     }
@@ -167,6 +159,23 @@ class SearchPageState extends CachingState<SearchPage> {
     _manager.sendAddToPrio(playbackTrack);
   }
 
+  void _onSearchMode(int index) {
+    if (index == 0) {
+      _searchAdapter = BestFitSearchAdapter();
+    } else if (index == 1) {
+      _searchAdapter = AlbumSearchAdapter();
+    } else if (index == 2) {
+      _searchAdapter = PlaylistsSearchAdapter();
+    } else if (index == 3) {
+      _searchAdapter = TrackSearchAdapter();
+    } else {
+      throw new RangeError.range(index, 0, 3);
+    }
+
+    _onText();
+    setState(() => _searchModeIndex = index);
+  }
+
   void onClose(SerializableSearchResult result) {
     setState(() {
       _prevSearches.remove(result);
@@ -216,7 +225,7 @@ class SearchPageState extends CachingState<SearchPage> {
               onPressed: () =>
                   key.currentState?.open(actionType: SlideActionType.primary),
             )
-          : Container(),
+          : null,
     );
 
     if (curr.type == SearchType.TRACK) {
@@ -239,13 +248,16 @@ class SearchPageState extends CachingState<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    final accent = Theme.of(context).colorScheme.secondary;
     return new Scaffold(
       appBar: AppBar(
         title: TextField(
           autofocus: true,
           controller: _textController,
+          cursorColor: Theme.of(context).primaryColor,
           decoration: InputDecoration(
             hintText: locale.translate('search'),
+            focusedBorder: InputBorder.none,
           ),
         ),
       ),
@@ -253,24 +265,69 @@ class SearchPageState extends CachingState<SearchPage> {
         child: const ControlBar(),
         color: Theme.of(context).primaryColor,
       ),
-      body: CustomScrollView(
-        slivers: _textController.text.isEmpty
-            ? <Widget>[
-                SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    _buildSearchedTitle,
-                    childCount: _prevSearches.length,
-                  ),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          return Column(
+            children: [
+              Container(
+                width: constraints.maxWidth,
+                height: 50.0,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    Container(width: 10),
+                    ActionChip(
+                      label: Text(locale.translate('best_search')),
+                      backgroundColor: _searchModeIndex == 0 ? accent : null,
+                      onPressed: () => _onSearchMode(0),
+                    ),
+                    Container(width: 10),
+                    ActionChip(
+                      label: Text(locale.translate('albums_search')),
+                      backgroundColor: _searchModeIndex == 1 ? accent : null,
+                      onPressed: () => _onSearchMode(1),
+                    ),
+                    Container(width: 10),
+                    ActionChip(
+                      label: Text(locale.translate('playlists_search')),
+                      backgroundColor: _searchModeIndex == 2 ? accent : null,
+                      onPressed: () => _onSearchMode(2),
+                    ),
+                    Container(width: 10),
+                    ActionChip(
+                      label: Text(locale.translate('tracks_search')),
+                      backgroundColor: _searchModeIndex == 3 ? accent : null,
+                      onPressed: () => _onSearchMode(3),
+                    ),
+                  ],
                 ),
-              ]
-            : <Widget>[
-                SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    _buildResultTile,
-                    childCount: _results.length,
-                  ),
+              ),
+              Container(
+                width: constraints.maxWidth,
+                height: constraints.maxHeight - 50.0,
+                child: CustomScrollView(
+                  slivers: _textController.text.isEmpty
+                      ? <Widget>[
+                          SliverList(
+                            delegate: SliverChildBuilderDelegate(
+                              _buildSearchedTitle,
+                              childCount: _prevSearches.length,
+                            ),
+                          ),
+                        ]
+                      : <Widget>[
+                          SliverList(
+                            delegate: SliverChildBuilderDelegate(
+                              _buildResultTile,
+                              childCount: _results.length,
+                            ),
+                          ),
+                        ],
                 ),
-              ],
+              ),
+            ],
+          );
+        },
       ),
     );
   }

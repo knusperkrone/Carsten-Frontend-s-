@@ -2,8 +2,6 @@
 // in chrome_tube/test/receive_test.dart.
 // Do not manually edit this file.
 
-// ignore_for_file: unnecessary_overrides
-
 import 'dart:async' as _i3;
 
 import 'package:chrome_tube/playback/src/playback_listeners.dart' as _i4;

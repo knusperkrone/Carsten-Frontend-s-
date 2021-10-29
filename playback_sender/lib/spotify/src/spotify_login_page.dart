@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -45,8 +47,8 @@ class SpotifyLoginPage extends StatelessWidget {
     if (loadedUri.startsWith(_REDIRECT_URL)) {
       // Parse return code url
       final uri = Uri.parse(loadedUri);
-      final token = uri.queryParameters['code']!;
-      final error = uri.queryParameters['error']!;
+      final token = uri.queryParameters['code'];
+      final error = uri.queryParameters['error'];
       Navigator.pop<SpotifyLoginPageResult>(
           context, new SpotifyLoginPageResult(token, error));
     }
@@ -58,6 +60,10 @@ class SpotifyLoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (Platform.isAndroid) {
+      WebView.platform = SurfaceAndroidWebView();
+    }
+
     return new Scaffold(
       key: scaffoldKey,
       appBar: AppBar(

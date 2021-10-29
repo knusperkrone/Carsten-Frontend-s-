@@ -4,7 +4,7 @@ part of 'dto.dart';
 class SpotifyTrack extends Dto {
   final String href;
   final String name;
-  final SpotifyAlbum album;
+  final SpotifyAlbum? album;
   final List<SpotifyArtist> artists;
 
   SpotifyTrack(this.href, this.name, this.album, this.artists);

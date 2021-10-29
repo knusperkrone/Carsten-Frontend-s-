@@ -10,7 +10,7 @@ SerializableApiToken _$SerializableApiTokenFromJson(
         Map<String, dynamic> json) =>
     SerializableApiToken(
       json['access_token'] as String,
-      json['refresh_token'] as String,
+      json['refresh_token'] as String?,
       json['token_type'] as String,
       json['expires_in'] as int,
       json['createdOn'] == null

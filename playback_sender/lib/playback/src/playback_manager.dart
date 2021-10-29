@@ -67,9 +67,9 @@ class PlaybackManager extends PlaybackReceiver {
         'isConnected': isConnected,
         'trackSeek': trackSeek,
         'isRepeating': isRepeating,
-        'currShuffleState': currShuffleState?.toJson(),
         'currPlayerState': currPlayerState.index,
         'seekTimestamp': seekTimestamp.toIso8601String(),
+        'currShuffleState': currShuffleState?.toJson(),
         'queue': queue?.toJson(),
       });
 
@@ -78,12 +78,16 @@ class PlaybackManager extends PlaybackReceiver {
     isConnected = json['isConnected'] as bool;
     trackSeek = json['trackSeek'] as double;
     isRepeating = json['isRepeating'] as bool;
-    shuffleState = new ShuffleStateDto.fromJson(
-        json['currShuffleState'] as Map<String, dynamic>);
     currPlayerState =
         SimplePlaybackState.values[json['currPlayerState'] as int];
     seekTimestamp = DateTime.parse(json['seekTimestamp'] as String);
-    queue =
-        new SenderPlaybackQueue.fromJson(json['queue'] as Map<String, dynamic>);
+    if (json['currShuffleState'] != null) {
+      shuffleState = new ShuffleStateDto.fromJson(
+          json['currShuffleState'] as Map<String, dynamic>);
+    }
+    if (json['queue'] != null) {
+      queue = new SenderPlaybackQueue.fromJson(
+          json['queue'] as Map<String, dynamic>);
+    }
   }
 }

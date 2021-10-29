@@ -2,8 +2,6 @@
 // in chrome_tube/test/playback_manager_test.dart.
 // Do not manually edit this file.
 
-// ignore_for_file: unnecessary_overrides
-
 import 'dart:async' as _i5;
 
 import 'package:chrome_tube/playback/playback.dart' as _i3;
