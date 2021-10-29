@@ -43,7 +43,7 @@ dev_dependencies:
   mockito: ^5.0.16
 
 flutter_icons:
-  image_path: 'assets/assets/icon.png'
+  image_path: 'assets/image/icon.png'
   android: false
   ios: true
 
