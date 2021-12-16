@@ -3,7 +3,6 @@ import 'package:playback_caf_dart/playback_caf.dart';
 import 'package:playback_caf_dart/src/playback/ui_manager.dart';
 import 'package:playback_interop/playback_interop.dart';
 import 'package:playback_interop/src_test/constant.dart';
-
 import 'package:playback_interop/src_test/generator.dart';
 import 'package:test/test.dart';
 
@@ -14,9 +13,9 @@ class MockedBridge extends Mock implements CommunicationChannel {}
 class MockedPlayer extends Mock implements PlaybackPlayer {}
 
 void main() {
-  List<PlaybackTrack> tracks;
-  PlaybackManager manager;
-  MockedBridge channel;
+  late List<PlaybackTrack> tracks;
+  late PlaybackManager manager;
+  late MockedBridge channel;
 
   setUp(() {
     final player = new MockedPlayer();

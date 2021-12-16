@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:optional/optional.dart';
 import 'package:playback_interop/playback_interop.dart';
 
 import '../playback/caf_queue.dart';
@@ -12,22 +11,22 @@ abstract class CommunicationChannel {
    * Business methods
    */
 
-  void sendTrackState(Optional<CafPlaybackQueue> queue, TrackState state) {
-    if (queue.isPresent && queue.value.currentTrack != null) {
+  void sendTrackState(CafPlaybackQueue? queue, TrackState state) {
+    if (queue?.currentTrack != null) {
       final dto = new TrackStateDto(
         trackState: state,
-        trackIndex: queue.value.currentTrack.origQueueIndex,
-        durationMs: queue.value.currentTrack.durationMs,
+        trackIndex: queue!.currentTrack!.origQueueIndex,
+        durationMs: queue.currentTrack!.durationMs,
       );
       final msg = new CastMessage<TrackStateDto>(CafToSenderConstants.PB_TRACK, dto);
       sendMessage(msg);
     }
   }
 
-  void sendQueue(Optional<CafPlaybackQueue> queue) {
-    if (queue.isPresent && queue.value.currentTrack != null && queue.value.trackHolder != null) {
+  void sendQueue(CafPlaybackQueue? queue) {
+    if (queue?.currentTrack != null && queue?.trackHolder != null) {
       // Paginate
-      final tracks = queue.value.immutableTracks;
+      final tracks = queue!.immutableTracks;
       int currIndex = 0;
       do {
         final sendList = tracks.sublist(currIndex, min(tracks.length, currIndex + _PAGINATE_WINDOW));
@@ -37,7 +36,7 @@ abstract class CommunicationChannel {
           immutableTracks: sendList,
           prioTracks: null,
           name: null,
-          hash: queue.value.hash,
+          hash: queue.hash,
         );
         currIndex += _PAGINATE_WINDOW;
         final msg = new CastMessage<PlaybackQueueDto>(CafToSenderConstants.PB_QUEUE, dto);
@@ -45,24 +44,24 @@ abstract class CommunicationChannel {
       } while (currIndex < tracks.length);
 
       final dto = new PlaybackQueueDto(
-        currentTrack: queue.value.currentTrack,
-        trackHolder: queue.value.trackHolder,
+        currentTrack: queue.currentTrack,
+        trackHolder: queue.trackHolder,
         immutableTracks: [],
-        prioTracks: queue.value.prioTracks,
-        name: queue.value.name,
-        hash: queue.value.hash,
+        prioTracks: queue.prioTracks,
+        name: queue.name,
+        hash: queue.hash,
       );
       final msg = new CastMessage<PlaybackQueueDto>(CafToSenderConstants.PB_QUEUE, dto);
       sendMessage(msg);
     }
   }
 
-  void sendShuffleState(Optional<CafPlaybackQueue> queue) {
-    queue.ifPresent((queue) {
+  void sendShuffleState(CafPlaybackQueue? queue) {
+    if (queue != null) {
       final dto = queue.shuffleState;
       final msg = new CastMessage<ShuffleStateDto>(CafToSenderConstants.PB_SHUFFLING, dto);
       sendMessage(msg);
-    });
+    }
   }
 
   void sendAddPrioDelta(PlaybackTrack track, bool append) {
@@ -77,12 +76,12 @@ abstract class CommunicationChannel {
     sendMessage(msg);
   }
 
-  void sendRepeating(Optional<CafPlaybackQueue> queue) {
-    queue.ifPresent((queue) {
+  void sendRepeating(CafPlaybackQueue? queue) {
+    if (queue != null) {
       final dto = new RepeatingDto(queue.isRepeating);
       final msg = new CastMessage<RepeatingDto>(CafToSenderConstants.PB_REPEATING, dto);
       sendMessage(msg);
-    });
+    }
   }
 
   void sendPlayerState(PlayerState playerState) {

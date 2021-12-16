@@ -9,12 +9,12 @@ class HttpUiManager extends UiManager {
 
   @override
   void showPlayer(bool isShowing) {
-    querySelector('#youTubePlayerDOM').style.visibility = isShowing ? 'visible' : 'hidden';
+    querySelector('#youTubePlayerDOM')!.style.visibility = isShowing ? 'visible' : 'hidden';
   }
 
   @override
   void showReady() {
     querySelector('#spinner')?.remove();
-    querySelector('#text').innerHtml = 'Ready for Carsten';
+    querySelector('#text')!.innerHtml = 'Ready for Carsten';
   }
 }
