@@ -175,7 +175,7 @@ abstract class BasePlaybackQueue {
         // Remove the real list element, so references are still valid
         final removeIndex = toShuffle.indexOf(shuffleState.startTrack!);
         if (removeIndex == -1) {
-          throw new StateError('Coulnd\nt find track ${shuffleState.startTrack}');
+          throw new StateError('Coulndn\'t find track ${shuffleState.startTrack}');
         }
         startTrack = toShuffle.removeAt(removeIndex);
       }
