@@ -3,7 +3,6 @@ import 'package:playback_caf_dart/playback_caf.dart';
 import 'package:playback_caf_dart/src/playback/ui_manager.dart';
 import 'package:playback_interop/playback_interop.dart';
 import 'package:playback_interop/src_test/constant.dart';
-
 import 'package:playback_interop/src_test/generator.dart';
 import 'package:test/test.dart';
 
@@ -14,9 +13,9 @@ class MockedBridge extends Mock implements CommunicationChannel {}
 class MockedPlayer extends Mock implements PlaybackPlayer {}
 
 void main() {
-  List<PlaybackTrack> tracks;
-  PlaybackManager manager;
-  MockedBridge channel;
+  late List<PlaybackTrack> tracks;
+  late PlaybackManager manager;
+  late MockedBridge channel;
 
   setUp(() {
     final player = new MockedPlayer();
@@ -37,7 +36,7 @@ void main() {
 
   test('On tracks', () {
     // validate
-    final sendDto = verify(channel.sendQueue(captureAny)).captured.first.value as CafPlaybackQueue;
+    final sendDto = verify(channel.sendQueue(captureAny)).captured.first as CafPlaybackQueue;
     verify(channel.sendShuffleState(any)).called(1);
     expect(tracks, sendDto.immutableTracks);
   });
@@ -86,7 +85,7 @@ void main() {
     manager.setShuffling(true, SHUFFLE_SEED);
 
     // validate
-    final queue = verify(channel.sendShuffleState(captureAny)).captured[0].value as BasePlaybackQueue;
+    final queue = verify(channel.sendShuffleState(captureAny)).captured[0] as BasePlaybackQueue;
     final ShuffleStateDto dto = queue.shuffleState;
     expect(true, dto.isShuffled);
     expect(SHUFFLE_SEED, dto.initSeed);
@@ -100,7 +99,7 @@ void main() {
     manager.setShuffling(false, SHUFFLE_SEED);
 
     // validate
-    final queue = verify(channel.sendShuffleState(captureAny)).captured[0].value as BasePlaybackQueue;
+    final queue = verify(channel.sendShuffleState(captureAny)).captured[0] as BasePlaybackQueue;
     final ShuffleStateDto dto = queue.shuffleState;
     expect(false, dto.isShuffled);
   });
@@ -110,7 +109,7 @@ void main() {
     manager.setRepeating(true);
 
     // validate
-    final queue = verify(channel.sendRepeating(captureAny)).captured[0].value as BasePlaybackQueue;
+    final queue = verify(channel.sendRepeating(captureAny)).captured[0] as BasePlaybackQueue;
     expect(true, queue.isRepeating);
   });
 
@@ -120,7 +119,7 @@ void main() {
     manager.setRepeating(false);
 
     // validate
-    final queue = verify(channel.sendRepeating(captureAny)).captured[0].value as BasePlaybackQueue;
+    final queue = verify(channel.sendRepeating(captureAny)).captured[0] as BasePlaybackQueue;
     expect(false, queue.isRepeating);
   });
 }

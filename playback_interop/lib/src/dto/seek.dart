@@ -4,7 +4,7 @@ part of 'dto.dart';
 class SeekDto extends Dto {
   final int seekMs;
 
-  SeekDto(this.seekMs) : assert(seekMs != null);
+  SeekDto(this.seekMs);
 
   factory SeekDto.fromJson(Map<String, dynamic> json) => _$SeekDtoFromJson(json);
 

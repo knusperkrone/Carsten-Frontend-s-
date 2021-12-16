@@ -12,6 +12,6 @@ class ChromecastCommunicationChannel extends CommunicationChannel {
     final msg = js_cast.CastMessage(type: castMsg.type, data: data);
     final context = js_cast.CastReceiverContext.getInstance();
     context.getSenders().forEach((sender) => context.sendCustomMessage(CHANNEL_NAMESPACE, sender.id, msg));
-    // print('SEND: ${data}');
+    print('SEND: $data');
   }
 }

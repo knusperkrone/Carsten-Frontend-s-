@@ -17,8 +17,8 @@ class Player {
   external void seekTo(num seek, bool alwaysTrue);
   external void cueVideoById(String id, double seek);
   external void loadVideoById(String id, double seek);
-  external double getCurrentTime();
-  external double getDuration();
+  external double? getCurrentTime();
+  external double? getDuration();
 }
 
 @JS()
@@ -49,16 +49,16 @@ class PlayerEvents {
 @anonymous
 class PlayerVars {
   external factory PlayerVars({
-    int autoplay,
-    int autohide,
-    int controls,
-    int enablejsapi,
-    int fs,
-    String origin,
-    int rel,
-    int showinfo,
+    int? autoplay,
+    int? autohide,
+    int? controls,
+    int? enablejsapi,
+    int? fs,
+    String? origin,
+    int? rel,
+    int? showinfo,
     // ignore: non_constant_identifier_names
-    int iv_load_policy,
+    int? iv_load_policy,
   });
 }
 

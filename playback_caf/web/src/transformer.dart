@@ -9,7 +9,7 @@ class Transformer {
       album: object.album as String,
       artist: object.artist as String,
       coverUrl: object.coverUrl as String,
-      durationMs: object.durationMs as int,
+      durationMs: object.durationMs as int?,
       isPrio: object.isPrio as bool,
       origQueueIndex: object.origQueueIndex as int,
       queueIndex: object.queueIndex as int,

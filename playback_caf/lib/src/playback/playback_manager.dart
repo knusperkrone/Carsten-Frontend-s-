@@ -1,4 +1,3 @@
-import 'package:optional/optional.dart';
 import 'package:playback_interop/playback_interop.dart';
 
 import '../io/communication_channel.dart';
@@ -15,10 +14,10 @@ class PlaybackManager {
   PlayerState _playerState = PlayerState.ENDED;
 
   // lateint variables
-  Optional<PlaybackPlayer> _player = const Optional.empty();
-  Optional<CafPlaybackQueue> _queue = const Optional.empty();
+  PlaybackPlayer? _player;
+  CafPlaybackQueue? _queue;
 
-  PlaybackManager(this._playerBridge, this._uiManager) : assert(_playerBridge != null && _uiManager != null);
+  PlaybackManager(this._playerBridge, this._uiManager);
 
   /*
    * CAF only methdos
@@ -33,6 +32,7 @@ class PlaybackManager {
    */
 
   void startNewQueue() {
+    print('[DEBUG] Start new queue');
     if (!_isBuildingQueue) {
       _isBuildingQueue = true;
       _queueBuffer.clear();
@@ -40,65 +40,71 @@ class PlaybackManager {
   }
 
   void appendToQueue(List<PlaybackTrack> tracks) {
+    print('[DEBUG] append to queue');
     if (tracks.isNotEmpty) {
       _queueBuffer.addAll(tracks);
     } else {
-      _queue = Optional.of(new CafPlaybackQueue.withQueue(_queue, _queueBuffer));
+      print('[DEBUG] New queue and play track $_player');
+      _queue = new CafPlaybackQueue.withQueue(_queue, _queueBuffer);
       _isBuildingQueue = false;
 
-      final firstTrack = _queue.value.currentTrack;
-      assert(firstTrack != null);
-      _player.ifPresent((player) {
+      final firstTrack = _queue!.currentTrack!;
+      if (_player != null) {
         // Kickoff first track
-        player.playTrack(firstTrack);
+        _player!.playTrack(firstTrack);
         _playerState = PlayerState.BUFFERING;
         _broadcastQueue();
         _broadcastShuffleState();
         _uiManager.showPlayer(true);
-      });
+      }
     }
   }
 
-  void play() => _player.ifPresent((player) {
-        _broadcastSeekMs(player.getTimeInMs());
-        player.play();
-      });
+  void play() {
+    if (_player != null) {
+      _broadcastSeekMs(_player!.getTimeInMs());
+      _player!.play();
+    }
+  }
 
-  void pause() => _player.ifPresent((player) {
-        _broadcastSeekMs(player.getTimeInMs());
-        player.pause();
-      });
+  void pause() {
+    if (_player != null) {
+      _broadcastSeekMs(_player!.getTimeInMs());
+      _player!.pause();
+    }
+  }
 
   void playNext() {
-    if (_queue.isPresent && _player.isPresent) {
-      final nextTrack = _queue.value.nextTrack();
-      if (nextTrack != null) {
-        _broadcastTrackState(TrackState.NEXT);
-        _player.value.playTrack(nextTrack);
-        final toPrefetch = _queue.value.peekNext();
-        if (toPrefetch != null) {
-          _player.value.cacheVideoKey(toPrefetch);
-        }
-      } else {
-        // Broadcast end of playlist
-        _queue = const Optional.empty();
-        _playerState = PlayerState.ENDED;
-        _broadcastPlayerState();
-        _setKillTimeout();
-        _player.value.stop();
-        _uiManager.showPlayer(false);
+    if (_queue == null || _player == null) {
+      print('[WARNING] coulnd\'t play next track');
+      return;
+    }
+
+    final nextTrack = _queue!.nextTrack();
+    if (nextTrack != null) {
+      _broadcastTrackState(TrackState.NEXT);
+      _player!.playTrack(nextTrack);
+      final toPrefetch = _queue!.peekNext();
+      if (toPrefetch != null) {
+        _player!.cacheVideoKey(toPrefetch);
       }
     } else {
-      print('[WARNING] coulnd\'t play next track');
+      // Broadcast end of playlist
+      _queue = null;
+      _playerState = PlayerState.ENDED;
+      _broadcastPlayerState();
+      _setKillTimeout();
+      _player!.stop();
+      _uiManager.showPlayer(false);
     }
   }
 
   void playPrevious() {
-    if (_queue.isPresent && _player.isPresent) {
-      final prevTrack = _queue.value.previousTrack();
+    if (_queue != null && _player != null) {
+      final prevTrack = _queue!.previousTrack();
       if (prevTrack != null) {
         _broadcastTrackState(TrackState.PREVIOUS);
-        _player.value.playTrack(prevTrack);
+        _player!.playTrack(prevTrack);
       }
     } else {
       print('[WARNING] coulnd\'t play previous track');
@@ -106,83 +112,83 @@ class PlaybackManager {
   }
 
   void playTrack(PlaybackTrack track) {
-    _player.ifPresent((player) {
-      if (!_queue.isPresent) {
+    if (_player != null) {
+      if (_queue == null) {
         // Assert queue present
-        _queue = new Optional.of(new CafPlaybackQueue.empty());
+        _queue = new CafPlaybackQueue.empty();
         _broadcastQueue();
       }
 
       // Add to prio list and play song
       try {
-        _queue.value.addPrioTrack(track, false);
+        _queue!.addPrioTrack(track, false);
         _broadcastAddPrioDelta(track, false);
         playNext();
       } catch (e) {
         print("[ERROR] Coulnd't play track: $track - $e");
       }
-    });
+    }
   }
 
   void stop() {
-    _player.ifPresent((player) {
-      player.stop();
+    if (_player != null) {
+      _player!.stop();
       _playerState = PlayerState.ENDED;
       _broadcastPlayerState();
       _uiManager.showPlayer(false);
-    });
+    }
   }
 
   void setSeek(int seekMs) {
-    _player.ifPresent((player) {
+    if (_player != null) {
       if (_playerState != PlayerState.PAUSED) {
         // Will break pause and seek callbacks otherwise
         _playerState = PlayerState.SEEKING;
       } else {
         _broadcastSeekMs(seekMs);
       }
-      player.seekTo(seekMs); // Internal state will be buffering
-    });
+      _player!.seekTo(seekMs); // Internal state will be buffering
+    }
   }
 
   void setShuffling(bool isShuffling, [int shuffleSeed = 0]) {
-    _queue.ifPresent((queue) {
+    if (_queue != null) {
       try {
-        queue.setShuffling(isShuffling, shuffleSeed);
+        _queue!.setShuffling(isShuffling, shuffleSeed);
         _broadcastShuffleState();
       } catch (e) {
         print('[ERROR] Couldn\'t shuffle: $e');
       }
-    });
+    }
   }
 
   void setRepeating(bool isRepeating) {
-    _queue.ifPresent((queue) {
-      queue.setRepeating(isRepeating);
+    if (_queue != null) {
+      _queue!.setRepeating(isRepeating);
       _broadcastRepeatState();
-    });
+    }
   }
 
   void appendToPrio(PlaybackTrack track) {
-    _queue.ifPresent((queue) {
+    if (_queue != null) {
       try {
-        queue.addPrioTrack(track, true);
+        _queue!.addPrioTrack(track, true);
         _broadcastAddPrioDelta(track, true);
       } catch (e) {
         print('[ERROR] Coulndn\t append $e');
       }
-    });
+    }
   }
 
   void move(bool startPrio, int startIndex, bool targetPrio, int targetIndex) {
-    _queue.ifPresent((queue) {
+    if (_queue != null) {
       try {
-        queue.move(startPrio, startIndex, targetPrio, targetIndex);
+        _queue!.move(startPrio, startIndex, targetPrio, targetIndex);
         _broadcastMovePrioDelta(startPrio, startIndex, targetPrio, targetIndex);
       } catch (e) {
         print('[ERROR] Couldn\'t move track: $e');
       }
-    });
+    }
   }
 
   /*
@@ -199,22 +205,22 @@ class PlaybackManager {
   }
 
   void onPlayerReady(PlaybackPlayer player) {
-    if (!_player.isPresent) {
-      _player = new Optional.of(player);
-      _broadcastReady();
-      _uiManager.showReady();
-    }
+    _player = player;
+    _broadcastReady();
+    _uiManager.showReady();
   }
 
   void onError(String error) {
-    assert(error != null);
     _broadcastError(error);
+    Future.delayed(const Duration(seconds: 2), playNext);
   }
 
   void onPlayerStateChanged(PlayerState state) {
-    assert(_player.isPresent);
-    final player = _player.value;
+    if (_player == null) {
+      return;
+    }
 
+    final player = _player!;
     switch (state) {
       case PlayerState.PLAYING:
         if (_playerState != PlayerState.SEEKING) {
@@ -265,7 +271,7 @@ class PlaybackManager {
 
   void _broadcastQueue() => _playerBridge.sendQueue(_queue);
 
-  void _broadcastReady() => _playerBridge.sendReady(_player.isPresent);
+  void _broadcastReady() => _playerBridge.sendReady(_player != null);
 
   void _broadcastPlayerState() => _playerBridge.sendPlayerState(_playerState);
 
@@ -278,7 +284,7 @@ class PlaybackManager {
   void _broadcastMovePrioDelta(bool startPrio, int startIndex, bool targetPrio, int targetIndex) =>
       _playerBridge.sendMovePrioDelta(startPrio, startIndex, targetPrio, targetIndex);
 
-  void _broadcastSeekMs(int seekMs) => _playerBridge.sendSeek(seekMs);
+  void _broadcastSeekMs(int? seekMs) => _playerBridge.sendSeek(seekMs);
 
   void _broadcastError(String error) => _playerBridge.sendError(error);
 
@@ -287,5 +293,5 @@ class PlaybackManager {
    */
 
   // ignore: non_constant_identifier_names
-  CafPlaybackQueue get TEST_queue => _queue.value;
+  CafPlaybackQueue get TEST_queue => _queue!;
 }

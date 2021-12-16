@@ -13,14 +13,13 @@ class YoutubePlayer extends PlaybackPlayer {
 
   final PlaybackManager _manager;
   final BackendAdapter _adapter = new BackendAdapter();
-  StreamSubscription _periodicSeekDispatcher; // Null safe by optional
-  PlaybackTrack _currTrack; // Null safe by assert
-  yt.Player _iplayer; // null safe
+  late yt.Player _iplayer;
+  StreamSubscription? _periodicSeekDispatcher;
+  PlaybackTrack? _currTrack;
   int _seekMs = 0;
-
   bool _isCueing = false;
 
-  YoutubePlayer(this._manager) : assert(_manager != null) {
+  YoutubePlayer(this._manager) {
     _iplayer = new yt.Player(
       'youTubePlayerDOM',
       yt.PlayerOptions(
@@ -63,7 +62,7 @@ class YoutubePlayer extends PlaybackPlayer {
 
   @override
   Future<void> playTrack(PlaybackTrack track) async {
-    assert(track != null);
+    print('Play track');
     _isCueing = true;
     _currTrack = track;
     final id = await cacheVideoKey(track);
@@ -86,12 +85,12 @@ class YoutubePlayer extends PlaybackPlayer {
   @override
   Future<String> cacheVideoKey(PlaybackTrack track) async {
     final key = '${track.title} ${track.artist}';
-    String id = cache.get(key);
+    String? id = cache.get(key);
     if (id == null) {
       id = await _adapter.getVideoId(track);
       cache.set(id, id);
     }
-    return id ?? 'QryoOF5jEbc'; // Fallback is twerk
+    return id;
   }
 
   /*
@@ -104,6 +103,7 @@ class YoutubePlayer extends PlaybackPlayer {
   }
 
   void _onReady() {
+    print('[INFO] lib_ytYoutube ready');
     _manager.onPlayerReady(this);
   }
 
@@ -113,12 +113,11 @@ class YoutubePlayer extends PlaybackPlayer {
   }
 
   void _sendPlayerStateChange(int playerState) {
-    assert(_currTrack != null);
     _periodicSeekDispatcher?.cancel();
 
     switch (playerState) {
       case yt.PlayerState.PLAYING:
-        _currTrack.durationMs = (_iplayer.getDuration() * MS_FACTOR).toInt();
+        _currTrack!.durationMs = ((_iplayer.getDuration() ?? 0) * MS_FACTOR).toInt();
 
         _manager.onPlayerStateChanged(PlayerState.PLAYING);
         _periodicSeekDispatcher =

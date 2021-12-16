@@ -14,9 +14,9 @@ class MockedBridge extends Mock implements CommunicationChannel {}
 class MockedPlayer extends Mock implements PlaybackPlayer {}
 
 void main() {
-  List<PlaybackTrack> tracks;
-  PlaybackManager manager;
-  MockedPlayer player;
+  late List<PlaybackTrack> tracks;
+  late PlaybackManager manager;
+  late MockedPlayer player;
 
   setUp(() {
     player = new MockedPlayer();
