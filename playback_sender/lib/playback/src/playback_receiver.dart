@@ -202,7 +202,7 @@ class PlaybackReceiver extends PlaybackSender {
       _currShuffleState = shuffleDto;
       _completer.add(PlaybackUIEvent.QUEUE);
     } catch (e) {
-      _reSync("Couldn't shuffle:\n$e");
+      _reSync("Couldn't shuffle: $e");
     }
   }
 
