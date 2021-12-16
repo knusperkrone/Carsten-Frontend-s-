@@ -1,8 +1,8 @@
 import 'dart:convert';
 
-import 'package:test/test.dart';
 import 'package:playback_interop/playback_interop.dart';
 import 'package:playback_interop/playback_interop_test.dart';
+import 'package:test/test.dart';
 
 void main() {
   test('Interop shuffling', () {
@@ -16,7 +16,8 @@ void main() {
   test('Interop shuffling - short', () {
     final shuffler = new PlaybackShuffler();
     final list = json.decode(INTEGRATION_TRACKS) as List<dynamic>;
-    final List<dynamic> untyped = list.map((dynamic json) => PlaybackTrack.fromJson(json as Map<String, dynamic>)).toList();
+    final List<dynamic> untyped =
+        list.map((dynamic json) => PlaybackTrack.fromJson(json as Map<String, dynamic>)).toList();
     final List<PlaybackTrack> tracks = untyped.cast();
 
     final List<PlaybackTrack> result = shuffler.shuffle(0, tracks);

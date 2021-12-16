@@ -1,6 +1,5 @@
-import 'package:meta/meta.dart';
-
 import 'package:dcache/dcache.dart';
+import 'package:meta/meta.dart';
 import 'package:playback_interop/playback_interop.dart';
 
 abstract class PlaybackPlayer {

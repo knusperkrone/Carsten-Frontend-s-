@@ -1,5 +1,6 @@
 import 'package:playback_interop/playback_interop.dart';
 
+// ignore: avoid_classes_with_only_static_members
 class Transformer {
   static List<PlaybackTrack> transfromTracks(List<dynamic> array) => array.map(transformTrack).toList();
 

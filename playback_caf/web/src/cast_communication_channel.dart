@@ -1,8 +1,7 @@
 import 'dart:convert';
 
-import 'package:playback_interop/playback_interop.dart';
 import 'package:playback_caf_dart/playback_caf.dart';
-import 'package:playback_interop/src/dto/dto.dart';
+import 'package:playback_interop/playback_interop.dart';
 
 import 'cast.dart' as js_cast;
 

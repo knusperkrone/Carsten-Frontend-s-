@@ -1,9 +1,9 @@
 import 'dart:async';
 
+import 'package:js/js.dart' show allowInterop;
 import 'package:playback_caf_dart/playback_caf.dart';
 import 'package:playback_caf_dart/src/playback/backend.dart';
 import 'package:playback_interop/playback_interop.dart';
-import 'package:js/js.dart' show allowInterop;
 
 import 'youtube_iframe.dart' as yt;
 
