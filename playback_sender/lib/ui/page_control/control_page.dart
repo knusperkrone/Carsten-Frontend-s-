@@ -105,7 +105,7 @@ class ControlPageState extends UIListenerState<ControlPage>
    */
 
   Future<void> _notifyPlayingState() async {
-    _progressKey.currentState?.onState();
+    _progressKey.currentState?.rebuild();
     _controlKey.currentState?.rebuild();
     if (_manager.currPlayerState != SimplePlaybackState.BUFFERING) {
       Color color;

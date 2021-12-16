@@ -10,24 +10,29 @@ class TrackProgress extends StatefulWidget {
 class TrackProgressState extends State<TrackProgress>
     with SingleTickerProviderStateMixin {
   final PlaybackManager _manager = new PlaybackManager();
-  double? _val = 0.0;
+  double _opacity = 0.0;
 
-  void onState() {
+  void rebuild() {
     if (_manager.currPlayerState == SimplePlaybackState.BUFFERING) {
       setState(() {
-        _val = null; // Make non deterministic animation
+        _opacity = 1.0; // Make non deterministic animation
       });
     } else {
       setState(() {
-        _val = 0.0;
+        _opacity = 0.0;
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return LinearProgressIndicator(
-      value: _val,
+    return AnimatedOpacity(
+      opacity: _opacity,
+      duration: const Duration(milliseconds: 550),
+      child: LinearProgressIndicator(
+        color: Theme.of(context).colorScheme.secondary,
+        value: null,
+      ),
     );
   }
 }
