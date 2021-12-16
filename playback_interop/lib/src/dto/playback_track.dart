@@ -82,7 +82,7 @@ class PlaybackTrack implements Dto {
   @override
   int get hashCode =>
       origQueueIndex.hashCode +
-      durationMs.hashCode +
+      //durationMs.hashCode +
       //queueIndex.hashCode +
       title.hashCode +
       artist.hashCode +
