@@ -18,7 +18,7 @@ internal class CastPlaybackChannel(private val sessionManager: SessionManager, p
     fun sendMessage(message: String) {
         try {
             // Log.d(TAG, "Send: $message")
-            sessionManager.currentCastSession.sendMessage(NAMESPACE, message)
+            sessionManager.currentCastSession!!.sendMessage(NAMESPACE, message)
         } catch (e: Exception) {
             Log.e(TAG, e.toString())
         }

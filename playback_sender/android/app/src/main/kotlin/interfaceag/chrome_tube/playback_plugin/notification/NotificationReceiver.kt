@@ -18,7 +18,7 @@ class PlaybackNotificationReceiver(private val mService: CastConnectionService) 
         const val PREVIOUS_INTENT_NAME = "interfaceag.chrome_tube.PREVIOUS"
         const val STOP_INTENT_NAME = "interfaceag.chrome_tube.STOP"
         const val NOP_INTENT_NAME = "interfaceag.chrome_tube.NOP"
-        internal val INTENT_REQUEST_CODE = 255
+        internal const val INTENT_REQUEST_CODE = 255
     }
 
     override fun onReceive(context: Context, intent: Intent) {

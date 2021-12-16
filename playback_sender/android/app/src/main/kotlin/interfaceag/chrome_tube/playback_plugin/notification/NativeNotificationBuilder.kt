@@ -109,15 +109,21 @@ class NativeNotificationBuilder(private val mContext: Context, private val mServ
         builder.setOngoing(true)
 
         // Intent stuff
+        val intentFlags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        } else {
+            PendingIntent.FLAG_UPDATE_CURRENT
+        }
+
         val contentIntent = Intent(mContext, MainActivity::class.java)
         contentIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-        val resultContentIntent = PendingIntent.getActivity(mContext, 0, contentIntent, 0)
+        val resultContentIntent = PendingIntent.getActivity(mContext, 0, contentIntent, intentFlags)
 
-        val pendingPlayIntent = PendingIntent.getBroadcast(mContext, PlaybackNotificationReceiver.INTENT_REQUEST_CODE, PLAY_INTENT, 0)
-        val pendingNextIntent = PendingIntent.getBroadcast(mContext, PlaybackNotificationReceiver.INTENT_REQUEST_CODE, NEXT_INTENT, 0)
-        val pendingStopIntent = PendingIntent.getBroadcast(mContext, PlaybackNotificationReceiver.INTENT_REQUEST_CODE, STOP_INTENT, 0)
-        val pendingPrevIntent = PendingIntent.getBroadcast(mContext, PlaybackNotificationReceiver.INTENT_REQUEST_CODE, PREV_INTENT, 0)
-        val pendingNopIntent = PendingIntent.getBroadcast(mContext, PlaybackNotificationReceiver.INTENT_REQUEST_CODE, NOP_INTENT, 0)
+        val pendingPlayIntent = PendingIntent.getBroadcast(mContext, PlaybackNotificationReceiver.INTENT_REQUEST_CODE, PLAY_INTENT, intentFlags)
+        val pendingNextIntent = PendingIntent.getBroadcast(mContext, PlaybackNotificationReceiver.INTENT_REQUEST_CODE, NEXT_INTENT, intentFlags)
+        val pendingStopIntent = PendingIntent.getBroadcast(mContext, PlaybackNotificationReceiver.INTENT_REQUEST_CODE, STOP_INTENT, intentFlags)
+        val pendingPrevIntent = PendingIntent.getBroadcast(mContext, PlaybackNotificationReceiver.INTENT_REQUEST_CODE, PREV_INTENT, intentFlags)
+        val pendingNopIntent = PendingIntent.getBroadcast(mContext, PlaybackNotificationReceiver.INTENT_REQUEST_CODE, NOP_INTENT, intentFlags)
 
         var pendingActionIntent = pendingPlayIntent
         var drawable = R.drawable.ic_play
@@ -143,7 +149,7 @@ class NativeNotificationBuilder(private val mContext: Context, private val mServ
 
             val palette = Palette.Builder(resource).generate()
             builder.setLargeIcon(resource)
-            builder.setColor(palette.getDominantColor(0x0))
+            builder.color = palette.getDominantColor(0x0)
             builder.setColorized(true)
         }
 
@@ -169,7 +175,7 @@ class NativeNotificationBuilder(private val mContext: Context, private val mServ
             val description = CHANNEL_DESCR
             val importance = NotificationManager.IMPORTANCE_DEFAULT
             val channel = NotificationChannel(CHANNEL_ID, name, importance)
-            channel.setDescription(description)
+            channel.description = description
             channel.setSound(null, null)
             channel.enableLights(false)
             channel.enableVibration(false)

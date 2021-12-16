@@ -12,8 +12,8 @@ class CastOptionsProvider : OptionsProvider {
         const val DESCRIPTION = "chromecast-youtube-player-receiver"
     }
 
-    override fun getCastOptions(p0: Context?): CastOptions =
+    override fun getCastOptions(p0: Context): CastOptions =
             CastOptions.Builder().setReceiverApplicationId(RECEIVER_ID).build()
 
-    override fun getAdditionalSessionProviders(p0: Context?): MutableList<SessionProvider>? = null
+    override fun getAdditionalSessionProviders(p0: Context): MutableList<SessionProvider>? = null
 }

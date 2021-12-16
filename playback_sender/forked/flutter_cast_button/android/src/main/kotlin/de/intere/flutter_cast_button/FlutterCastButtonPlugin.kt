@@ -88,7 +88,6 @@ class FlutterCastButtonPlugin : FlutterPlugin, ActivityAware, MethodCallHandler 
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
         when (call.method) {
-            "loadMedia" -> loadMedia(call.argument("url")!!)
             "showCastDialog" -> showCastDialog()
             else -> result.notImplemented()
         }
@@ -103,20 +102,6 @@ class FlutterCastButtonPlugin : FlutterPlugin, ActivityAware, MethodCallHandler 
                 show()
             }
         }
-    }
-
-    private fun loadMedia(url: String) {
-        val mediaInfo: MediaInfo = MediaInfo.Builder(url)
-            .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
-            .build()
-
-        val remoteMediaClient: RemoteMediaClient =
-            castContext.sessionManager.currentCastSession!!.remoteMediaClient!!
-        val mediaRequest: MediaLoadRequestData = MediaLoadRequestData.Builder()
-            .setMediaInfo(mediaInfo)
-            .build()
-
-        remoteMediaClient.load(mediaRequest)
     }
 }
 

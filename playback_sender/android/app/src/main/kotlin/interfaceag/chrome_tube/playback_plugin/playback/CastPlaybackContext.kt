@@ -1,6 +1,7 @@
 package interfaceag.chrome_tube.playback_plugin.playback
 
 import android.os.Handler
+import android.os.Looper
 import androidx.mediarouter.media.MediaRouteSelector
 import androidx.mediarouter.media.MediaRouter
 import com.google.android.gms.cast.CastDevice
@@ -37,31 +38,31 @@ class CastPlaybackContext(private val router: MediaRouter, private val castConte
      * Business methods
      */
 
-    fun isConnected(): Boolean? = castContext.sessionManager?.currentCastSession != null
+    fun isConnected(): Boolean = castContext.sessionManager.currentCastSession != null
 
-    fun setVolume(volume: Double): Double? {
-        castContext.sessionManager?.currentCastSession?.volume = volume
+    fun setVolume(volume: Double): Double {
+        castContext.sessionManager.currentCastSession?.volume = volume
         return volume
     }
 
     fun volumeUp(): Double? {
-        val session = castContext.sessionManager?.currentCastSession
+        val session = castContext.sessionManager.currentCastSession
         if (session != null) {
             val newVolume = min(1.0, session.volume + 0.04)
             session.volume = newVolume
             return newVolume
         }
-        return castContext.sessionManager?.currentCastSession?.volume
+        return castContext.sessionManager.currentCastSession?.volume
     }
 
     fun volumeDown(): Double? {
-        val session = castContext.sessionManager?.currentCastSession
+        val session = castContext.sessionManager.currentCastSession
         if (session != null) {
             val newVolume = max(0.0, session.volume - 0.04)
             session.volume = newVolume
             return newVolume
         }
-        return castContext.sessionManager?.currentCastSession?.volume
+        return castContext.sessionManager.currentCastSession?.volume
     }
 
     fun endCurrentSession(): Boolean {
@@ -94,7 +95,7 @@ class CastPlaybackContext(private val router: MediaRouter, private val castConte
     private fun restoreSession() {
         val sessionManager = castContext.sessionManager
         if (sessionManager.currentCastSession != null) {
-            onSessionResumed(sessionManager.currentCastSession, false)
+            onSessionResumed(sessionManager.currentCastSession!!, false)
         } else {
             val selector = MediaRouteSelector.Builder()
                     .addControlCategory(CastMediaControlIntent.categoryForCast(CastOptionsProvider.RECEIVER_ID))
@@ -118,7 +119,7 @@ class CastPlaybackContext(private val router: MediaRouter, private val castConte
                 }
                 // Perform active-scan for 2500ms
                 router.addCallback(selector, callback, MediaRouter.CALLBACK_FLAG_PERFORM_ACTIVE_SCAN)
-                Handler().postDelayed({ router.removeCallback(callback) }, 2500)
+                Handler(Looper.getMainLooper()).postDelayed({ router.removeCallback(callback) }, 2500)
             }
         }
     }
