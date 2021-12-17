@@ -1,0 +1,23 @@
+name: playback_caf_dart
+description: CAF implementation for ChromiTube
+# version: 1.0.0
+#homepage: https://www.interfaceag.de
+#author: Aron Metzig <aron.metzig@interface-ag.de>
+
+environment:
+  sdk: '>=2.15.0 <3.0.0'
+
+dependencies:
+  dcache: ^0.4.0
+  playback_core: 
+    path: ../core
+  test: ^1.19.5
+
+dev_dependencies:
+  build_runner: ^2.1.5
+  build_test: ^2.1.4
+  build_web_compilers: ^3.2.1
+  http: ^0.13.0
+  js: ^0.6.3
+  mockito: ^5.0.16
+  pedantic: ^1.10.0
