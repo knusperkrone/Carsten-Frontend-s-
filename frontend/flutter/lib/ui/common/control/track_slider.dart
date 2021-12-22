@@ -83,7 +83,8 @@ class LinearTrackSliderState extends UIListenerState<LinearTrackSlider>
 
       _trackDuration = track.durationMs!.toDouble();
       _animTween.end = _trackDuration;
-      _animController.duration = Duration(milliseconds: _trackDuration!.toInt());
+      _animController.duration =
+          Duration(milliseconds: _trackDuration!.toInt());
 
       double timeDelta = _trackDuration! - _manager.trackSeek;
       if (_manager.currPlayerState == SimplePlaybackState.PLAYING) {
@@ -111,8 +112,10 @@ class LinearTrackSliderState extends UIListenerState<LinearTrackSlider>
   Widget build(BuildContext context) {
     return new AnimatedBuilder(
       animation: _animController,
-      builder: (context, _) =>
-          new LinearProgressIndicator(value: _animController.value),
+      builder: (context, _) => new LinearProgressIndicator(
+        value: _animController.value,
+        color: Theme.of(context).colorScheme.secondary,
+      ),
     );
   }
 }
