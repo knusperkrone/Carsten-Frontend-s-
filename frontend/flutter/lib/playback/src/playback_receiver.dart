@@ -251,15 +251,14 @@ class PlaybackReceiver extends PlaybackSender {
     scheduleFullSync();
   }
 
-  void _onStop() {
+  Future<void> _onStop() async {
     _isRepeating = false;
     _currSeek = 0;
     _queue = null;
 
-    _completer.add(PlaybackUIEvent.SEEK);
-    _completer.add(PlaybackUIEvent.TRACK);
-    _completer.add(PlaybackUIEvent.QUEUE);
-    _completer.add(PlaybackUIEvent.REPEATING);
-    _completer.add(PlaybackUIEvent.PLAYER_STATE);
+    for (final event in PlaybackUIEvent.values) {
+      _completer.add(event);
+      await Future.delayed(const Duration(milliseconds: 10), () {});
+    }
   }
 }

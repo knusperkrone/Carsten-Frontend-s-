@@ -50,8 +50,8 @@ class ReorderTrackListState extends CachingState<ReorderTrackList>
    * Ordering
    */
 
-  // TODO(aron): Reimplement
-  bool _canReorder(int i) => i != _shadowPrioTracks.length; // Is barrier
+  bool _canReorder(Widget? _widget, int i) =>
+      i != _shadowPrioTracks.length; // Is barrier
 
   void _onReorder(int startIndex, int targetIndex) {
     setState(() {
@@ -232,6 +232,7 @@ class ReorderTrackListState extends CachingState<ReorderTrackList>
           onReorder: _onReorder,
           delegate: ReorderableSliverChildBuilderDelegate(
             _buildTile,
+            canReorder: _canReorder,
             childCount: trackCount,
           ),
         ),
