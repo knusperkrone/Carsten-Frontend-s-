@@ -68,7 +68,9 @@ class QueueControlState extends State<QueueControl> {
               ),
               AnimatedOpacity(
                 duration: const Duration(milliseconds: 250),
-                child: const LinearProgressIndicator(),
+                child: LinearProgressIndicator(
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
                 opacity:
                     (_manager.currPlayerState == SimplePlaybackState.BUFFERING)
                         ? 1.0
